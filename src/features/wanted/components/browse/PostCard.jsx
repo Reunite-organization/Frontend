@@ -1,5 +1,4 @@
-﻿// client/src/features/wanted/components/browse/PostCard.jsx
-import { motion } from 'framer-motion';
+﻿import { motion } from 'framer-motion';
 import { MapPin, Calendar, Heart, Share2, Users } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { formatDistanceToNow } from 'date-fns';

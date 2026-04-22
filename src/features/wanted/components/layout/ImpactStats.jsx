@@ -5,7 +5,7 @@ import { useLanguage } from '../../../../lib/i18n';
 
 export const ImpactStats = ({ compact = false }) => {
   const { language } = useLanguage();
-  const { stats, isLoading } = useImpactStats();
+  const { data: stats, isLoading } = useImpactStats();
 
   const items = [
     {

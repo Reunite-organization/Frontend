@@ -411,6 +411,29 @@ class OfflineStorage {
     
     console.log('✅ All offline data cleared');
   }
+
+
+async clearStuckItems() {
+  const db = await this.init();
+  const tx = db.transaction('syncQueue', 'readwrite');
+  
+  let cursor = await tx.store.openCursor();
+  
+  while (cursor) {
+    // Remove items that have failed 3+ times or are older than 1 day
+    const isStuck = cursor.value.attempts >= 3;
+    const isOld = Date.now() - cursor.value.timestamp > 24 * 60 * 60 * 1000;
+    
+    if (isStuck || isOld) {
+      console.log(`Removing stuck item: ${cursor.value.id}`);
+      await cursor.delete();
+    }
+    
+    cursor = await cursor.continue();
+  }
+  
+  await tx.done;
+}
 }
 
 export const offlineStorage = new OfflineStorage();

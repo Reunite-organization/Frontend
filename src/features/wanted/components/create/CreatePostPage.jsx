@@ -1,5 +1,4 @@
-﻿// client/src/features/wanted/components/create/CreatePostPage.jsx
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -36,6 +35,11 @@ export const CreatePostPage = () => {
   
   const [currentStep, setCurrentStep] = useState(0);
   const [formData, setFormData] = useState({
+    personDetails: {
+    personName: '',
+    nickname: '',
+    knownAs: '',
+  },
     memoryText: { en: '', am: '' },
     city: '',
     country: '',
@@ -51,20 +55,26 @@ export const CreatePostPage = () => {
   const [errors, setErrors] = useState({});
 
   const updateFormData = (updates) => {
-    setFormData(prev => ({ ...prev, ...updates }));
-    // Clear errors for updated fields
-    Object.keys(updates).forEach(key => {
-      if (errors[key]) {
-        setErrors(prev => ({ ...prev, [key]: null }));
-      }
-    });
-  };
+  setFormData(prev => {
+    if (updates.personDetails) {
+      return {
+        ...prev,
+        ...updates,
+        personDetails: {
+          ...prev.personDetails,
+          ...updates.personDetails
+        }
+      };
+    }
+    return { ...prev, ...updates };
+  });
+};
 
   const validateStep = () => {
     const newErrors = {};
     
     switch (currentStep) {
-      case 0: // Memory
+      case 0: 
         if (!formData.memoryText.en && !formData.memoryText.am) {
           newErrors.memoryText = language === 'am' 
             ? 'ቢያንስ በአንድ ቋንቋ ትዝታ ያስፈልጋል' 
@@ -81,6 +91,15 @@ export const CreatePostPage = () => {
           newErrors.secretQuestions = language === 'am'
             ? 'ቢያንስ 2 ሚስጥራዊ ጥያቄዎች ያስፈልጋሉ'
             : 'At least 2 secret questions are required';
+        } else {
+          const incomplete = formData.secretQuestions.some(
+            q => !q.question.en || !q.question.am || !q.answer
+          );
+          if (incomplete) {
+            newErrors.secretQuestions = language === 'am'
+              ? 'እባክዎ ለሁሉም ጥያቄዎች እንግሊዝኛ እና አማርኛ ጥያቄዎችን እና መልሶችን ይሙሉ'
+              : 'Please fill both English and Amharic questions and answers for all items';
+          }
         }
         break;
     }
@@ -101,7 +120,12 @@ export const CreatePostPage = () => {
 
   const handleSubmit = () => {
     if (validateStep()) {
-      createPost(formData, {
+      const submissionData = {
+        ...formData,
+        year: parseInt(formData.year, 10),
+      };
+
+      createPost(submissionData, {
         onSuccess: (post) => {
           navigate(`/wanted/post/${post._id}`);
         },
@@ -188,20 +212,19 @@ export const CreatePostPage = () => {
                         }
                       </span>
                     </div>
+
                     <h2 className="font-display text-3xl font-bold text-charcoal mb-3">
                       {language === 'am'
-                        ? 'ስለምን ታስታውሷቸዋለህ?'
+                        ? 'ስለነሱ ምን ያስታውሳሉ?'
                         : 'What do you remember about them?'
                       }
                     </h2>
-                    <p className="text-stone max-w-lg mx-auto">
-                      {language === 'am'
-                        ? 'የበለጠ ዝርዝር መረጃ በሰጡ ቁጥር ትክክለኛውን ሰው ለማግኘት ቀላል ይሆናል።'
-                        : 'The more details you share, the easier it will be to find the right person.'
-                      }
-                    </p>
-                  </div>
                   
+                  </div>
+                  <div className='font-bold text-2xl text-center'> {language === 'am'
+                        ? 'እባኮ ፍለጋዎትን ለማፋጠን ከዚህ በታች ያሉትን ጥያቄዎች በቻሉት መጠን ለመሙላት ይሞክሩ መረጃውን መበድም በሞሉ ቁጥር ፍለጋዎት የዛኑ ያህል ይፋጠናል!!!'
+                        : 'The more details you share, the easier it will be to find the right person.'
+                      }</div>
                   <MemoryInput
                     value={formData.memoryText}
                     onChange={(memoryText) => updateFormData({ memoryText })}

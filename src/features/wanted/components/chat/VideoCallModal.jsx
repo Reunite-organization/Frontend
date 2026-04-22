@@ -12,10 +12,12 @@ import {
   Users
 } from 'lucide-react';
 import { useLanguage } from '../../../../lib/i18n';
+import { useAuth } from '../../../../hooks/useAuth';
 import { wantedApi } from '../../services/wantedApi';
 
 export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const [isMuted, setIsMuted] = useState(false);
   const [isVideoOff, setIsVideoOff] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -25,12 +27,15 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
   const containerRef = useRef(null);
   const timerRef = useRef(null);
   const zegoRef = useRef(null);
+  const callSessionRef = useRef(null);
+  const endingCallRef = useRef(false);
 
   useEffect(() => {
     if (isOpen && roomId) {
       initializeCall();
     }
     return () => {
+      void endCall();
       cleanupCall();
     };
   }, [isOpen, roomId]);
@@ -39,18 +44,21 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
     try {
       setIsConnecting(true);
       setError(null);
+
+      const { token, roomId: videoRoomId, appId } = await wantedApi.generateVideoToken(roomId);
+      const userId = user?.id ? String(user.id) : Date.now().toString();
+      const userName = user?.name || 'Falagiye User';
+
+      callSessionRef.current = { callId: videoRoomId };
       
-      const { token } = await wantedApi.generateVideoToken(roomId);
-      
-      // Initialize ZegoCloud
       const { ZegoUIKitPrebuilt } = await import('@zegocloud/zego-uikit-prebuilt');
       
       const kitToken = ZegoUIKitPrebuilt.generateKitTokenForProduction(
-        import.meta.env.VITE_ZEGOCLOUD_APP_ID,
+        appId,
         token,
-        roomId,
-        Date.now().toString(),
-        'Falagiye User'
+        videoRoomId,
+        userId,
+        userName,
       );
 
       const zp = ZegoUIKitPrebuilt.create(kitToken);
@@ -87,6 +95,26 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
     stopTimer();
   };
 
+  const endCall = async () => {
+    if (endingCallRef.current || !callSessionRef.current?.callId || !roomId) {
+      return;
+    }
+
+    endingCallRef.current = true;
+
+    try {
+      await wantedApi.endVideoCall(roomId, {
+        callId: callSessionRef.current.callId,
+        duration: callDuration,
+      });
+    } catch (requestError) {
+      console.error('Failed to end video call cleanly:', requestError);
+    } finally {
+      endingCallRef.current = false;
+      callSessionRef.current = null;
+    }
+  };
+
   const startTimer = () => {
     timerRef.current = setInterval(() => {
       setCallDuration(prev => prev + 1);
@@ -117,6 +145,7 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
   };
 
   const handleHangup = () => {
+    void endCall();
     cleanupCall();
     onClose();
   };

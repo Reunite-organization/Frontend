@@ -5,6 +5,7 @@ import { useLanguage } from '../../../../lib/i18n';
 
 export const ProfileForm = ({ profile, onClose, onSubmit, isSubmitting }) => {
   const { language } = useLanguage();
+  const isCreating = !profile;
   const [formData, setFormData] = useState({
     realName: profile?.realName || '',
     displayName: profile?.displayName || '',
@@ -57,7 +58,9 @@ export const ProfileForm = ({ profile, onClose, onSubmit, isSubmitting }) => {
       >
         <div className="sticky top-0 bg-white dark:bg-charcoal border-b border-warm-gray/30 px-6 py-4 flex items-center justify-between">
           <h2 className="font-display text-xl font-semibold text-charcoal">
-            {language === 'am' ? 'መገለጫ አርትዕ' : 'Edit Profile'}
+            {language === 'am'
+              ? isCreating ? 'መገለጫ ፍጠር' : 'መገለጫ አርትዕ'
+              : isCreating ? 'Create Profile' : 'Edit Profile'}
           </h2>
           <button
             onClick={onClose}

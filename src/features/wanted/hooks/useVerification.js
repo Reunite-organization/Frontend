@@ -1,5 +1,6 @@
 ﻿// client/src/features/wanted/hooks/useVerification.js
 import { useMutation } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { wantedApi } from '../services/wantedApi';
 import { useLanguage } from '../../../lib/i18n';
 import { toast } from 'sonner';
@@ -7,6 +8,7 @@ import { useState, useEffect } from 'react';
 
 export const usePhoneVerification = () => {
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
   const [countdown, setCountdown] = useState(0);
 
   useEffect(() => {
@@ -40,6 +42,10 @@ export const usePhoneVerification = () => {
           ? 'ስልክ ቁጥር ተረጋግጧል'
           : 'Phone number verified'
       );
+      queryClient.invalidateQueries({ queryKey: ['wanted', 'profile'] });
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || error.message);
     },
   });
 
@@ -54,6 +60,7 @@ export const usePhoneVerification = () => {
 
 export const useTelegramVerification = () => {
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
 
   const generateCode = useMutation({
     mutationFn: () => wantedApi.generateTelegramCode(),
@@ -63,6 +70,10 @@ export const useTelegramVerification = () => {
           ? 'ኮድ ተፈጥሯል። ከቴሌግራም ቦት ጋር ያጋሩት።'
           : 'Code generated. Share it with the Telegram bot.'
       );
+      queryClient.invalidateQueries({ queryKey: ['wanted', 'profile'] });
+    },
+    onError: (error) => {
+      toast.error(error.response?.data?.message || error.message);
     },
   });
 

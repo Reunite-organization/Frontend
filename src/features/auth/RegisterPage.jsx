@@ -1,4 +1,3 @@
-// client/src/features/auth/RegisterPage.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
@@ -90,7 +89,7 @@ export const RegisterPage = () => {
     });
     
     if (result.success) {
-      navigate('/wanted/profile/create', { 
+      navigate('/wanted/profile', { 
         state: { message: language === 'am' ? 'እንኳን ደህና መጡ! መገለጫዎን ያጠናቅቁ።' : 'Welcome! Complete your profile.' }
       });
     } else {

@@ -1,4 +1,5 @@
-﻿import { createContext, useState, useEffect, useCallback } from 'react';
+// client/src/app/providers/AuthProvider.jsx
+import { createContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from '../../lib/axios';
 import { toast } from 'sonner';
@@ -10,42 +11,51 @@ export const AuthProvider = ({ children }) => {
   const [profile, setProfile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [needsProfile, setNeedsProfile] = useState(false);
   const navigate = useNavigate();
+  
+  // Prevent multiple auth checks
+  const checkingAuth = useRef(false);
 
-  useEffect(() => {
-    checkAuth();
-  }, []);
-
-  const checkAuth = async () => {
-    const token = localStorage.getItem('auth-token');
+  const checkAuth = useCallback(async () => {
+    if (checkingAuth.current) return;
+    checkingAuth.current = true;
     
+    const token = localStorage.getItem('auth-token');
+
     if (!token) {
       setIsLoading(false);
+      checkingAuth.current = false;
       return;
     }
 
     try {
-      // Try to get user profile from wanted API
-      const response = await axios.get('/api/wanted/profile');
-      
+      const response = await axios.get('/api/auth/status');
+
       if (response.data.success) {
-        setProfile(response.data.data);
-        // User is stored in localStorage after login
-        const userData = localStorage.getItem('user-data');
-        if (userData) {
-          setUser(JSON.parse(userData));
+        const { authenticated, user, profile } = response.data.data;
+
+        if (authenticated) {
+          setUser(user);
+          setProfile(profile?.hasProfile ? profile : null);
+          setNeedsProfile(!profile?.hasProfile);
+          setIsAuthenticated(true);
+          localStorage.setItem('user-data', JSON.stringify(user));
+        } else {
+          throw new Error('Not authenticated');
         }
-        setIsAuthenticated(true);
       }
     } catch (error) {
       console.error('Auth check failed:', error);
-      // Token might be expired, try refresh
+      
+      // Try refresh token
       try {
         const refreshToken = localStorage.getItem('refresh-token');
         if (refreshToken) {
           const refreshResponse = await axios.post('/api/auth/refresh-token', { refreshToken });
           if (refreshResponse.data.success) {
             localStorage.setItem('auth-token', refreshResponse.data.data.token);
+            checkingAuth.current = false;
             await checkAuth();
             return;
           }
@@ -53,46 +63,56 @@ export const AuthProvider = ({ children }) => {
       } catch (refreshError) {
         console.error('Refresh failed:', refreshError);
       }
-      
+
       // Clear invalid tokens
       localStorage.removeItem('auth-token');
       localStorage.removeItem('refresh-token');
       localStorage.removeItem('user-data');
+      setUser(null);
+      setProfile(null);
     } finally {
       setIsLoading(false);
+      checkingAuth.current = false;
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    checkAuth();
+  }, [checkAuth]);
 
   const login = useCallback(async (email, password) => {
     try {
       const response = await axios.post('/api/auth/login', { email, password });
-      
+
       if (response.data.success) {
         const { token, refreshToken, user } = response.data.data;
-        
+
         localStorage.setItem('auth-token', token);
         localStorage.setItem('refresh-token', refreshToken);
         localStorage.setItem('user-data', JSON.stringify(user));
-        
+
         setUser(user);
         setIsAuthenticated(true);
-        
+
         toast.success(response.data.message || 'Welcome back!');
-        
+
         // Try to fetch wanted profile
         try {
           const profileResponse = await axios.get('/api/wanted/profile');
           if (profileResponse.data.success) {
             setProfile(profileResponse.data.data);
+            setNeedsProfile(false);
           }
         } catch (profileError) {
-          // Profile might not exist yet
-          setProfile(null);
+          if (profileError.response?.status === 403) {
+            setProfile(null);
+            setNeedsProfile(true);
+          }
         }
-        
+
         return { success: true };
       }
-      
+
       return { success: false, error: response.data.message };
     } catch (error) {
       const message = error.response?.data?.message || 'Login failed';
@@ -104,22 +124,23 @@ export const AuthProvider = ({ children }) => {
   const register = useCallback(async (userData) => {
     try {
       const response = await axios.post('/api/auth/register', userData);
-      
+
       if (response.data.success) {
         const { token, refreshToken, user } = response.data.data;
-        
+
         localStorage.setItem('auth-token', token);
         localStorage.setItem('refresh-token', refreshToken);
         localStorage.setItem('user-data', JSON.stringify(user));
-        
+
         setUser(user);
         setProfile(null);
+        setNeedsProfile(true); // New users need profile
         setIsAuthenticated(true);
-        
-        toast.success(response.data.message || 'Account created successfully!');
-        return { success: true };
+
+        toast.success(response.data.message || 'Account created! Please complete your profile.');
+        return { success: true, needsProfile: true };
       }
-      
+
       return { success: false, error: response.data.message };
     } catch (error) {
       const message = error.response?.data?.message || 'Registration failed';
@@ -142,6 +163,7 @@ export const AuthProvider = ({ children }) => {
       localStorage.removeItem('user-data');
       setUser(null);
       setProfile(null);
+      setNeedsProfile(false);
       setIsAuthenticated(false);
       navigate('/');
       toast.success('Logged out successfully');
@@ -153,22 +175,27 @@ export const AuthProvider = ({ children }) => {
       const response = await axios.get('/api/wanted/profile');
       if (response.data.success) {
         setProfile(response.data.data);
+        setNeedsProfile(false);
       }
     } catch (error) {
       console.error('Failed to refresh profile:', error);
     }
   }, []);
 
+  const getAccessToken = useCallback(() => localStorage.getItem('auth-token'), []);
+
   const value = {
     user,
     profile,
     isLoading,
     isAuthenticated,
+    needsProfile,
     login,
     register,
     logout,
     refreshProfile,
     checkAuth,
+    getAccessToken,
   };
 
   if (isLoading) {

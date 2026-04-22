@@ -9,6 +9,10 @@ import { ChatPage } from "../features/wanted/components/chat/ChatPage";
 import { SuccessStories } from "../features/wanted/components/shared/SuccessStories";
 import { LoginPage } from '../features/auth/LoginPage';
 import { RegisterPage } from '../features/auth/RegisterPage';
+import { ForgotPasswordPage } from '../features/auth/ForgotPasswordPage';
+import { ResetPasswordPage } from '../features/auth/ResetPasswordPage';
+import { CreateProfilePage } from '../features/wanted/components/profile/CreateProfilePage';
+
 export const Router = () => {
   return (
     <Routes>
@@ -28,6 +32,9 @@ export const Router = () => {
       {/* Auth */}
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
+      <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
+      <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+      <Route path="/wanted/profile/create" element={<CreateProfilePage />} />
 
 
       {/* general */}

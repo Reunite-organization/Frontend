@@ -1,5 +1,4 @@
-﻿// client/src/features/wanted/components/profile/ProfilePage.jsx
-import { useState } from 'react';
+﻿import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   User, 
@@ -21,7 +20,7 @@ import {
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { useLanguage } from '../../../../lib/i18n';
-import { useWantedProfile, useUpdateProfile } from '../../hooks/useProfile';
+import { useCreateProfile, useWantedProfile, useUpdateProfile } from '../../hooks/useProfile';
 import { useUserPosts } from '../../hooks/usePosts';
 import { TrustBadgeDetailed } from './TrustBadge';
 import { VerificationStatus } from './VerificationStatus';
@@ -43,8 +42,10 @@ export const ProfilePage = () => {
   const [activeTab, setActiveTab] = useState('posts');
   
   const { data: profile, isLoading: profileLoading } = useWantedProfile();
-  const { data: posts, isLoading: postsLoading } = useUserPosts('active');
-  const { data: reconnectedPosts } = useUserPosts('reconnected');
+  const hasProfile = Boolean(profile);
+  const { data: posts, isLoading: postsLoading } = useUserPosts('active', hasProfile);
+  const { data: reconnectedPosts } = useUserPosts('reconnected', hasProfile);
+  const { mutate: createProfile, isPending: isCreating } = useCreateProfile();
   const { mutate: updateProfile, isPending: isUpdating } = useUpdateProfile();
 
   if (profileLoading) {
@@ -370,10 +371,11 @@ export const ProfilePage = () => {
             profile={profile}
             onClose={() => setIsEditing(false)}
             onSubmit={(data) => {
-              updateProfile(data);
+              const saveProfile = profile ? updateProfile : createProfile;
+              saveProfile(data);
               setIsEditing(false);
             }}
-            isSubmitting={isUpdating}
+            isSubmitting={isUpdating || isCreating}
           />
         )}
       </AnimatePresence>

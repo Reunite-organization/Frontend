@@ -1,60 +1,80 @@
-﻿import axios from 'axios';
+import axios from "axios";
+import { apiBaseUrl } from "./apiConfig";
+
+export const clearStoredAuth = () => {
+  localStorage.removeItem("auth-token");
+  localStorage.removeItem("refresh-token");
+  localStorage.removeItem("user-data");
+};
 
 const instance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5500',
+  baseURL: apiBaseUrl,
   timeout: 30000,
   headers: {
-    'Content-Type': 'application/json',
+    "Content-Type": "application/json",
   },
 });
 
-// Request interceptor
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('auth-token');
+    const token = localStorage.getItem("auth-token");
+
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
-    // Add language header
-    const language = localStorage.getItem('falagiye-language') || 'en';
-    config.headers['Accept-Language'] = language;
-    
+
+    if (typeof FormData !== "undefined" && config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
+    const language = localStorage.getItem("falagiye-language") || "en";
+    config.headers["Accept-Language"] = language;
+
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
 );
 
-// Response interceptor
 instance.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
-    
-    // Handle token refresh
-    if (error.response?.status === 401 && !originalRequest._retry) {
+
+    if (
+      (error.response?.status === 401 || error.response?.status === 403) &&
+      originalRequest &&
+      !originalRequest._retry &&
+      originalRequest.url !== "/api/auth/refresh-token"
+    ) {
       originalRequest._retry = true;
-      
+
       try {
-        const refreshToken = localStorage.getItem('refresh-token');
-        const response = await instance.post('/auth/refresh', { refreshToken });
-        const { token } = response.data;
-        
-        localStorage.setItem('auth-token', token);
+        const refreshToken = localStorage.getItem("refresh-token");
+        if (!refreshToken) {
+          clearStoredAuth();
+          if (typeof window !== "undefined") {
+            window.location.assign("/login");
+          }
+          return Promise.reject(error);
+        }
+        const response = await instance.post("/api/auth/refresh-token", {
+          refreshToken,
+        });
+        const { token } = response.data.data;
+        localStorage.setItem("auth-token", token);
+        originalRequest.headers = originalRequest.headers || {};
         originalRequest.headers.Authorization = `Bearer ${token}`;
-        
         return instance(originalRequest);
       } catch (refreshError) {
-        // Redirect to login
-        localStorage.removeItem('auth-token');
-        localStorage.removeItem('refresh-token');
-        window.location.href = '/auth/login';
+        clearStoredAuth();
+        if (typeof window !== "undefined") {
+          window.location.assign("/login");
+        }
         return Promise.reject(refreshError);
       }
     }
-    
     return Promise.reject(error);
-  }
+  },
 );
 
 export default instance;

@@ -1,5 +1,4 @@
-﻿// client/src/features/wanted/components/chat/ChatPage.jsx
-import { useState, useEffect, useRef } from 'react';
+﻿import { useState, useEffect, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -18,6 +17,7 @@ import {
 import { useChat } from '../../hooks/useChat';
 import { useSocket } from '../../hooks/useSocket';
 import { useLanguage } from '../../../../lib/i18n';
+import { useAuth } from '../../../../hooks/useAuth';
 import { ChatSidebar } from './ChatSidebar';
 import { MessageBubble } from './MessageBubble';
 import { VideoCallModal } from './VideoCallModal';
@@ -27,6 +27,7 @@ import { formatMessageTime } from '../../utils/formatters';
 export const ChatPage = () => {
   const { roomId } = useParams();
   const { language } = useLanguage();
+  const { user } = useAuth();
   const { 
     rooms, 
     currentRoom, 
@@ -190,8 +191,8 @@ export const ChatPage = () => {
               <MessageBubble
                 key={message._id}
                 message={message}
-                isOwn={message.sender === currentUser?.id}
-                showAvatar={idx === 0 || messages[idx - 1]?.sender !== message.sender}
+                isOwn={message.sender?._id === user?.id || message.sender === user?.id}
+                showAvatar={idx === 0 || (messages[idx - 1]?.sender?._id || messages[idx - 1]?.sender) !== (message.sender?._id || message.sender)}
               />
             ))}
           </AnimatePresence>

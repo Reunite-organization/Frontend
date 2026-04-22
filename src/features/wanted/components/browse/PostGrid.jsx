@@ -7,7 +7,7 @@ import { LoadingSkeleton } from '../shared/LoadingSkeleton';
 import { useInView } from 'react-intersection-observer';
 import { useLanguage } from '../../../../lib/i18n';
 
-export const PostGrid = ({ posts = [], hasMore, loadMore, isLoading }) => {
+export const PostGrid = ({ posts, hasMore, loadMore, isLoading }) => {
   const { language } = useLanguage();
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: false });
 
@@ -17,11 +17,19 @@ export const PostGrid = ({ posts = [], hasMore, loadMore, isLoading }) => {
     }
   }, [inView, hasMore, isLoading, loadMore]);
 
-  if (isLoading && posts.length === 0) {
+  // 🚨 CRITICAL: Ensure posts is always an array
+  const safePosts = Array.isArray(posts) ? posts : [];
+  
+  // Filter out invalid posts
+  const validPosts = safePosts.filter(post => post && typeof post === 'object' && post._id);
+
+  // Loading state
+  if (isLoading && validPosts.length === 0) {
     return <LoadingSkeleton type="grid" count={6} />;
   }
 
-  if (!posts.length) {
+  // Empty state
+  if (validPosts.length === 0) {
     return (
       <EmptyState
         title={language === 'am' ? 'ምንም ልጥፎች አልተገኙም' : 'No posts found'}
@@ -40,13 +48,9 @@ export const PostGrid = ({ posts = [], hasMore, loadMore, isLoading }) => {
 
   return (
     <>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        className="grid md:grid-cols-2 lg:grid-cols-3 gap-6"
-      >
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         <AnimatePresence mode="popLayout">
-          {posts.map((post, index) => (
+          {validPosts.map((post, index) => (
             <motion.div
               key={post._id}
               layout
@@ -62,7 +66,7 @@ export const PostGrid = ({ posts = [], hasMore, loadMore, isLoading }) => {
             </motion.div>
           ))}
         </AnimatePresence>
-      </motion.div>
+      </div>
 
       {/* Load More Trigger */}
       {hasMore && (

@@ -5,20 +5,45 @@ import { toast } from 'sonner';
 import { useLanguage } from '../../../lib/i18n';
 
 // Get posts with infinite scroll
+// client/src/features/wanted/hooks/usePosts.js
 export const usePosts = (filters = {}) => {
-  return useInfiniteQuery({
-    queryKey: ['wanted', 'posts', filters],
-    queryFn: ({ pageParam = 1 }) => wantedApi.getPosts({ ...filters, page: pageParam }),
+  const cleanFilters = Object.fromEntries(
+    Object.entries(filters).filter(([_, value]) => 
+      value !== '' && value !== null && value !== undefined
+    )
+  );
+
+  const query = useInfiniteQuery({
+    queryKey: ['wanted', 'posts', cleanFilters],
+    queryFn: ({ pageParam = 1 }) => wantedApi.getPosts({ 
+      ...cleanFilters, 
+      page: pageParam 
+    }),
     getNextPageParam: (lastPage) => {
-      if (lastPage.pagination.page < lastPage.pagination.pages) {
+      if (lastPage?.pagination?.page < lastPage?.pagination?.pages) {
         return lastPage.pagination.page + 1;
       }
       return undefined;
     },
     initialPageParam: 1,
-    staleTime: 5 * 60 * 1000, 
+    staleTime: 5 * 60 * 1000,
     gcTime: 10 * 60 * 1000,
   });
+
+  const posts = query.data?.pages?.flatMap(page => {
+    return page?.data || page?.posts || [];
+  }) || [];
+
+  // Filter valid posts
+  const validPosts = posts.filter(p => p && p._id);
+
+  return {
+    ...query,
+    data: {
+      pages: query.data?.pages || [],
+      posts: validPosts,
+    },
+  };
 };
 
 // Get single post
@@ -112,11 +137,12 @@ export const useDeletePost = () => {
 };
 
 // Get user's posts
-export const useUserPosts = (status) => {
+export const useUserPosts = (status, enabled = true) => {
   return useQuery({
     queryKey: ['wanted', 'my-posts', status],
     queryFn: () => wantedApi.getMyPosts(status),
     staleTime: 2 * 60 * 1000,
+    enabled,
   });
 };
 

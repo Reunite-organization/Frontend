@@ -636,17 +636,7 @@ export const LandingPage = () => {
       <ImpactSection />
       <TrustSection />
       <FinalCTASection />
-      
-      {/* Footer */}
-      <footer className="bg-charcoal text-white/60 py-8">
-        <div className="container text-center">
-          <p className="text-sm">
-            © {new Date().getFullYear()} Reunite × Falagiye • Built for real-world reconnection • Privacy-first architecture
-          </p>
-        </div>
-      </footer>
     </div>
   );
 };
-
 export default LandingPage;

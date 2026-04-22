@@ -1,12 +1,23 @@
-﻿// client/src/features/wanted/components/create/MemoryInput.jsx
-import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Globe, Type, Sparkles, AlertCircle } from 'lucide-react';
-import { useLanguage } from '../../../../lib/i18n';
+﻿import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Globe, Sparkles, AlertCircle, User, Tag, Users } from "lucide-react";
+import { useLanguage } from "../../../../lib/i18n";
 
-export const MemoryInput = ({ value = { en: '', am: '' }, onChange, error }) => {
+export const MemoryInput = ({
+  value = { en: "", am: "" },
+  onChange,
+  error,
+}) => {
   const { language } = useLanguage();
   const [activeLanguage, setActiveLanguage] = useState(language);
+
+  // Separate state for person details
+  const [personDetails, setPersonDetails] = useState({
+    personName: "", // The person being searched for
+    nickname: "", // Their nickname (optional)
+    knownAs: "", // What they knew YOU as
+  });
+
   const [charCount, setCharCount] = useState({
     en: value.en?.length || 0,
     am: value.am?.length || 0,
@@ -15,14 +26,28 @@ export const MemoryInput = ({ value = { en: '', am: '' }, onChange, error }) => 
   const MAX_CHARS = 2000;
 
   const handleChange = (lang, text) => {
-    const newValue = { ...value, [lang]: text };
+    const newValue = {
+      ...value,
+      [lang]: text,
+      personDetails: value.personDetails || personDetails,
+    };
     setCharCount({ ...charCount, [lang]: text.length });
     onChange(newValue);
   };
 
+  const handlePersonDetailChange = (field, fieldValue) => {
+    const updatedDetails = { ...personDetails, [field]: fieldValue };
+    setPersonDetails(updatedDetails);
+    if (onChange) {
+      onChange({
+        ...value,
+        personDetails: updatedDetails,
+      });
+    }
+  };
   const languages = [
-    { code: 'en', label: 'English', flag: '🇺🇸', hint: 'Write in English' },
-    { code: 'am', label: 'አማርኛ', flag: '🇪🇹', hint: 'በአማርኛ ይጻፉ' },
+    { code: "en", label: "English", flag: "🇺🇸", hint: "Write in English" },
+    { code: "am", label: "አማርኛ", flag: "🇪🇹", hint: "በአማርኛ ይጻፉ" },
   ];
 
   const prompts = {
@@ -33,15 +58,127 @@ export const MemoryInput = ({ value = { en: '', am: '' }, onChange, error }) => 
       "Any special memories or stories?",
     ],
     am: [
-      "እንዴት ተገናኙ?",
-      "በጣም የሚያስታውሷቸው ምንድን ነው?",
-      "የት አብራችሁ ትቆዩ ነበር?",
-      "ልዩ ትዝታዎች ወይም ታሪኮች አሉ?",
+      "እንዴት ነው የተገናኙት?",
+      "ስለነሱ በጣም የሚያስታውሱት ነገር ምንድን ነው?",
+      "የት ነበር አብራችሁ ጊዜ የምታሳልፉት?",
+      "ልዩ ትዝታ ካሎት ያጋሩን?",
     ],
   };
 
   return (
     <div className="space-y-4">
+      {/* Person Details Section */}
+      <div className="p-4 bg-cream/30 rounded-xl border border-warm-gray/20 space-y-3">
+        {activeLanguage === "am" ? (
+          <>
+            {/* Row 1: Full Name + Nickname */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-charcoal flex items-center gap-1">
+                  <User className="w-4 h-4 text-terracotta" />
+                  የሚፈልጉት ሰው ሙሉ ስም *
+                </label>
+                <input
+                  placeholder="ለምሳሌ፡ አበበ ከበደ"
+                  value={personDetails.personName}
+                  onChange={(e) =>
+                    handlePersonDetailChange("personName", e.target.value)
+                  }
+                  className="w-full px-4 py-2.5 bg-white border border-warm-gray rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-charcoal flex items-center gap-1">
+                  <Tag className="w-4 h-4 text-sahara" />
+                  ቅጽል ስም (ካለ)
+                </label>
+                <input
+                  placeholder="ለምሳሌ፡ ቦንያ"
+                  value={personDetails.nickname}
+                  onChange={(e) =>
+                    handlePersonDetailChange("nickname", e.target.value)
+                  }
+                  className="w-full px-4 py-2.5 bg-white border border-warm-gray rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Row 2: What they knew you as */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-charcoal flex items-center gap-1">
+                <Users className="w-4 h-4 text-hope-green" />ያ ሰው በምን ስም ነው
+                የሚያውቀዎት? *
+              </label>
+              <input
+                placeholder="ለምሳሌ፡ አበበ ጓደኛው 'ጎንደሬ' እያለ ይጠራኝ ነበር"
+                value={personDetails.knownAs}
+                onChange={(e) =>
+                  handlePersonDetailChange("knownAs", e.target.value)
+                }
+                className="w-full px-4 py-2.5 bg-white border border-warm-gray rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all"
+              />
+              <p className="text-xs text-stone mt-1">
+                ለምሳሌ፡ ቅጽል ስምዎ፣ የመጀመሪያ ስምዎ፣ ወይም እርስዎን ለይቶ የሚጠራበት ማንኛውም ስም
+              </p>
+            </div>
+          </>
+        ) : (
+          <>
+            {/* Row 1: Full Name + Nickname */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-charcoal flex items-center gap-1">
+                  <User className="w-4 h-4 text-terracotta" />
+                  Full name of the person *
+                </label>
+                <input
+                  placeholder="e.g., Abebe Kebede"
+                  value={personDetails.personName}
+                  onChange={(e) =>
+                    handlePersonDetailChange("personName", e.target.value)
+                  }
+                  className="w-full px-4 py-2.5 bg-white border border-warm-gray rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all"
+                />
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium text-charcoal flex items-center gap-1">
+                  <Tag className="w-4 h-4 text-sahara" />
+                  Nickname (optional)
+                </label>
+                <input
+                  placeholder="e.g., Boni"
+                  value={personDetails.nickname}
+                  onChange={(e) =>
+                    handlePersonDetailChange("nickname", e.target.value)
+                  }
+                  className="w-full px-4 py-2.5 bg-white border border-warm-gray rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Row 2: What they knew you as */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-charcoal flex items-center gap-1">
+                <Users className="w-4 h-4 text-hope-green" />
+                What name did they know you by? *
+              </label>
+              <input
+                placeholder="e.g., Abebe's friend called me 'Gondere'"
+                value={personDetails.knownAs}
+                onChange={(e) =>
+                  handlePersonDetailChange("knownAs", e.target.value)
+                }
+                className="w-full px-4 py-2.5 bg-white border border-warm-gray rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all"
+              />
+              <p className="text-xs text-stone mt-1">
+                e.g., Your nickname, first name, or any name they used to call
+                you
+              </p>
+            </div>
+          </>
+        )}
+      </div>
+
       {/* Language Tabs */}
       <div className="flex gap-2 border-b border-warm-gray/30">
         {languages.map((lang) => (
@@ -50,9 +187,10 @@ export const MemoryInput = ({ value = { en: '', am: '' }, onChange, error }) => 
             onClick={() => setActiveLanguage(lang.code)}
             className={`
               flex items-center gap-2 px-4 py-2.5 font-medium transition-all relative
-              ${activeLanguage === lang.code
-                ? 'text-terracotta'
-                : 'text-stone hover:text-charcoal'
+              ${
+                activeLanguage === lang.code
+                  ? "text-terracotta"
+                  : "text-stone hover:text-charcoal"
               }
             `}
           >
@@ -80,8 +218,8 @@ export const MemoryInput = ({ value = { en: '', am: '' }, onChange, error }) => 
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: idx * 0.05 }}
             onClick={() => {
-              const current = value[activeLanguage] || '';
-              const newText = current + (current ? '\n\n' : '') + prompt + ' ';
+              const current = value[activeLanguage] || "";
+              const newText = current + (current ? "\n\n" : "") + prompt + " ";
               handleChange(activeLanguage, newText);
             }}
             className="px-3 py-1.5 bg-cream hover:bg-warm-gray/30 text-olive text-xs rounded-full transition-colors flex items-center gap-1"
@@ -94,7 +232,7 @@ export const MemoryInput = ({ value = { en: '', am: '' }, onChange, error }) => 
 
       {/* Text Areas */}
       <AnimatePresence mode="wait">
-        {activeLanguage === 'en' && (
+        {activeLanguage === "en" && (
           <motion.div
             key="en"
             initial={{ opacity: 0, y: 10 }}
@@ -104,23 +242,25 @@ export const MemoryInput = ({ value = { en: '', am: '' }, onChange, error }) => 
           >
             <div className="relative">
               <textarea
-                value={value.en || ''}
-                onChange={(e) => handleChange('en', e.target.value)}
+                value={value.en || ""}
+                onChange={(e) => handleChange("en", e.target.value)}
                 placeholder="Share your memory in English... 
-For example: We met in elementary school in Addis Ababa. We used to play soccer together after school..."
+For example: We met at Lideta Catholic Cathedral school in Addis Ababa. We used to play soccer together after school..."
                 rows={8}
                 className={`
                   w-full px-4 py-4 bg-cream/50 border rounded-xl resize-none
                   focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all
                   font-body text-charcoal leading-relaxed
-                  ${error ? 'border-error' : 'border-warm-gray'}
+                  ${error ? "border-error" : "border-warm-gray"}
                 `}
               />
               <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                <span className={`
+                <span
+                  className={`
                   text-xs px-2 py-1 rounded-full
-                  ${charCount.en > MAX_CHARS * 0.9 ? 'bg-warmth/20 text-warmth' : 'bg-warm-gray/30 text-stone'}
-                `}>
+                  ${charCount.en > MAX_CHARS * 0.9 ? "bg-warmth/20 text-warmth" : "bg-warm-gray/30 text-stone"}
+                `}
+                >
                   {charCount.en} / {MAX_CHARS}
                 </span>
               </div>
@@ -134,7 +274,7 @@ For example: We met in elementary school in Addis Ababa. We used to play soccer 
           </motion.div>
         )}
 
-        {activeLanguage === 'am' && (
+        {activeLanguage === "am" && (
           <motion.div
             key="am"
             initial={{ opacity: 0, y: 10 }}
@@ -144,24 +284,26 @@ For example: We met in elementary school in Addis Ababa. We used to play soccer 
           >
             <div className="relative">
               <textarea
-                value={value.am || ''}
-                onChange={(e) => handleChange('am', e.target.value)}
-                placeholder="ትዝታዎን በአማርኛ ያካፍሉ...
-ለምሳሌ፡ በአዲስ አበባ የመጀመሪያ ደረጃ ትምህርት ቤት ተገናኘን። ከትምህርት በኋላ አብረን እግር ኳስ እንጫወት ነበር..."
+                value={value.am || ""}
+                onChange={(e) => handleChange("am", e.target.value)}
+                placeholder="ትዝታዎን በትክክል ያካፍሉ...
+ለምሳሌ፡ በአዲስ አበባ ልደታ ካቶሊክ ካቴድራል ትምህርት ቤት ተገናኘን። ከትምህርት በኋላ አብረን እግር ኳስ እንጫወት ነበር..."
                 rows={8}
                 className={`
                   w-full px-4 py-4 bg-cream/50 border rounded-xl resize-none
                   focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all
                   font-amharic text-charcoal leading-loose text-lg
-                  ${error ? 'border-error' : 'border-warm-gray'}
+                  ${error ? "border-error" : "border-warm-gray"}
                 `}
                 dir="auto"
               />
               <div className="absolute bottom-3 right-3 flex items-center gap-2">
-                <span className={`
+                <span
+                  className={`
                   text-xs px-2 py-1 rounded-full
-                  ${charCount.am > MAX_CHARS * 0.9 ? 'bg-warmth/20 text-warmth' : 'bg-warm-gray/30 text-stone'}
-                `}>
+                  ${charCount.am > MAX_CHARS * 0.9 ? "bg-warmth/20 text-warmth" : "bg-warm-gray/30 text-stone"}
+                `}
+                >
                   {charCount.am} / {MAX_CHARS}
                 </span>
               </div>
@@ -181,16 +323,14 @@ For example: We met in elementary school in Addis Ababa. We used to play soccer 
         <Globe className="w-5 h-5 text-warmth flex-shrink-0 mt-0.5" />
         <div className="text-sm text-stone">
           <p className="font-medium text-charcoal mb-1">
-            {language === 'am' 
-              ? 'ቢያንስ በአንድ ቋንቋ ይጻፉ'
-              : 'Write in at least one language'
-            }
+            {language === "am"
+              ? "ቢያንስ በአንድ ቋንቋ ይጻፉ"
+              : "Write in at least one language"}
           </p>
           <p>
-            {language === 'am'
-              ? 'በእንግሊዝኛ፣ በአማርኛ ወይም በሁለቱም መጻፍ ይችላሉ። በብዙ ቋንቋዎች መጻፍ ብዙ ሰዎች እንዲያገኙት ይረዳል።'
-              : 'You can write in English, Amharic, or both. Writing in multiple languages helps more people find your post.'
-            }
+            {language === "am"
+              ? "በእንግሊዝኛ፣ በአማርኛ ወይም በሁለቱም መጻፍ ይችላሉ። በብዙ ቋንቋዎች መጻፍ ብዙ ሰዎች እንዲያገኙት ይረዳል።"
+              : "You can write in English, Amharic, or both. Writing in multiple languages helps more people find your post."}
           </p>
         </div>
       </div>

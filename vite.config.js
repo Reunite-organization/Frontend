@@ -16,10 +16,11 @@ export default defineConfig({
       ],
       manifest: false, 
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
+        globPatterns: ['**/*.{js,css,html,ico,svg,woff2}'],
+        globIgnores: ['assets/zego-uikit-prebuilt-*.js'],
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/api\..*\/api\/reunite\/.*/i,
+            urlPattern: ({ url }) => url.pathname.startsWith('/api/'),
             handler: 'NetworkFirst',
             options: {
               cacheName: 'falagiye-api',
@@ -39,7 +40,7 @@ export default defineConfig({
               cacheName: 'falagiye-images',
               expiration: {
                 maxEntries: 200,
-                maxAgeSeconds: 30 * 24 * 60 * 60, // 30 days
+                maxAgeSeconds: 30 * 24 * 60 * 60, 
               },
             },
           },
@@ -50,7 +51,7 @@ export default defineConfig({
               cacheName: 'google-fonts-stylesheets',
               expiration: {
                 maxEntries: 10,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365, 
               },
             },
           },
@@ -61,7 +62,7 @@ export default defineConfig({
               cacheName: 'google-fonts-webfonts',
               expiration: {
                 maxEntries: 30,
-                maxAgeSeconds: 60 * 60 * 24 * 365, // 1 year
+                maxAgeSeconds: 60 * 60 * 24 * 365, 
               },
             },
           },

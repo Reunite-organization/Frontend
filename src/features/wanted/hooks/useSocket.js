@@ -4,13 +4,21 @@ import { socketClient } from '../services/socketClient';
 import { useAuth } from '../../../hooks/useAuth';
 
 export const useSocket = () => {
-  const { user } = useAuth();
+  const { user, getAccessToken } = useAuth();
   const [isConnected, setIsConnected] = useState(false);
 
   useEffect(() => {
     if (!user) return;
 
-    socketClient.connect(user.token);
+    const token = getAccessToken();
+
+    if (!token) {
+      setIsConnected(false);
+      return;
+    }
+
+    socketClient.connect(token);
+    setIsConnected(socketClient.isConnected());
 
     const handleConnect = () => setIsConnected(true);
     const handleDisconnect = () => setIsConnected(false);
@@ -22,7 +30,7 @@ export const useSocket = () => {
       socketClient.off('connect', handleConnect);
       socketClient.off('disconnect', handleDisconnect);
     };
-  }, [user]);
+  }, [getAccessToken, user]);
 
   return {
     isConnected,

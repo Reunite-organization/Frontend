@@ -6,7 +6,7 @@ import { offlineStorage } from '../services/offlineStorage';
 import { useAuth } from '../../../hooks/useAuth';
 
 export const useChat = (roomId) => {
-  const { user } = useAuth();
+  const { user, getAccessToken } = useAuth();
   const queryClient = useQueryClient();
   const [isConnected, setIsConnected] = useState(false);
   const [typingUsers, setTypingUsers] = useState(new Set());
@@ -47,7 +47,15 @@ export const useChat = (roomId) => {
   useEffect(() => {
     if (!user) return;
 
-    socketClient.connect(user.token);
+    const token = getAccessToken();
+
+    if (!token) {
+      setIsConnected(false);
+      return;
+    }
+
+    socketClient.connect(token);
+    setIsConnected(socketClient.isConnected());
     
     const handleConnect = () => setIsConnected(true);
     const handleDisconnect = () => setIsConnected(false);
@@ -55,7 +63,25 @@ export const useChat = (roomId) => {
       if (message.chatRoom === roomId) {
         queryClient.setQueryData(
           ['wanted', 'chat', 'messages', roomId],
-          (old = []) => [...old, message]
+          (old = []) => {
+            const existingIndex = old.findIndex((entry) => entry._id === message._id);
+            const requestId = message.metadata?.clientRequestId;
+            const pendingIndex = requestId
+              ? old.findIndex(
+                  (entry) => entry.pending && entry.metadata?.clientRequestId === requestId,
+                )
+              : -1;
+
+            if (existingIndex >= 0) {
+              return old.map((entry, index) => (index === existingIndex ? message : entry));
+            }
+
+            if (pendingIndex >= 0) {
+              return old.map((entry, index) => (index === pendingIndex ? message : entry));
+            }
+
+            return [...old, message];
+          }
         );
       }
       queryClient.invalidateQueries({ queryKey: ['wanted', 'chat', 'rooms'] });
@@ -106,19 +132,22 @@ export const useChat = (roomId) => {
         socketClient.emit('leave-room', roomId);
       }
     };
-  }, [user, roomId, queryClient]);
+  }, [getAccessToken, user, roomId, queryClient]);
 
   // Send message
   const sendMessageMutation = useMutation({
     mutationFn: async ({ content, type = 'text', metadata = {} }) => {
       const tempId = `temp-${Date.now()}`;
+      const clientRequestId = tempId;
+      metadata.clientRequestId = clientRequestId;
+      const requestMetadata = { ...metadata, clientRequestId };
       const tempMessage = {
         _id: tempId,
         chatRoom: roomId,
         sender: user.id,
         content,
         type,
-        metadata,
+        metadata: requestMetadata,
         createdAt: new Date().toISOString(),
         pending: true,
       };
@@ -130,18 +159,39 @@ export const useChat = (roomId) => {
       );
 
       try {
-        // Send via socket
-        socketClient.emit('send-message', { roomId, content, type, metadata });
-        
-        // Cache for offline
-        await offlineStorage.cacheMessage(tempMessage);
-        
-        return tempMessage;
+        const message = await wantedApi.sendMessage(roomId, { content, type, metadata: requestMetadata });
+        await offlineStorage.cacheMessage({ ...message, synced: true });
+        return message;
       } catch (error) {
-        // Store for later sync
-        await offlineStorage.addToQueue('sendMessage', { roomId, content, type, metadata });
+        await offlineStorage.addToQueue('sendMessage', { roomId, content, type, metadata: requestMetadata });
         throw error;
       }
+    },
+    onSuccess: (message) => {
+      queryClient.setQueryData(
+        ['wanted', 'chat', 'messages', roomId],
+        (old = []) =>
+          old.map((entry) => {
+            const sameRequest =
+              entry.pending &&
+              entry.metadata?.clientRequestId &&
+              entry.metadata.clientRequestId === message.metadata?.clientRequestId;
+
+            return sameRequest ? message : entry;
+          }),
+      );
+      queryClient.invalidateQueries({ queryKey: ['wanted', 'chat', 'rooms'] });
+    },
+    onError: (_error, variables) => {
+      const requestId = variables.metadata?.clientRequestId;
+      queryClient.setQueryData(
+        ['wanted', 'chat', 'messages', roomId],
+        (old = []) =>
+          old.filter(
+            (entry) =>
+              !(entry.pending && requestId && entry.metadata?.clientRequestId === requestId),
+          ),
+      );
     },
   });
 

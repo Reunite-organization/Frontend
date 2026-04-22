@@ -33,7 +33,7 @@ export const PostDetailPage = () => {
   const [showShareModal, setShowShareModal] = useState(false);
   
   const { data: post, isLoading, error } = usePost(id);
-  const { mutate: submitClaim, isPending: isSubmitting } = useClaim();
+  const { submitClaim, isSubmitting } = useClaims();
 
   if (isLoading) {
     return <PostDetailSkeleton />;
