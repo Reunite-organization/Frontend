@@ -55,7 +55,7 @@ const HeroSection = () => {
       title: { en: 'Browse Memories', am: 'ትዝታዎችን ያስሱ' },
       description: { 
         en: 'Search through thousands of memory posts from people looking for loved ones',
-        am: 'የሚወዷቸውን ሰዎች ከሚፈልጉ ሺዎች ከሚቆጠሩ የትዝታ ልጥፎች ውስጥ ይፈልጉ'
+        am: 'ሰዎች ሰለተራቋቸው የልብ ጓደኞች ካጋሩት ትዝታ ውስጥ የእርሶን የልብ ጓደኛ በማሰስ ይፈልጉ'
       }
     },
     {
@@ -64,7 +64,7 @@ const HeroSection = () => {
       title: { en: 'Share Your Story', am: 'ታሪክዎን ያካፍሉ' },
       description: { 
         en: 'Post a memory with details only the person you\'re looking for would know',
-        am: 'እርስዎ የሚፈልጉት ሰው ብቻ ሊያውቀው የሚችለውን ዝርዝር መረጃ የያዘ ትዝታ ይለጥፉ'
+        am: 'እርስዎ የሚፈልጉት ሰው ሊያውቀው የሚችለውን  ትዝታ በማጋራት ተፈላጊውን ያግኙ'
       }
     },
     {
@@ -73,7 +73,7 @@ const HeroSection = () => {
       title: { en: 'Get Verified', am: 'ያረጋግጡ' },
       description: { 
         en: 'Our community helps verify matches through sharing your posts and trust scoring',
-        am: 'ማህበረሰባችን በሚስጥር በማካፋል እና በእምነት ነጥብ አማካኝነት ማዛመጃዎችን ለማረጋገጥ ይረዳል'
+        am: 'ማህበረሰባችን እርሶ ያጋሩትን ትዝታ ለሌሎች በማካፋል እና በታማኝነት መረጃዎት ግቡን እንዲመታ ያግዞታል'
       }
     },
     {
@@ -82,7 +82,7 @@ const HeroSection = () => {
       title: { en: 'Reconnect Safely', am: 'በደህንነት ይገናኙ' },
       description: { 
         en: 'Once verified, you can chat through text,vedio send photo and reconnect securely through our platform',
-        am: 'አንዴ ከተረጋገጠ በኋላ በመድረካችን አማካኝነት በደህንነት መነጋገር እና እንደገና መገናኘት ይችላሉ'
+        am: 'አንዴ የሚፈልጉትን ካገኙ ቡኃላ መተግበሪያችንን በመጠቀም ምስጢሮ በተጠበቀ መንገድ ቢፈልጉ በጹፍ፣ በድምጽ ወይም ቪዲዮ ማውራት ይችላሉ'
       }
     }
   ];
@@ -119,10 +119,9 @@ const HeroSection = () => {
             {/* Main Headline */}
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-white mb-4 leading-tight">
               {language === 'am' ? (
-                <>ያጡትን ሰው<br />እንደገና ያግኙ</>
+                <>የጠፉትን ይፈልጉ<br />የልቦትን ሰው ያግኙ</>
               ) : (
-                <>Find the People<br />You Thought You Lost <span className="text-3xl md:text-4xl lg:text-5xl font-display  font-bold text-terracotta mb-6 ">
-              {language === 'am' ? `ለዘላለም` : `Forever`}
+                <>Find the lost<br />Reconnect the heart <span className="text-3xl md:text-4xl lg:text-5xl font-display  font-bold text-terracotta mb-6 ">
             </span></>
               )}
             </h1>
@@ -132,8 +131,8 @@ const HeroSection = () => {
             {/* Subheadline */}
             <p className="text-lg text-white/90 max-w-md lg:mb-4 font-semibold leading-relaxed mt-8 mb-8">
               {language === 'am'
-                ? 'በትዝታ፣ በማህበረሰብ እና በእምነት የተደገፈ የዳግም ግንኙነት መድረክ።'
-                : 'Reconnect across time, distance, and silence — powered by memory, community, and trust.'
+                ? 'ምንም እንኳ ረጅም ጊዜ ቢቆጠር፣ የቱንም ያህል ርቀት ቢኖር፣ ወይም የአድራሻቸው መረጃ ቢጎድልዎ፤ በድረ ገጻችን በመገናኘት ናፍቆቶን ይወጡ።'
+                : 'No matter how much time has passed, how great the distance, or if their contact details are lost—reconnect through our platform and ease your longing.'
               }
             </p>
 
@@ -167,7 +166,7 @@ const HeroSection = () => {
             </h3>
             <p className="text-stone mb-8">
               {language === 'am' 
-                ? 'በ4 ቀላል ደረጃዎች የጠፉትን ሰዎች ያግኙ'
+                ? 'በነዚህ ቀላል መንገዶች የጠፉትን ሰዎች ያግኙ'
                 : 'Find lost connections in this simple steps'
               }
             </p>
@@ -215,7 +214,7 @@ const HeroSection = () => {
           </h3>
           <p className="text-stone mb-8">
             {language === 'am' 
-              ? 'በ ቀላል ደረጃዎች የጠፉትን ሰዎች ያግኙ'
+              ? 'በነዚህ ቀላል መንገዶች የጠፉትን ሰዎች ያግኙ'
               : 'Find lost connections in  simple steps'
             }
           </p>
@@ -256,26 +255,26 @@ const ProblemSection = () => {
       image: 'hero 2',
       title: { en: 'Migration Separates', am: 'ስደት ይለያል' },
       description: { 
-        en: 'Friends and families lost after moving countries. Generations scattered across continents.',
-        am: 'ሀገር ከቀየሩ በኋላ የጠፉ ጓደኞች እና ቤተሰቦች። በአህጉራት የተለያዩ ትውልዶች።'
+        en: 'Whether seeking a better life, peace, or new career opportunities, people often move or migrate. Unfortunately, this often leads to distance and the loss of long-held connections.',
+        am: 'ሰዎች ሕይወትን ለማሸነፍ፣ ሰላምን ፍለጋ፣ በሥራ ምክንያት በሀገር ውስጥም ሆነ ከሀገር ውጭ ሊዘዋወሩ፣ ሊሰደዱ ይችላሉ  ይሄም መራራቅን መጠፋፋትን ሊያስከትል ይችላል።'
       }
     },
     {
       icon: Globe,
       image: 'hero 3',
-      title: { en: 'Connections Fade', am: 'ግንኙነቶች ይደበዝዛሉ' },
+      title: { en: 'Connections Fade', am: 'የጊዜ ርዝመት ያደበዘዘው ግንኙነት' },
       description: { 
         en: 'Classmates, colleagues, communities you never found again. Time erases connections.',
-        am: 'ዳግም ያላገኟቸው የክፍል ጓደኞች፣ የስራ ባልደረቦች። ጊዜ ግንኙነቶችን ያጠፋል።'
+        am: 'ሰዎች በሥራ፣ በትምህርት ቤት እና በተለላዩ ቦታዎች በአጭር ጊዜ ውስጥ ጥሩ ጓደኝነት ሊመሰርቱ ይችላሉ። በዛው ፍጥነት መለያየት ሊመጣ ይችላል። ጊዜ ዳኛ ነውና።'
       }
     },
     {
       icon: StopCircleIcon,
       image: 'hero 4',
-      title: { en: 'Silence Grows', am: 'ዝምታ ያድጋል' },
+      title: { en: 'Silence Grows', am: 'በኛ በዝምታ የመገናኘት ጊዘው ሊረዝም ይቻላል። ' },
       description: { 
         en: 'Years of silence turn into decades. The longer you wait, the harder it gets to reconnect.',
-        am: 'የአመታት ዝምታ ወደ አስርት አመታት ይቀየራል። በጠበቁ ቁጥር እንደገና መገናኘት አስቸጋሪ ይሆናል።'
+        am: 'የዕለት ተለት ዝምታችን ዓመታትን እየወለደ በመጣ ቁጥር የመገናኘት ዕድላችንን ሊያጠበው ይችላል። እርሶም ፍለጋውን ዛረዉኑ ይጀምሩ።'
       }
     }
   ];
@@ -286,7 +285,7 @@ const ProblemSection = () => {
         <div className="text-center max-w-3xl mx-auto mb-16">
           <h2 className="text-4xl md:text-5xl font-display font-bold text-charcoal mb-4">
             {language === 'am' 
-              ? 'በየቀኑ ግንኙነቶች ይጠፋሉ'
+              ? 'ሰዎች በተለያዩ ምክንያቶች ይለያያሉ'
               : 'Every Day, Connections Disappear'
             }
           </h2>
@@ -415,7 +414,7 @@ export const BrowsePage = () => {
             </h2>
             <p className="text-stone mb-8">
               {language === "am"
-                ? "በሺዎች የሚቆጠሩ ልጥፎችን ያስሱ። በከተማ፣ በአመት ወይም በምድብ ያጣሩ።"
+                ? "ትዝታዎችን በያስስ የልብ ጓደኛዎትን ይፈልጉ።"
                 : "Browse thousands of posts. Filter by city, year, or category."}
             </p>
 
@@ -427,8 +426,8 @@ export const BrowsePage = () => {
                   type="text"
                   placeholder={
                     language === "am"
-                      ? "ስም፣ ከተማ ወይም ቁልፍ ቃል ይፈልጉ..."
-                      : "Search by name, city, or keyword..."
+                      ? "በስም፣ ከተማ ይፈልጉ..."
+                      : "Search by name, city..."
                   }
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
@@ -452,7 +451,7 @@ export const BrowsePage = () => {
             {activeFilters.length > 0 && (
               <div className="flex items-center justify-center gap-2 mt-4">
                 <span className="text-sm text-stone">
-                  {language === "am" ? "ንቁ ማጣሪያዎች:" : "Active filters:"}
+                  {language === "am" ? "የመረጡትን ከተማ/ሀገር:" : "Active filters:"}
                 </span>
                 {activeFilters.map((filter, idx) => (
                   <span
@@ -472,7 +471,7 @@ export const BrowsePage = () => {
                   onClick={clearAllFilters}
                   className="text-sm text-stone hover:text-terracotta underline"
                 >
-                  {language === "am" ? "ሁሉንም አጽዳ" : "Clear all"}
+                  {language === "am" ? "ሁሉንም አጽዳ/ጂ" : "Clear all"}
                 </button>
               </div>
             )}
@@ -528,7 +527,7 @@ export const BrowsePage = () => {
         <div className="container">
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-2xl font-display font-bold text-charcoal">
-              {language === "am" ? "የቅርብ ጊዜ ልጥፎች" : "Recent Posts"}
+              {language === "am" ? "በቅርብ ጊዜ የተለጠፉ ትዝታዎች" : "Latest Memories"}
             </h2>
             <span className="text-sm text-stone">
               {data?.pages[0]?.total || 0} {language === "am" ? "ልጥፎች" : "posts"}
@@ -554,7 +553,7 @@ export const BrowsePage = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-50 rounded-full mb-4">
               <span className="text-green-600 text-sm font-medium">
-                {language === "am" ? "የተሳካላቸው ታሪኮች" : "Success Stories"}
+                {language === "am" ? "የተሳኩ ታሪኮች" : "Success Stories"}
               </span>
             </div>
             <h2 className="text-3xl md:text-4xl font-display font-bold text-charcoal mb-4">
@@ -564,7 +563,7 @@ export const BrowsePage = () => {
             </h2>
             <p className="text-stone max-w-2xl mx-auto">
               {language === "am"
-                ? "በዚ ፕላትፎርም አማካኝነት እንደገና የተገናኙ እውነተኛ ታሪኮች።"
+                ? "በዚህ መተግበሪያ አማካኝነት እንደገና የተገናኙ ሰዎች እውነተኛ ታሪኮች።"
                 : "Real stories of people reconnected through This Platform."}
             </p>
           </div>
@@ -576,7 +575,7 @@ export const BrowsePage = () => {
               to="/wanted/stories"
               className="inline-flex items-center gap-2 text-terracotta hover:text-clay font-medium transition-colors"
             >
-              {language === "am" ? "ሁሉንም ታሪኮች ይመልከቱ" : "View all stories"}
+              {language === "am" ? "ሁሉንም ይመልከቱ" : "View all stories"}
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
@@ -589,19 +588,19 @@ export const BrowsePage = () => {
           <div className="bg-gradient-to-br from-terracotta to-sahara rounded-3xl p-12 md:p-16 text-center">
             <h2 className="text-3xl md:text-4xl font-display font-bold text-white mb-4">
               {language === "am"
-                ? "እርስዎ የሚፈልጉት ማነው?"
+                ? "እርስዎስ የሚፈልጉት ማንን ነው?"
                 : "Who are you looking for?"}
             </h2>
             <p className="text-white/80 text-lg mb-8 max-w-xl mx-auto">
               {language === "am"
-                ? "የራስዎን ልጥፍ ይፍጠሩ እና ማህበረሰቡ እንደገና እንዲገናኙ ይርዳዎታል።"
+                ? "የራስዎን ትዝታ በማጋራት ማህበረሰባችን የመገናኘት ዕድሎችትን እንዲያሰፋሎት ያድርጉ።"
                 : "Create your own post and let the community help you reconnect."}
             </p>
             <Link
               to="/wanted/create"
               className="inline-flex px-8 py-4 bg-white text-terracotta rounded-lg font-semibold hover:bg-warm-white transition-colors shadow-lg"
             >
-              {language === "am" ? "ልጥፍ ይፍጠሩ" : "Create a Post"}
+              {language === "am" ? "ትዝታ ያጋሩ" : "Create a Post"}
             </Link>
           </div>
         </div>

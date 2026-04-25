@@ -53,9 +53,9 @@ const OrgHeroSection = () => {
           {/* Headline */}
           <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
             {language === "am" ? (
-              <>የጠፉቦትን ወይም ሲፈልጓቸው<br /> የቆዩትን ሰዎችን ያግኙ</>
+              <>የጠፉትን ይፈልጉ የልቦትን ሰው ያግኙ </>
             ) : (
-              <>Find the People <br/>You’ve Lost or <br />Been Searching For</>
+              <>Find the lost. Reconnect the heart </>
             )}
           </h1>
 
@@ -65,13 +65,6 @@ const OrgHeroSection = () => {
               ? "ምንም እንኳ ረጅም ጊዜ ቢቆጠር፣ የቱንም ያህል ርቀት ቢኖር፣ ወይም የአድራሻቸው መረጃ ቢጎድልዎ፤ ድረ ገጻችን ይህንን ክፍተት እንድታገናኙ ታሳቢ ተደርጎ የተዘጋጀ ነው። የግል ምስጢሮችን መጠበቅ፣ ሁሉን አቃፊነት እና ታአማኒነት የድረ ገጻችን መገለጫ ነው።"
               : "No matter how long it has been, how far away they are, or how little information you have, our platform is designed to help you bridge that gap. Privacy, inclusivity, and trust are the hallmarks of our platform."}
           </p>
-          <h1 className="text-5xl md:text-7xl font-display font-bold mb-6 leading-tight">
-            {language === "am" ? (
-              <>በሕይወት ያለ ሰው ይገናኛል</>
-            ) : (
-              <>Find the People <br/>You’ve Lost or <br />Been Searching For</>
-            )}
-          </h1>
 
           {/* CTA Split */}
           <div className="flex flex-wrap justify-center gap-4">
@@ -127,17 +120,35 @@ const DualSystemSection = () => {
             className="text-4xl md:text-5xl font-display font-bold text-charcoal mb-4"
           >
             {language === "am"
-              ? "በሕይወት ያለ ሰው ይገናኛል።"
-              : "How to Use the Reunite Platform"}
+              ? "ሪዩናይት ምን አገልግሎት ይሰጣል።"
+              : "What Reunite Offers"}
           </motion.h2>
           <motion.p 
             variants={cardVariants}
             className="text-lg text-stone/70"
           >
             {language === "am"
-              ? "ለተለያዩ የመጥፋት አይነቶች የተለያዩ መፍትሄዎች"
-              : "How to Use the Reunite Platform Finding a loved one is a sensitive process. To get started, please choose the system that best matches your current needs:" }
+              ? " ሪዩናይት ለእናንተ ሁለት ዋና ዋና መንገዶችን ያቀርባል፤ የመጀመሪያው በድንገት ለጠፉ ሰዎች እና  ፈጣን ምላሽ ለሚሹ ጉዳዮች በማህበረሰቡ ተሳትፎ ፈጣን ምላሽ የሚሰጥ ሲሆን። ሁለተኛው ደግሞ ለረጅም ጊዜ አድራሻቸውን በማጣት ከተለዩዋቸው ከምትወዳቸው ሰዎች ጋር ለመገናኘት አስተማማኝ መንገድ ማቅረብ የሚቀርብ ነው።በሕይወት ያለ ሰው ይገናኛል እና ማንም ሰው ጠፍቶ መቅረት የለበትም። ፍለጋዎን ዛረዉኑ ይጀምሩ።"
+              : "Reunite delivers a dual approach to reconnection. Our Rapid Response system  provides immediate community visibility for urgent situations, helping you mobilize resources when every second counts, while our Heart-Centered Connection offers a secure, private, and verified bridge for finding those you have lost touch with, ensuring dignity and safety throughout the process. At the core of our platform is an unwavering commitment: we believe no one should stay lost. We provide the essential tools, technology, and community trust required to turn 'missing' into 'found. " }
           </motion.p>
+
+          <motion.h2 
+            variants={cardVariants}
+            className="text-4xl md:text-5xl font-display font-bold text-charcoal mb-4"
+          >
+            {language === "am"
+              ? "ሪዩናይትን እንዴት ልጠቀም።"
+              : "How to Use Reunite"}
+          </motion.h2>
+          <motion.p 
+            variants={cardVariants}
+            className="text-lg text-stone/70"
+          >
+            {language === "am"
+              ? "የምትወዱትን ሰው መፈለግ ጥንቃቄ የሚጠይቅ ሂደት ነው። ፍለጋዎን ለመጀመር፣ ከእርሶ ፍለጋ ጋር የሚስማማውን ሂደት ይምረጡ።"
+              : "Finding a loved one is a sensitive process. To get started, please choose the system that best matches your current needs:" }
+          </motion.p>
+          
         </motion.div>
 
         <motion.div 
@@ -157,20 +168,20 @@ const DualSystemSection = () => {
             </div> */}
 
             <h3 className="text-2xl font-bold mb-3 text-charcoal">
-              Missing Person Search
+              {language === "am" ? "የጠፉቦትን ሰው ይፈልጉ" : "Missing Person Search"}
             </h3>
 
             <p className="text-stone/70 mb-6 leading-relaxed">
               {language === "am"
-                ? "የጠፉ ሰዎችን በፍጥነት ለማግኘት የAI የተደገፈ ስርዓት። ማንቂያዎችን፣ የማህበረሰብ ቅንጅትን እና ፈጣን ምላሽ መሳሪያዎችን ያካትታል።"
+                ? " በቅርብ ጊዜም ሆነ ከረጅም ጊዜ  በፊት በድንገት የጠፉ ሰዎችን ለመፈለግ እሄኛውን መተግበሪያ ይጠቀሙ።።"
                 : "Use this system if you are dealing with a sudden loss or an urgent situation where time is of the essence."}
             </p>
 
             <ul className="space-y-3 mb-8">
               {[
-                { icon: Clock, text: language === "am" ? "የእውነተኛ ጊዜ ማንቂያዎች" : "When to use:" , "description": "Use this for missing persons or emergency scenarios where every minute matters." },
-                { icon: Users, text: language === "am" ? "የማህበረሰብ ቅንጅት" : "How to use it" , "description": "Click the Find Missing Person (🚨) button on the landing page" },
-                { icon: MapPin, text: language === "am" ? "በቦታ ላይ የተመሰረተ ፍለጋ" : "What to expect:", "description": "Location-based search with AI assistance to find matches in our database." }
+                { icon: Clock, text: language === "am" ? "መቼ ልጠቀም?" : "When to use:" , description:language === "am" ? "ይህንን ለጠፉ ሰዎች ወይም ቅድሚያ ለሚሹ ሁኔታዎች ይጠቀሙ። ማህበረሰቡን በማስተባበር፣ የምትፈልጓቸውን ሰዎች በፍጥነት ለማግኘት እና የፍለጋ ሂደቱን ለማገዝ አስፈላጊውን ድጋፍ እንሰጣለን።": "Use this system for missing persons or emergency situations where every minute matters. We coordinate community alerts and rapid response teams to help bring your loved ones home quickly and safely." },
+                { icon: Users, text: language === "am" ? "እንዴት ላመልክት?" : "How to use it" , description: language === "am" ? "የጠፉቦትን ሰው ይፈልጉ የሚለውን ከታች ይጫኑ": "Click the Find Missing Person search below" },
+                { icon: MapPin, text: language === "am" ? "እንዴት ልከታተል?" : "What to expect:", description: language === "am" ? "ፍለጋውን ሲጀምሩ፣ ጉዳይዎ እንደየሁኔታው ቅድሚያ ይሰጠዋል። ከማህበረሰቡ ጋር በመተባበር ወዲያውኑ  መረጃዎችን ማሰባሰብ እንጀምራለን። በዚህ ሂደት ውስጥ ፈጣን ፣ የተረጋገጡ የመረጃ ውጤቶች እና ቀጣይነት ያለቸው ታማኝ መረጃ እናደርሶታለን።": "When you start a search, your report is prioritized immediately. Our response team begins coordinating the search, reaching out to the community, and tracking leads. You can expect real-time updates, verified information, and clear communication from us as we work to bring them home." }
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-sm text-stone/80">
                   <item.icon className="w-4 h-4 text-red-500 flex-shrink-0" />
@@ -200,7 +211,7 @@ const DualSystemSection = () => {
             className="group bg-white rounded-3xl p-8 border-2 border-amber-100 hover:border-amber-200 shadow-lg hover:shadow-xl transition-all"
           >
             <h3 className="text-2xl font-bold mb-3 text-charcoal">
-            Reunite Memory
+              {language === "am" ? "የልቦትን ሰው ያግኙ" : "Reunite Memory"}
             </h3>
 
             <p className="text-stone/70 mb-6 leading-relaxed">
@@ -209,15 +220,16 @@ const DualSystemSection = () => {
                 : "Reconnect with people from your past using shared memories and stories. Safe verification and private reconnection built in."}
             </p>
 
-            <ul className="space-y-3 mb-8">
+             <ul className="space-y-3 mb-8">
               {[
-                { icon: MessageCircle, text: language === "am" ? "በትዝታ ላይ የተመሰረተ ፍለጋ" : "Memory-based search" },
-                { icon: Shield, text: language === "am" ? "ደህንነቱ የተጠበቀ ማረጋገጫ" : "Safe verification" },
-                { icon: Heart, text: language === "am" ? "የግል ዳግም ግንኙነት" : "Private reconnection" }
+                { icon: Clock, text: language === "am" ? "መቼ ልጠቀም?" : "When to use:" , description:language === "am" ? "አድራሻቸው ለጠፋባችሁ የልጅነት ጓደኞች፣ የትህምርት ቤት ጓደኛዮች፣ ቀደም ሲል ለነበሩዎት የሥራ ባልደረቦች፣ እና የመሳሰሉትን ሰዎች ለመፈለግ ይሄንን ይጠቀሙ።": "Use this to reconnect with people from your past, such as former colleagues, childhood friends, or anyone with whom you have simply lost touch." },
+                { icon: Users, text: language === "am" ? "እንዴት ላመልክት?" : "How to use it" , description: language === "am" ? "ከተራራቁት ሰዎች ጋር ይገናኙ የሚለውን ከታች ይጫኑ": "Click the Reconnect With Someone search below" },
+                { icon: MapPin, text: language === "am" ? "እንዴት ልከታተል?" : "What to expect:", description: language === "am" ? "ፍለጋውን ሲጀምሩ፣ ስለሚፈልጉት ሰው ያለዎትን ትዝታ ወይም መረጃ ለማህበረሰቡ ያጋሩ። የምትፈልጉት ሰው ያጋሩትን መረጃ  ካየ እና  ለመነጋገር ፍላጎት ካለው፣ መልእክት በመላክ ምላሽ ይሰጣል። አንዴ ከተገናኛችሁ በኋላ በግል በማውራት ትገናኛላችሁ።": "When you begin, share a memory or detail about the person with our community. If the person you’re looking for sees your post and wants to reconnect, they can respond to you. Once connected, you can start chatting privately." }
               ].map((item, i) => (
                 <li key={i} className="flex items-center gap-3 text-sm text-stone/80">
-                  <item.icon className="w-4 h-4 text-amber-500 flex-shrink-0" />
-                  <span>{item.text}</span>
+                  <item.icon className="w-4 h-4 text-red-500 flex-shrink-0" />
+                  <span className="font-bold p-1 text-blue-800 text-md">{item.text}</span>
+                  <p> {item.description}</p>
                 </li>
               ))}
             </ul>
@@ -262,12 +274,12 @@ const LossUnderstandingSection = () => {
         >
           <h2 className="text-4xl md:text-5xl font-bold mb-6 text-charcoal">
             {language === "am" 
-              ? "ሰዎች በተለያየ መንገድ ይጠፋሉ"
+              ? "ሰዎች በተለያየ መንገድ ይራራቃሉ"
               : "People Get Lost in Different Ways"}
           </h2>
           <p className="text-lg text-stone/70 mb-16 max-w-2xl mx-auto">
             {language === "am"
-              ? "አንዳንድ ጊዜ በድንገት፣ አንዳንድ ጊዜ በጊዜ ሂደት። ለሁለቱም መፍትሄ አለን።"
+              ? "ሰዎች በድንገት ይጠፋፋሉ፣ በጊዜ ሂደት ውስጥም ኑሮን ለማሸነፍ በሚያደርጉት ውጣ ውረድ ውስጥ አንዱ የአንዱ አንድራሳ በማጣት፣ ይራራቃሉ አንዱ የሕይወት አካል ነውና። "
               : "Understanding the nature of separation helps us build better tools for reconnection."}
           </p>
 
@@ -283,11 +295,11 @@ const LossUnderstandingSection = () => {
                 <Clock className="w-4 h-4 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-red-600 mb-3">
-                🚨 {language === "am" ? "ድንገተኛ መጥፋት" : "Sudden Loss"}
+                🚨 {language === "am" ? "በድንገት መጥፋት" : "Sudden Loss"}
               </h3>
               <p className="text-stone/70">
                 {language === "am"
-                  ? "የጠፉ ሰዎች፣ ድንገተኛ አደጋዎች፣ እያንዳንዱ ደቂቃ አስፈላጊ በሆነባቸው ሁኔታዎች። ፈጣን እርምጃ ያስፈልጋል።"
+                  ? "በድንገት የጠፉ ሰዎች በፍጥነት መረጃን ማሰራጭት እና ፈጣን ምላሽ ያስፈልጋቸዋል "
                   : "Missing persons, emergencies, urgent situations where every minute matters. Fast action required."}
               </p>
             </motion.div>
@@ -303,12 +315,12 @@ const LossUnderstandingSection = () => {
                 <Heart className="w-4 h-4 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-amber-600 mb-3">
-                💛 {language === "am" ? "ዝምተኛ መለያየት" : "Silent Loss"}
+                💛 {language === "am" ? "አርዳሻቸውን በማጣት መራራቅ" : "Silent Loss"}
               </h3>
               <p className="text-stone/70">
                 {language === "am"
-                  ? "የጠፉ ጓደኞች፣ የተለዩ ቤተሰቦች፣ በጊዜ ሂደት የደበዘዙ ግንኙነቶች። ስሜታዊ መፍትሄ ያስፈልጋል።"
-                  : "Lost friends, separated families, connections faded over time. Emotional resolution needed."}
+                  ? "የተጠፋፉ ጓደኛሞች፣ የተለያዩ ቤተሰቦች፣ በጊዜ ሂደት ግንኙነታቸው እየደበዘዘ ትዝታቸው እየጨመረ ናፍቆትን ያባብሳልና ። ዘላቂ መፍትሄ ያስፈልግርዋል።"
+                  : "Lost friends and separated families. As time passes, connections may fade, but memories linger—deepening the longing. We provide the lasting solution to bridge the gap.."}
               </p>
             </motion.div>
           </div>
@@ -334,8 +346,8 @@ const ImpactSection = () => {
           </h2>
           <p className="text-white/60">
             {language === "am" 
-              ? "በመላው ኢትዮጵያ ህይወቶችን እንደገና ማገናኘት"
-              : "Reconnecting lives across Ethiopia and beyond"}
+              ? "በመላው ዓለም እና በኢትዮጵያ ውስጥ ኢትዮጵያዊያንን እንደገና ማገናኘት"
+              : "Reconnecting Ethiopians worldwide and across Ethiopia."}
           </p>
         </div>
          <ImpactStats />
@@ -353,21 +365,21 @@ const TrustSection = () => {
   const features = [
     {
       icon: Shield,
-      title: language === "am" ? "የተረጋገጠ ደህንነት" : "Verified Safety",
+      title: language === "am" ? "ደንነቱ የተረጋገጠ" : "Verified Safety",
       description: language === "am" 
-        ? "ሁሉም ግንኙነቶች ከመፈጸማቸው በፊት ይረጋገጣሉ"
+        ? "ሁሉም ግንኙነቶች ደንነቱ በተረጋገጠ መንገድ ይከናወናሉ"
         : "All connections verified before proceeding"
     },
     {
       icon: Users,
-      title: language === "am" ? "በማህበረሰብ የተደገፈ" : "Community Powered",
+      title: language === "am" ? "በማህበረሰቡ የተደገፈ" : "Community Powered",
       description: language === "am"
-        ? "በሺዎች የሚቆጠሩ በጎ ፈቃደኞች ይረዳሉ"
+        ? "በሺዎች በሚቆጠሩ በጎ ፈቃደኞች የሚደገፍ"
         : "Thousands of volunteers helping reunite"
     },
     {
       icon: Share2,
-      title: language === "am" ? "ግላዊነት የተጠበቀ" : "Privacy First",
+      title: language === "am" ? "የግል ምስጢሮ የተጠበቀ" : "Privacy First",
       description: language === "am"
         ? "የእርስዎ መረጃ ደህንነቱ የተጠበቀ ነው"
         : "Your information stays protected"
@@ -418,14 +430,15 @@ const FinalCTASection = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
         >
+          
           <h2 className="text-3xl md:text-5xl font-bold mb-6">
             {language === "am" 
-              ? "አንድ ሰው ለማግኘት ዝግጁ ነዎት?"
+              ? "ፍለጋውትን ለመጀመር ዝግጁ ነዎት?"
               : "Ready to Find Someone?"}
           </h2>
           <p className="text-white/70 mb-10 text-lg">
             {language === "am"
-              ? "የትኛውንም መንገድ ይምረጡ — እኛ ለመርዳት እዚህ ነን።"
+              ? "ፍለጋዎን ለመጀመር፣ ከእርሶ ፍለጋ ጋር የሚስማማውን ሂደት ይምረጡ።"
               : "Choose your path — we're here to help you reconnect."}
           </p>
 
@@ -436,7 +449,7 @@ const FinalCTASection = () => {
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-red-500 hover:bg-red-600 rounded-full font-semibold shadow-lg"
               >
-                🚨 {language === "am" ? "የጠፋ ሰው ፈልግ" : "Find Missing Person"}
+                🚨 {language === "am" ? "የጠፉቦትን ሰው ይፈልጉ " : "Find Missing Person"}
               </motion.button>
             </Link>
 
@@ -446,7 +459,7 @@ const FinalCTASection = () => {
                 whileTap={{ scale: 0.95 }}
                 className="px-8 py-4 bg-amber-500 hover:bg-amber-600 rounded-full font-semibold shadow-lg"
               >
-                💛 {language === "am" ? "ከድሮ ሰዎች ጋር ተገናኝ" : "Reconnect"}
+                💛 {language === "am" ? "ከተራራቁት ሰዎች ጋር ይገናኙ" : "Reconnect With Someone"}
               </motion.button>
             </Link>
           </div>

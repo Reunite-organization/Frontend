@@ -16,7 +16,7 @@ export const ImpactStats = ({ compact = false }) => {
     },
     {
       value: stats?.activePosts || '450',
-      label: { en: 'Active Searches', am: 'ንቁ ፍለጋዎች' },
+      label: { en: 'Active Searches', am: 'በፍለጋ ላይ ያሉ' },
       icon: Users,
       color: 'text-sahara',
     },
@@ -28,7 +28,7 @@ export const ImpactStats = ({ compact = false }) => {
     },
     {
       value: stats?.successRate || '74%',
-      label: { en: 'Success Rate', am: 'የስኬት መጠን' },
+      label: { en: 'Success Rate', am: 'የስኬት መለኪያ' },
       icon: Star,
       color: 'text-warmth',
     },
