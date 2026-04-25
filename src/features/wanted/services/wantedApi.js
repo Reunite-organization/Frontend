@@ -71,10 +71,9 @@ export const wantedApi = {
   // Chat
   generateVideoToken: async (roomId) => {
     try {
-      const response = await api.get(`/chat/${roomId}/video/token`);
+      const response = await axios.post(`/api/wanted/chat/${roomId}/video`);
       return response.data.data;
     } catch (error) {
-      console.error('Failed to generate video token:', error);
       throw new Error(
         error.response?.data?.message || 'Failed to generate video token'
       );
@@ -84,10 +83,9 @@ export const wantedApi = {
   // End video call
   endVideoCall: async (roomId, data) => {
     try {
-      const response = await api.post(`/chat/${roomId}/video/end`, data);
+      const response = await axios.post(`/api/wanted/chat/${roomId}/video/end`, data);
       return response.data;
-    } catch (error) {
-      console.error('Failed to end video call:', error);
+    } catch {
       // Don't throw error for call ending - it should be fire-and-forget
       return null;
     }
@@ -96,10 +94,9 @@ export const wantedApi = {
   // Get call history
   getCallHistory: async (roomId) => {
     try {
-      const response = await api.get(`/chat/${roomId}/video/history`);
+      const response = await axios.get(`/api/wanted/chat/${roomId}/calls`);
       return response.data.data;
-    } catch (error) {
-      console.error('Failed to get call history:', error);
+    } catch {
       return [];
     }
   },

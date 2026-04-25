@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useCallback } from "react";
+﻿import { useState, useEffect, useCallback, useRef } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { wantedApi } from "../services/wantedApi";
 import { socketClient } from "../services/socketClient";
@@ -10,6 +10,7 @@ export const useChat = (roomId) => {
   const queryClient = useQueryClient();
   const [isConnected, setIsConnected] = useState(false);
   const [typingUsers, setTypingUsers] = useState(new Set());
+  const processedMessageIds = useRef(new Set());
 
   // Get chat rooms
   const { data: rooms, isLoading: roomsLoading } = useQuery({
@@ -34,7 +35,7 @@ export const useChat = (roomId) => {
       try {
         const serverMessages = await wantedApi.getChatMessages(roomId);
         return serverMessages;
-      } catch (error) {
+      } catch {
         // Return cached if offline
         return cached;
       }
@@ -82,7 +83,7 @@ export const useChat = (roomId) => {
               );
             }
             if (processedMessageIds.current.has(message._id)) {
-              return; // Skip duplicate
+              return old;
             }
             processedMessageIds.current.add(message._id);
 
@@ -150,6 +151,7 @@ export const useChat = (roomId) => {
       if (roomId) {
         socketClient.emit("leave-room", roomId);
       }
+      processedMessageIds.current.clear();
     };
   }, [getAccessToken, user, roomId, queryClient]);
 

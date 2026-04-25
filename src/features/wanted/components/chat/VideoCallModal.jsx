@@ -14,6 +14,7 @@ import {
 import { useLanguage } from '../../../../lib/i18n';
 import { useAuth } from '../../../../hooks/useAuth';
 import { wantedApi } from '../../services/wantedApi';
+import logger from '../../../../utils/logger';
 
 export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
   const { language } = useLanguage();
@@ -30,6 +31,21 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
   const callSessionRef = useRef(null);
   const endingCallRef = useRef(false);
   const isCleaningUp = useRef(false);
+  const isInitializingRef = useRef(false);
+
+  function startTimer() {
+    if (timerRef.current) return;
+    timerRef.current = setInterval(() => {
+      setCallDuration(prev => prev + 1);
+    }, 1000);
+  }
+
+  function stopTimer() {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }
 
   // Memoize cleanup function to prevent recreation
   const cleanupCall = useCallback(() => {
@@ -43,9 +59,10 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
       }
       stopTimer();
     } catch (err) {
-      console.error('Error during call cleanup:', err);
+      logger.error('Error during video call cleanup', { error: err.message });
     } finally {
       isCleaningUp.current = false;
+      isInitializingRef.current = false;
     }
   }, []);
 
@@ -63,7 +80,7 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
         duration: callDuration,
       });
     } catch (requestError) {
-      console.error('Failed to end video call cleanly:', requestError);
+      logger.warn('Failed to end video call cleanly', { error: requestError.message });
     } finally {
       endingCallRef.current = false;
       callSessionRef.current = null;
@@ -71,7 +88,8 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
   }, [roomId, callDuration]);
 
   const initializeCall = useCallback(async () => {
-    if (!roomId) return;
+    if (!roomId || isInitializingRef.current || zegoRef.current) return;
+    isInitializingRef.current = true;
 
     setIsConnecting(true);
     setError(null);
@@ -128,13 +146,14 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
       });
 
     } catch (err) {
-      console.error('Failed to initialize call:', err);
+      logger.error('Failed to initialize call', { error: err.message });
       setError(
         language === 'am' 
           ? 'ጥሪ መጀመር አልተሳካም' 
           : 'Failed to start video call. Please try again.'
       );
       setIsConnecting(false);
+      isInitializingRef.current = false;
     }
   }, [roomId, user, language]);
 
@@ -157,20 +176,6 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  const startTimer = () => {
-    if (timerRef.current) return;
-    timerRef.current = setInterval(() => {
-      setCallDuration(prev => prev + 1);
-    }, 1000);
-  };
-
-  const stopTimer = () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  };
-
   const formatDuration = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -185,7 +190,7 @@ export const VideoCallModal = ({ isOpen, onClose, roomId }) => {
         await document.exitFullscreen();
       }
     } catch (err) {
-      console.error('Fullscreen error:', err);
+      logger.warn('Fullscreen toggle failed', { error: err.message });
     }
   };
 

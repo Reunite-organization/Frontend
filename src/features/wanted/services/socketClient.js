@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client';
+import logger from '../../../utils/logger';
 
 class SocketClient {
   constructor() {
@@ -24,9 +25,9 @@ class SocketClient {
     });
 
     // 3. Native Socket.io listeners
-    this.socket.on('connect', () => console.log('✅ Socket connected'));
-    this.socket.on('disconnect', (reason) => console.log('🔌 Disconnected:', reason));
-    this.socket.on('connect_error', (err) => console.error('❌ Error:', err.message));
+    this.socket.on('connect', () => logger.info('Socket connected'));
+    this.socket.on('disconnect', (reason) => logger.info('Socket disconnected', { reason }));
+    this.socket.on('connect_error', (err) => logger.error('Socket connection error', { error: err.message }));
 
     this.socket.connect();
   }
