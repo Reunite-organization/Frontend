@@ -89,8 +89,8 @@ export const LoginPage = () => {
           </h2>
           <p className="text-stone">
             {language === 'am' 
-              ? 'ለመቀጠል ወደ መለያዎ ይግቡ'
-              : 'Sign in to your account to continue'
+              ? 'ለመቀጠል Sign in ያርጉ'
+              : 'Sign in to continue'
             }
           </p>
         </div>
@@ -148,7 +148,7 @@ export const LoginPage = () => {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  placeholder={language === 'am' ? 'የይለፍ ቃልዎን ያስገቡ' : 'Enter your password'}
+                  placeholder={language === 'am' ? 'የይለፍ ቃልዎትን ያስገቡ' : 'Enter your password'}
                   className={`w-full pl-11 pr-12 py-3 bg-cream/50 border rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all ${
                     errors.password ? 'border-error' : 'border-warm-gray'
                   }`}
@@ -176,7 +176,7 @@ export const LoginPage = () => {
                 to="/auth/forgot-password"
                 className="text-sm text-terracotta hover:text-clay transition-colors"
               >
-                {language === 'am' ? 'የይለፍ ቃል ረሱ?' : 'Forgot password?'}
+                {language === 'am' ? 'የይለፍ ቃል ረሳው?' : 'Forgot password?'}
               </Link>
             </div>
 
@@ -189,11 +189,11 @@ export const LoginPage = () => {
               {isLoading ? (
                 <>
                   <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  <span>{language === 'am' ? 'በመግባት ላይ...' : 'Signing in...'}</span>
+                  <span>{language === 'am' ? 'ትንሽ ይጠብቁ...' : 'Signing in...'}</span>
                 </>
               ) : (
                 <>
-                  <span>{language === 'am' ? 'ግባ' : 'Sign In'}</span>
+                  <span>{language === 'am' ? 'ይግቡ' : 'Sign In'}</span>
                   <ArrowRight className="w-4 h-4" />
                 </>
               )}
@@ -214,13 +214,13 @@ export const LoginPage = () => {
 
           {/* Register Link */}
           <p className="text-center text-sm text-stone">
-            {language === 'am' ? 'መለያ የሎትም?' : 'Don\'t have an account?'}
+            {language === 'am' ? 'አካውንት የሎትም?' : 'Don\'t have an account?'}
             {' '}
             <Link
               to="/auth/register"
               className="text-terracotta hover:text-clay font-medium"
             >
-              {language === 'am' ? 'አሁን ይመዝገቡ' : 'Sign up free'}
+              {language === 'am' ? 'አሁኑኑ ይመዝገቡ' : 'Sign up now'}
             </Link>
           </p>
         </div>
@@ -229,7 +229,7 @@ export const LoginPage = () => {
         <p className="text-center text-xs text-stone mt-6">
           <Lock className="inline w-3 h-3 mr-1" />
           {language === 'am' 
-            ? 'ደህንነቱ የተጠበቀ ግባት • መረጃዎ የግል ነው'
+            ? 'የግል መረጃዎ ደህንነት የተጠበቀ ነው'
             : 'Secure login • Your information is private'
           }
         </p>

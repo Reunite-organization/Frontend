@@ -62,11 +62,11 @@ export const ProfilePage = () => {
         <div className="max-w-md mx-auto text-center py-12">
           <User className="w-16 h-16 text-stone mx-auto mb-4 opacity-50" />
           <h2 className="font-display text-2xl font-bold text-charcoal mb-3">
-            {language === 'am' ? 'መገለጫ አልተገኘም' : 'Profile Not Found'}
+            {language === 'am' ? 'Profile አልተገኘም' : 'Profile Not Found'}
           </h2>
           <p className="text-stone mb-6">
             {language === 'am'
-              ? 'እባክዎ መገለጫዎን ያጠናቅቁ'
+              ? 'እባክዎ ፕሮፋይሎን ያጠናቅቁ'
               : 'Please complete your profile to continue'
             }
           </p>
@@ -75,7 +75,7 @@ export const ProfilePage = () => {
             onClick={() => setIsEditing(true)}
             className="btn-primary"
           >
-            {language === 'am' ? 'መገለጫ ይፍጠሩ' : 'Create Profile'}
+            {language === 'am' ? 'ፕሮፋይል ይፍጠሩ' : 'Create Profile'}
           </Link>
         </div>
       </div>
@@ -153,25 +153,25 @@ export const ProfilePage = () => {
             <StatCard 
               icon={Heart} 
               value={profile.successfulReconnections} 
-              label={language === 'am' ? 'ዳግም ግኝኙነቶች' : 'Reconnections'}
+              label={language === 'am' ? 'የተሳኩ ግኝኙነቶች' : 'Reconnections'}
               color="text-hope-green"
             />
             <StatCard 
               icon={Users} 
               value={posts?.length || 0} 
-              label={language === 'am' ? 'ንቁ ልጥፎች' : 'Active Posts'}
+              label={language === 'am' ? 'በፍለጋ ላይ ያሉ ልጥፎች' : 'Active Posts'}
               color="text-terracotta"
             />
             <StatCard 
               icon={Globe} 
               value={profile.connectionCity?.split(',')[0]} 
-              label={language === 'am' ? 'ዋና ከተማ' : 'Primary City'}
+              label={language === 'am' ? 'ከተማ' : 'City'}
               color="text-sahara"
             />
             <StatCard 
               icon={Award} 
               value={profile.trustScore} 
-              label={language === 'am' ? 'እምነት ነጥብ' : 'Trust Score'}
+              label={language === 'am' ? 'የታማኝነት ደረጃ' : 'Trust Score'}
               color="text-olive"
             />
           </div>
@@ -193,7 +193,7 @@ export const ProfilePage = () => {
               {[
                 { id: 'posts', label: language === 'am' ? 'የኔ ልጥፎች' : 'My Posts', count: posts?.length },
                 { id: 'reconnected', label: language === 'am' ? 'የተገኙ' : 'Reconnected', count: reconnectedPosts?.length },
-                { id: 'settings', label: language === 'am' ? 'ቅንብሮች' : 'Settings' },
+                { id: 'settings', label: language === 'am' ? 'ማስተካከያ' : 'Settings' },
               ].map(tab => (
                 <button
                   key={tab.id}
@@ -288,7 +288,7 @@ export const ProfilePage = () => {
                           <div className="flex items-center gap-2 mb-2">
                             <CheckCircle className="w-4 h-4 text-hope-green" />
                             <span className="text-sm font-medium text-hope-green">
-                              {language === 'am' ? 'ተገኝቷል' : 'Reconnected'}
+                              {language === 'am' ? 'የተሳኩ ግኝኙነት' : 'Reconnected'}
                             </span>
                           </div>
                           <p className="text-charcoal mb-2">{post.memoryText?.en || post.memoryText?.am}</p>
@@ -304,7 +304,7 @@ export const ProfilePage = () => {
                     <div className="text-center py-12">
                       <Heart className="w-12 h-12 text-stone mx-auto mb-3 opacity-50" />
                       <p className="text-stone">
-                        {language === 'am' ? 'እስካሁን ምንም ዳግም ግኝኙነት የለም' : 'No reconnections yet'}
+                        {language === 'am' ? 'እስካሁን የተሳኩ ግኝኙነቶች የሉም' : 'No reconnections yet'}
                       </p>
                     </div>
                   )}
@@ -339,7 +339,7 @@ export const ProfilePage = () => {
                       <div className="flex items-center gap-3">
                         <Shield className="w-5 h-5 text-olive" />
                         <span className="text-charcoal">
-                          {language === 'am' ? 'ግላዊነት' : 'Privacy'}
+                          {language === 'am' ? 'ፕራይቬሲ' : 'Privacy'}
                         </span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-stone" />
@@ -349,7 +349,7 @@ export const ProfilePage = () => {
                       <div className="flex items-center gap-3">
                         <MessageCircle className="w-5 h-5 text-olive" />
                         <span className="text-charcoal">
-                          {language === 'am' ? 'ማሳወቂያዎች' : 'Notifications'}
+                          {language === 'am' ? 'ኖቲፊኬሽን' : 'Notifications'}
                         </span>
                       </div>
                       <ChevronRight className="w-4 h-4 text-stone" />
@@ -358,7 +358,7 @@ export const ProfilePage = () => {
                     <button className="w-full p-4 flex items-center justify-between text-error hover:bg-error/10 transition-colors">
                       <div className="flex items-center gap-3">
                         <LogOut className="w-5 h-5" />
-                        <span>{language === 'am' ? 'ውጣ' : 'Sign Out'}</span>
+                        <span>{language === 'am' ? 'ይውጡ' : 'Sign Out'}</span>
                       </div>
                     </button>
                   </div>

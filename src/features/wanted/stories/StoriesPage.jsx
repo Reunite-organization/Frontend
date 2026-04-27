@@ -21,17 +21,17 @@ export const StoriesPage = () => {
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-hope-green/20 rounded-full mb-6 border border-hope-green/30">
             <Sparkles className="w-4 h-4 text-hope-green" />
             <span className="text-sm font-medium text-hope-green-light uppercase tracking-wider">
-              {language === 'am' ? 'የተስፋ ታሪኮች' : 'Stories of Hope'}
+              {language === 'am' ? 'የተሳኩ ታሪኮች' : 'Stories of Hope'}
             </span>
           </div>
           
           <h1 className="text-4xl md:text-6xl font-bold mb-6 font-display">
-            {language === 'am' ? 'የስኬት ታሪኮች' : 'Success Stories'}
+            {language === 'am' ? 'የተሳኩ ታሪኮች' : 'Success Stories'}
           </h1>
           
           <p className="text-xl text-white/70 max-w-2xl mx-auto leading-relaxed">
             {language === 'am' 
-              ? 'በእኛ ድረ ገጽ በኩል እንደገና የተገናኙ ሰዎች የሚያበረታቱ ታሪኮች' 
+              ? 'በእኛ ድረ ገጽ በኩል እንደገና የተገናኙ ልብን የሚያሞቁ ታሪኮች' 
               : 'Heartwarming accounts of families and friends reunited through our platform'}
           </p>
         </div>
@@ -49,11 +49,11 @@ export const StoriesPage = () => {
             <Heart className="w-8 h-8 text-white" />
           </div>
           <h2 className="text-3xl font-bold mb-4">
-            {language === 'am' ? 'ታሪክዎን ያጋሩ' : 'Share Your Story'}
+            {language === 'am' ? 'ታሪክዎትን ያጋሩ' : 'Share Your Story'}
           </h2>
           <p className="text-white/90 text-lg mb-8 max-w-xl mx-auto">
             {language === 'am'
-              ? 'የእርስዎ ታሪክ ለሌሎች ተስፋ ሊሆን ይችላል። አሁኑኑ ያጋሩን።'
+              ? 'በዚህ ድረ ገጽ ያገኙት ሰው አለ? እርስዎ የሄዱበት ርቀት ለሌሎች ተስፋ ይሆናል እና ታኪሮትን አሁኑኑ ያጋሩን።'
               : 'Did you find someone through Reunite? Your story could be the beacon of hope someone else needs.'}
           </p>
           <div className="flex flex-wrap justify-center gap-4">

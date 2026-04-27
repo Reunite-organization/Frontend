@@ -111,11 +111,11 @@ export const CreateProfilePage = () => {
             <Heart className="w-8 h-8 text-terracotta" />
           </div>
           <h1 className="font-display text-3xl font-bold text-charcoal mb-2">
-            {language === 'am' ? 'መገለጫ ይፍጠሩ' : 'Create Your Profile'}
+            {language === 'am' ? 'የራሶትን ፕሮፋይል ይፍጠሩ' : 'Create Your Profile'}
           </h1>
           <p className="text-stone">
             {language === 'am'
-              ? 'ለመቀጠል መገለጫዎን ያጠናቅቁ'
+              ? 'ለመቀጠል ፕሮፋይሎትን ያጠናቅቁ'
               : 'Complete your profile to continue'
             }
           </p>
@@ -154,7 +154,7 @@ export const CreateProfilePage = () => {
               )}
             </div>
             <p className="text-xs text-stone mt-3">
-              {language === 'am' ? 'ፎቶ ይጫኑ (አማራጭ)' : 'Upload profile photo (Optional)'}
+              {language === 'am' ? 'ፎቶ ይጫኑ (optional)' : 'Upload profile photo (Optional)'}
             </p>
             <input
               type="file"
@@ -188,13 +188,13 @@ export const CreateProfilePage = () => {
           {/* Display Name */}
           <div>
             <label className="block text-sm font-medium text-charcoal mb-1.5">
-              @ {language === 'am' ? 'የማሳያ ስም (አማራጭ)' : 'Display Name (Optional)'}
+              @ {language === 'am' ? 'Display Name (አማራጭ)' : 'Display Name (Optional)'}
             </label>
             <input
               type="text"
               value={formData.displayName}
               onChange={(e) => setFormData({ ...formData, displayName: e.target.value })}
-              placeholder={language === 'am' ? 'የሚታይ ስም' : 'How you want to appear'}
+              placeholder={language === 'am' ? 'የእይታ ገደብ' : 'How you want to appear'}
               className="w-full px-4 py-3 bg-cream/50 border border-warm-gray rounded-xl focus:border-terracotta focus:ring-2 focus:ring-terracotta/20 outline-none transition-all"
             />
           </div>
@@ -250,7 +250,7 @@ export const CreateProfilePage = () => {
           <div>
             <label className="block text-sm font-medium text-charcoal mb-1.5">
               <Globe className="inline w-4 h-4 mr-1" />
-              {language === 'am' ? 'የሚመረጥ ቋንቋ' : 'Preferred Language'}
+              {language === 'am' ? 'የሚመርጡት ቋንቋ' : 'Preferred Language'}
             </label>
             <div className="flex gap-3">
               {[
@@ -278,12 +278,12 @@ export const CreateProfilePage = () => {
           <div className="space-y-3">
             <label className="block text-sm font-medium text-charcoal">
               <Shield className="inline w-4 h-4 mr-1 text-terracotta" />
-              {language === 'am' ? 'የግላዊነት ቅንብሮች' : 'Privacy Settings'}
+              {language === 'am' ? 'ማስተካከያዎች' : 'Privacy Settings'}
             </label>
             
             <label className="flex items-center justify-between p-1 bg-cream rounded-xl border border-warm-gray/30 cursor-pointer">
               <span className="text-sm text-charcoal">
-                {language === 'am' ? 'በፍለጋ ውጤቶች ውስጥ አሳይ' : 'Show in search results'}
+                {language === 'am' ? 'በፍለጋ ውጤቶች ላይ ይታይ' : 'Show in search results'}
               </span>
               <button
                 type="button"
@@ -306,7 +306,7 @@ export const CreateProfilePage = () => {
 
             <label className="flex items-center justify-between p-3 bg-cream rounded-xl border border-warm-gray/30 cursor-pointer">
               <span className="text-sm text-charcoal">
-                {language === 'am' ? 'ማሳወቂያዎችን ፍቀድ' : 'Allow notifications'}
+                {language === 'am' ? 'notifications ፍቀዱ' : 'Allow notifications'}
               </span>
               <button
                 type="button"
@@ -337,11 +337,11 @@ export const CreateProfilePage = () => {
             {isPending ? (
               <>
                 <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                <span>{language === 'am' ? 'በመፍጠር ላይ...' : 'Creating Profile...'}</span>
+                <span>{language === 'am' ? 'ትንሽ ይጠብቁ...' : 'Creating Profile...'}</span>
               </>
             ) : (
               <>
-                <span>{language === 'am' ? 'መገለጫ ፍጠር' : 'Create Profile'}</span>
+                <span>{language === 'am' ? 'ፕሮፋይል ይፍጠሩ' : 'Create Profile'}</span>
                 <ArrowRight className="w-4 h-4" />
               </>
             )}

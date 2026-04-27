@@ -17,7 +17,7 @@ export const SuccessStories = ({ limit = 3, showTitle = false }) => {
     return (
       <div className="text-center py-12 bg-cream rounded-2xl border border-warm-gray/30">
         <p className="text-stone">
-          {language === "am" ? "ታሪኮችን መጫን አልተሳካም" : "Failed to load stories"}
+          {language === "am" ? "ለጊዘው የተሳኩ ታሪኮች የሉም" : "There are no successful stories for now"}
         </p>
       </div>
     );

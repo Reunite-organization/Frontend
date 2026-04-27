@@ -23,43 +23,43 @@ import { isAdminRole } from "../../lib/authRoles";
 
 const primaryLinks = [
   { path: "/cases", label: { en: "Cases", am: "ኬሶች" } },
-  { path: "/report", label: { en: "Report Missing", am: "ጠፋ ሪፖርት" } },
-  { path: "/volunteers", label: { en: "Volunteer Response", am: "በጎ ፈቃድ" } },
-  { path: "/admin", label: { en: "Command Center", am: "ቁጥጥር ማዕከል" } },
-  { path: "/ai", label: { en: "AI Desk", am: "AI ማዕከል" }, icon: Bot },
+  { path: "/report", label: { en: "Report Missing", am: "የጠፉ ሰዎችን ያመልክቱ" } },
+  { path: "/volunteers", label: { en: "Volunteer Response", am: "የበጎ ፈቃደኞች ምላሽ" } },
+  { path: "/admin", label: { en: "Command Center", am: "Command Center" } },
+  { path: "/ai", label: { en: "Help", am: "ዕርዳታ" }, icon: Bot },
 ];
 
 const reconnectLinks = [
   {
     path: "/wanted",
-    label: { en: "Reconnect Hub", am: "የእንደገና መገናኛ ማዕከል" },
+    label: { en: "Reconnect Hub", am: "የተራራቁ ሰዎች መገንናኛ ማዕከል" },
     description: {
       en: "Browse reconnect posts",
-      am: "የመገናኛ ፖስቶችን ይመልከቱ",
+      am: "የተለጠፉ ትዝታዎችን ይመልከቱ",
     },
   },
   {
     path: "/wanted/create",
-    label: { en: "Share Memory Post", am: "የትዝታ ፖስት ያጋሩ" },
+    label: { en: "Share Memory Post", am: "የተለጠፉ ትዝታዎትን ያጋሩ" },
     description: {
       en: "Create a reconnect memory post",
-      am: "የትዝታ መገናኛ ፖስት ፍጠሩ",
+      am: "የእርሶን ትዝታ የጋሩ",
     },
   },
   {
     path: "/wanted/stories",
-    label: { en: "Success Stories", am: "የስኬት ታሪኮች" },
+    label: { en: "Success Stories", am: "የተሳኩ ታሪኮች" },
     description: {
       en: "Read successful reconnect stories",
-      am: "የተሳኩ መገናኛዎችን ያንብቡ",
+      am: "የተሳኩ ታሪኮችን ያንብቡ",
     },
   },
   {
     path: "/wanted/stories/share",
-    label: { en: "Share Success Story", am: "የስኬት ታሪክ አጋሩ" },
+    label: { en: "Share Success Story", am: "የተሳኩ ታሪኮችን ያጋሩ" },
     description: {
       en: "Publish a completed reconnect story",
-      am: "የተጠናቀቀ መገናኛ ታሪክ ያትሙ",
+      am: "የተሳኩሎትን ታሮኮች ለሌሎች ያጋሩ",
     },
   },
 ];
@@ -174,7 +174,7 @@ export const MainHeader = () => {
                   }`}
                 >
                   <span>
-                    {language === "am" ? "እንደገና መገናኘት" : "Reconnect"}
+                    {language === "am" ? "እንደገና ለመገናኘት" : "Reconnect"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -197,11 +197,11 @@ export const MainHeader = () => {
                           <div className="font-medium text-charcoal">
                             {language === "am" ? link.label.am : link.label.en}
                           </div>
-                          <div className="mt-1 text-xs leading-5 text-stone-500">
+                          {/* <div className="mt-1 text-xs leading-5 text-stone-500">
                             {language === "am"
                               ? link.description.am
                               : link.description.en}
-                          </div>
+                          </div> */}
                         </Link>
                       ))}
                     </motion.div>
