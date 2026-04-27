@@ -1,4 +1,4 @@
-﻿import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { Toaster } from "sonner";
@@ -7,9 +7,10 @@ import { LanguageProvider } from "../lib/i18n";
 import { AuthProvider } from "./providers/AuthProvider";
 import { MainHeader } from "../components/layout/MainHeader";
 import { MainFooter } from "../components/layout/MainFooter";
-import { BrowsePage } from "../features/wanted/components/browse/BrowsePage";
 import { useOfflineSync } from "../features/wanted/hooks/useOfflineSync";
+import { GlobalAIAssistant } from "../components/ai/GlobalAIAssistant";
 import { Router } from "./Router";
+
 function App() {
   useOfflineSync();
 
@@ -25,6 +26,7 @@ function App() {
               </main>
               <MainFooter />
             </div>
+            {/* <GlobalAIAssistant /> */}
             <Toaster
               position="top-center"
               toastOptions={{

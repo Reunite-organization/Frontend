@@ -11,9 +11,13 @@ const normalizeConfiguredApiUrl = (value) => {
 
 const stripApiSuffix = (value) => value.replace(/\/api(\/)?$/i, '');
 
-const configuredApiUrl = normalizeConfiguredApiUrl(import.meta.env.VITE_API_URL);
-export const apiBaseUrl = configuredApiUrl;
-export const socketServerUrl = stripApiSuffix(configuredApiUrl) || undefined;
+const rawApiUrl = import.meta.env.VITE_API_URL;
+const configuredApiUrl = normalizeConfiguredApiUrl(rawApiUrl);
+
+// In development, we use the proxy (empty base URL)
+// In production, we use the configured API URL
+export const apiBaseUrl = import.meta.env.DEV ? '' : configuredApiUrl;
+export const socketServerUrl = import.meta.env.DEV ? undefined : stripApiSuffix(configuredApiUrl);
 
 export default {
   apiBaseUrl,

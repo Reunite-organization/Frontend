@@ -1,90 +1,118 @@
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Heart,
-  Search,
-  PenTool,
-  User,
-  MessageCircle,
-  Globe,
-  Menu,
-  X,
+  Bot,
   ChevronDown,
-  LogOut,
-  Settings,
-  HelpCircle,
-  Shield,
-  Users,
-  Sparkles,
+  Globe,
+  Heart,
   Inbox,
+  LogOut,
+  Menu,
+  MessageCircle,
+  Shield,
+  User,
+  Users,
+  X,
 } from "lucide-react";
 import { useLanguage } from "../../lib/i18n";
 import { useAuth } from "../../hooks/useAuth";
-import { TrustBadge } from "../../features/wanted/components/profile/TrustBadge";
 import { wantedApi } from "../../features/wanted/services/wantedApi";
+import { TrustBadge } from "../../features/wanted/components/profile/TrustBadge";
+import { isAdminRole } from "../../lib/authRoles";
+
+const primaryLinks = [
+  { path: "/cases", label: { en: "Cases", am: "ኬሶች" } },
+  { path: "/report", label: { en: "Report Missing", am: "ጠፋ ሪፖርት" } },
+  { path: "/volunteers", label: { en: "Volunteer Response", am: "በጎ ፈቃድ" } },
+  { path: "/admin", label: { en: "Command Center", am: "ቁጥጥር ማዕከል" } },
+  { path: "/ai", label: { en: "AI Desk", am: "AI ማዕከል" }, icon: Bot },
+];
+
+const reconnectLinks = [
+  {
+    path: "/wanted",
+    label: { en: "Reconnect Hub", am: "የእንደገና መገናኛ ማዕከል" },
+    description: {
+      en: "Browse reconnect posts",
+      am: "የመገናኛ ፖስቶችን ይመልከቱ",
+    },
+  },
+  {
+    path: "/wanted/create",
+    label: { en: "Share Memory Post", am: "የትዝታ ፖስት ያጋሩ" },
+    description: {
+      en: "Create a reconnect memory post",
+      am: "የትዝታ መገናኛ ፖስት ፍጠሩ",
+    },
+  },
+  {
+    path: "/wanted/stories",
+    label: { en: "Success Stories", am: "የስኬት ታሪኮች" },
+    description: {
+      en: "Read successful reconnect stories",
+      am: "የተሳኩ መገናኛዎችን ያንብቡ",
+    },
+  },
+  {
+    path: "/wanted/stories/share",
+    label: { en: "Share Success Story", am: "የስኬት ታሪክ አጋሩ" },
+    description: {
+      en: "Publish a completed reconnect story",
+      am: "የተጠናቀቀ መገናኛ ታሪክ ያትሙ",
+    },
+  },
+];
 
 export const MainHeader = () => {
   const { language, setLanguage } = useLanguage();
   const { user, profile, isAuthenticated, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  const isAdmin = localStorage.getItem("isAdmin") === "true";
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isLangMenuOpen, setIsLangMenuOpen] = useState(false);
-
+  const [isReconnectMenuOpen, setIsReconnectMenuOpen] = useState(false);
   const [pendingClaimsCount, setPendingClaimsCount] = useState(0);
+  const canAccessAdmin = isAdminRole(user?.role);
+  const visiblePrimaryLinks = primaryLinks.filter(
+    (link) => link.path !== "/admin" || canAccessAdmin,
+  );
+
+  const isReconnectActive = useMemo(
+    () => location.pathname.startsWith("/wanted"),
+    [location.pathname],
+  );
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
+    const onScroll = () => setIsScrolled(window.scrollY > 12);
+    window.addEventListener("scroll", onScroll);
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   useEffect(() => {
-    if (isAuthenticated && profile) {
-      const fetchPendingCount = async () => {
-        try {
-          const response = await wantedApi.getPendingClaims();
-          setPendingClaimsCount(response?.length || 0);
-        } catch (error) {
-          console.error("Failed to fetch pending claims:", error);
-        }
-      };
-
-      fetchPendingCount();
-
-      // Refresh every 30 seconds
-      const interval = setInterval(fetchPendingCount, 30000);
-      return () => clearInterval(interval);
+    if (!isAuthenticated || !profile) {
+      setPendingClaimsCount(0);
+      return;
     }
+
+    const loadClaims = async () => {
+      try {
+        const claims = await wantedApi.getPendingClaims();
+        setPendingClaimsCount(claims?.length || 0);
+      } catch (error) {
+        setPendingClaimsCount(0);
+      }
+    };
+
+    loadClaims();
+    const interval = window.setInterval(loadClaims, 30000);
+    return () => window.clearInterval(interval);
   }, [isAuthenticated, profile]);
 
-  const navLinks = [
-    {
-      path: "/wanted",
-      label: { en: "Reconnect", am: "" },
-      icon: Search,
-      description: { en: "", am: "" },
-    },
-    {
-      path: "/",
-      label: { en: "Post", am: "ሰዉን ፋሊግ" },
-      icon: PenTool,
-      description: { en: "Start a search", am: "ፍለጋ ጀምር" },
-    },
-    {
-      path: "/wanted",
-      label: { en: "Reconnect", am: "እንደገና መገናኘት" },
-      icon: PenTool,
-      description: { en: "Reconnecting people through memory", am: "ከሰዎች ጋራ መገናኛት" },
-    },
-  ];
-
   const isActive = (path) =>
-    location.pathname === path || location.pathname.startsWith(path + "/");
+    location.pathname === path || location.pathname.startsWith(`${path}/`);
 
   const handleLogout = async () => {
     await logout();
@@ -95,263 +123,265 @@ export const MainHeader = () => {
   return (
     <>
       <header
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+        className={`fixed left-0 right-0 top-0 z-50 transition-all duration-300 ${
           isScrolled
-            ? "bg-warm-white/95 backdrop-blur-xl shadow-sm border-b border-warm-gray/20"
+            ? "border-b border-stone-200 bg-white/95 shadow-sm backdrop-blur-xl"
             : "bg-transparent"
         }`}
       >
-        <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16 md:h-20">
-            {/* Logo */}
-            <Link to="/" className="flex items-center gap-2 group">
+        <nav className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="flex h-16 items-center justify-between md:h-20">
+            <Link to="/" className="flex items-center gap-3">
               <div className="relative">
-                <Heart className="w-8 h-8 text-terracotta group-hover:scale-110 transition-transform" />
-                <motion.div
-                  animate={{ scale: [1, 1.2, 1] }}
-                  transition={{ duration: 2, repeat: Infinity }}
-                  className="absolute -top-1 -right-1 w-3 h-3 bg-hope-green rounded-full border-2 border-warm-white"
-                />
+                <span className="absolute -right-1 -top-1 h-3 w-3 rounded-full bg-hope-green ring-2 ring-white" />
               </div>
-              <div className="flex flex-col">
-                <span className="font-display text-xl md:text-2xl font-bold text-charcoal leading-tight">
+              <div>
+                <div className="font-display text-xl font-bold text-charcoal md:text-2xl">
                   Reunite
-                </span>
+                </div>
+                <div className="hidden text-xs text-stone-500 md:block">
+                  Missing-person response first
+                </div>
               </div>
             </Link>
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center gap-1">
-              {navLinks.map((link) => {
-                const Icon = link.icon;
-                const active = isActive(link.path);
 
-                return (
-                  <Link
-                    key={link.path}
-                    to={link.path}
-                    className={`relative px-4 py-2 rounded-full transition-all group ${
-                      active
-                        ? "text-terracotta bg-terracotta/5"
-                        : "text-charcoal hover:text-terracotta hover:bg-cream"
-                    }`}
-                  >
-                    <div className="flex items-center gap-2">
-                      <Icon
-                        className={`w-4 h-4 ${active ? "text-terracotta" : "text-stone group-hover:text-terracotta"}`}
-                      />
-                      <span className="font-medium">
-                        {language === "am" ? link.label.am : link.label.en}
-                      </span>
-                    </div>
+            <div className="hidden items-center gap-2 md:flex">
+              {visiblePrimaryLinks.map((link) => (
+                <Link
+                  key={link.path}
+                  to={link.path}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition ${
+                    isActive(link.path)
+                      ? "bg-terracotta/10 text-terracotta"
+                      : "text-stone-700 hover:bg-stone-100 hover:text-charcoal"
+                  }`}
+                >
+                  <span className="inline-flex items-center gap-2">
+                    {link.icon ? <link.icon className="h-4 w-4" /> : null}
+                    {language === "am" ? link.label.am : link.label.en}
+                  </span>
+                </Link>
+              ))}
 
-                    {active && (
-                      <motion.div
-                        layoutId="activeNav"
-                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-terracotta rounded-full"
-                      />
-                    )}
-                  </Link>
-                );
-              })}
-            </div>
-
-            {/* admin section */}
-
-            {isAdmin && (
-              <Link
-                to="/admin"
-                className="flex items-center gap-2 px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm hover:bg-indigo-700"
-              >
-                <Shield className="w-4 h-4" />
-                <span>Admin</span>
-              </Link>
-            )}
-            {/* Right Actions */}
-            <div className="flex items-center gap-2">
-              {/* Language Switcher */}
               <div className="relative">
                 <button
-                  onClick={() => setIsLangMenuOpen(!isLangMenuOpen)}
-                  className="p-2 text-stone hover:text-charcoal rounded-full hover:bg-cream transition-colors flex items-center gap-1"
+                  type="button"
+                  onClick={() => setIsReconnectMenuOpen((current) => !current)}
+                  className={`inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-medium transition ${
+                    isReconnectActive
+                      ? "bg-terracotta/10 text-terracotta"
+                      : "text-stone-700 hover:bg-stone-100 hover:text-charcoal"
+                  }`}
                 >
-                  <Globe className="w-5 h-5" />
-                  <span className="text-sm font-medium hidden sm:block">
-                    {language === "en" ? "EN" : "አማ"}
+                  <span>
+                    {language === "am" ? "እንደገና መገናኘት" : "Reconnect"}
                   </span>
+                  <ChevronDown className="h-4 w-4" />
                 </button>
 
                 <AnimatePresence>
-                  {isLangMenuOpen && (
+                  {isReconnectMenuOpen ? (
                     <motion.div
-                      initial={{ opacity: 0, y: -10 }}
+                      initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-warm-gray overflow-hidden"
+                      exit={{ opacity: 0, y: 8 }}
+                      className="absolute right-0 mt-3 w-80 rounded-3xl border border-stone-200 bg-white p-3 shadow-xl"
+                    >
+                      {reconnectLinks.map((link) => (
+                        <Link
+                          key={link.path}
+                          to={link.path}
+                          onClick={() => setIsReconnectMenuOpen(false)}
+                          className="block rounded-2xl px-4 py-3 transition hover:bg-stone-50"
+                        >
+                          <div className="font-medium text-charcoal">
+                            {language === "am" ? link.label.am : link.label.en}
+                          </div>
+                          <div className="mt-1 text-xs leading-5 text-stone-500">
+                            {language === "am"
+                              ? link.description.am
+                              : link.description.en}
+                          </div>
+                        </Link>
+                      ))}
+                    </motion.div>
+                  ) : null}
+                </AnimatePresence>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <div className="relative hidden sm:block">
+                <button
+                  type="button"
+                  onClick={() => setIsLangMenuOpen((current) => !current)}
+                  className="inline-flex items-center gap-2 rounded-full px-3 py-2 text-sm text-stone-600 transition hover:bg-stone-100 hover:text-charcoal"
+                >
+                  <Globe className="h-4 w-4" />
+                  <span>{language === "am" ? "አማ" : "EN"}</span>
+                </button>
+
+                <AnimatePresence>
+                  {isLangMenuOpen ? (
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 8 }}
+                      className="absolute right-0 mt-3 w-36 rounded-2xl border border-stone-200 bg-white p-2 shadow-xl"
                     >
                       {[
-                        { code: "en", label: "English", flag: "🇺🇸" },
-                        { code: "am", label: "አማርኛ", flag: "🇪🇹" },
-                      ].map((lang) => (
+                        { code: "en", label: "English" },
+                        { code: "am", label: "አማርኛ" },
+                      ].map((item) => (
                         <button
-                          key={lang.code}
+                          key={item.code}
+                          type="button"
                           onClick={() => {
-                            setLanguage(lang.code);
+                            setLanguage(item.code);
                             setIsLangMenuOpen(false);
                           }}
-                          className={`w-full px-4 py-3 text-left hover:bg-cream transition-colors flex items-center gap-3 ${
-                            language === lang.code
-                              ? "text-terracotta font-medium bg-terracotta/5"
-                              : "text-charcoal"
+                          className={`block w-full rounded-xl px-3 py-2 text-left text-sm transition ${
+                            language === item.code
+                              ? "bg-terracotta/10 text-terracotta"
+                              : "text-stone-700 hover:bg-stone-50"
                           }`}
                         >
-                          <span className="text-lg">{lang.flag}</span>
-                          <span>{lang.label}</span>
-                          {language === lang.code && (
-                            <span className="ml-auto">✓</span>
-                          )}
+                          {item.label}
                         </button>
                       ))}
                     </motion.div>
-                  )}
+                  ) : null}
                 </AnimatePresence>
               </div>
 
-              {/* Auth Actions */}
-              {isAuthenticated && profile ? (
+              {isAuthenticated ? (
                 <>
-                  {/* ✅ Claims Link with Badge */}
                   <Link
                     to="/wanted/claims"
-                    className="relative p-2 text-stone hover:text-charcoal rounded-full hover:bg-cream transition-colors"
+                    className="relative rounded-full p-2 text-stone-600 transition hover:bg-stone-100 hover:text-charcoal"
+                    aria-label="Claims"
                   >
-                    <Inbox className="w-5 h-5" />
-                    {pendingClaimsCount > 0 && (
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-terracotta text-white text-xs font-medium rounded-full flex items-center justify-center">
+                    <Inbox className="h-5 w-5" />
+                    {pendingClaimsCount > 0 ? (
+                      <span className="absolute -right-0.5 -top-0.5 flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-terracotta px-1 text-[11px] font-semibold text-white">
                         {pendingClaimsCount > 9 ? "9+" : pendingClaimsCount}
                       </span>
-                    )}
+                    ) : null}
                   </Link>
 
-                  {/* Messages */}
                   <Link
                     to="/wanted/chat"
-                    className="relative p-2 text-stone hover:text-charcoal rounded-full hover:bg-cream transition-colors"
+                    className="rounded-full p-2 text-stone-600 transition hover:bg-stone-100 hover:text-charcoal"
+                    aria-label="Reconnect chat"
                   >
-                    <MessageCircle className="w-5 h-5" />
+                    <MessageCircle className="h-5 w-5" />
                   </Link>
 
-                  {/* Profile Menu */}
-                  <div className="relative">
+                  <div className="relative hidden sm:block">
                     <button
-                      onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                      className="flex items-center gap-2 p-1.5 rounded-full hover:bg-cream transition-colors"
+                      type="button"
+                      onClick={() => setIsProfileMenuOpen((current) => !current)}
+                      className="inline-flex items-center gap-2 rounded-full p-1.5 transition hover:bg-stone-100"
                     >
-                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-terracotta to-sahara flex items-center justify-center text-white font-medium shadow-sm overflow-hidden">
-                        {profile.avatarUrl ? (
-                          <img src={profile.avatarUrl} alt={profile.realName} className="w-full h-full object-cover" />
-                        ) : (
-                          profile.realName?.[0]?.toUpperCase() ||
+                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-terracotta to-sahara text-sm font-semibold text-white">
+                        {profile?.realName?.[0]?.toUpperCase() ||
+                          user?.name?.[0]?.toUpperCase() ||
                           user?.email?.[0]?.toUpperCase() ||
-                          "?"
-                        )}
+                          "R"}
                       </div>
-                      <ChevronDown
-                        className={`w-4 h-4 text-stone transition-transform ${isProfileMenuOpen ? "rotate-180" : ""}`}
-                      />
+                      <ChevronDown className="h-4 w-4 text-stone-500" />
                     </button>
 
                     <AnimatePresence>
-                      {isProfileMenuOpen && (
+                      {isProfileMenuOpen ? (
                         <motion.div
-                          initial={{ opacity: 0, y: -10 }}
+                          initial={{ opacity: 0, y: 8 }}
                           animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0, y: -10 }}
-                          className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-lg border border-warm-gray overflow-hidden"
+                          exit={{ opacity: 0, y: 8 }}
+                          className="absolute right-0 mt-3 w-72 rounded-3xl border border-stone-200 bg-white p-3 shadow-xl"
                         >
-                          <div className="p-4 border-b border-warm-gray/30">
-                            <p className="font-medium text-charcoal">
-                              {profile.realName}
+                          <div className="rounded-2xl bg-stone-50 p-4">
+                            <p className="font-semibold text-charcoal">
+                              {profile?.realName || user?.name || "Reunite user"}
                             </p>
-                            <p className="text-sm text-stone">{user?.email}</p>
-                            <div className="mt-2">
-                              <TrustBadge
-                                score={profile.trustScore}
-                                size="sm"
-                              />
-                            </div>
+                            <p className="mt-1 text-sm text-stone-500">
+                              {user?.email || user?.phone || "Authenticated"}
+                            </p>
+                            {profile?.trustScore ? (
+                              <div className="mt-3">
+                                <TrustBadge score={profile.trustScore} size="sm" />
+                              </div>
+                            ) : null}
                           </div>
 
-                          <div className="py-2">
+                          <div className="mt-3 space-y-1">
                             <Link
                               to="/wanted/profile"
                               onClick={() => setIsProfileMenuOpen(false)}
-                              className="w-full px-4 py-2.5 text-left hover:bg-cream transition-colors flex items-center gap-3 text-sm"
+                              className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-stone-700 transition hover:bg-stone-50"
                             >
-                              <User className="w-4 h-4 text-stone" />
-                              <span>
-                                {language === "am" ? "መገለጫ" : "Profile"}
-                              </span>
+                              <User className="h-4 w-4" />
+                              Profile
                             </Link>
-
                             <Link
-                              to="/wanted/claims"
+                              to="/volunteers"
                               onClick={() => setIsProfileMenuOpen(false)}
-                              className="w-full px-4 py-2.5 text-left hover:bg-cream transition-colors flex items-center gap-3 text-sm"
+                              className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-stone-700 transition hover:bg-stone-50"
                             >
-                              <Inbox className="w-4 h-4 text-stone" />
-                              <span>
-                                {language === "am" ? "ጥያቄዎች" : "Claims"}
-                              </span>
-                              {pendingClaimsCount > 0 && (
-                                <span className="ml-auto bg-terracotta text-white text-xs px-2 py-0.5 rounded-full">
-                                  {pendingClaimsCount}
-                                </span>
-                              )}
+                              <Users className="h-4 w-4" />
+                              Volunteer response
                             </Link>
-                          </div>
-
-                          <div className="border-t border-warm-gray/30 py-2">
+                            {canAccessAdmin ? (
+                              <Link
+                                to="/admin"
+                                onClick={() => setIsProfileMenuOpen(false)}
+                                className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-stone-700 transition hover:bg-stone-50"
+                              >
+                                <Shield className="h-4 w-4" />
+                                Command Center
+                              </Link>
+                            ) : null}
                             <button
+                              type="button"
                               onClick={handleLogout}
-                              className="w-full px-4 py-2.5 text-left hover:bg-error/10 transition-colors flex items-center gap-3 text-sm text-error"
+                              className="flex w-full items-center gap-3 rounded-2xl px-4 py-3 text-left text-sm text-red-600 transition hover:bg-red-50"
                             >
-                              <LogOut className="w-4 h-4" />
-                              <span>
-                                {language === "am" ? "ውጣ" : "Sign Out"}
-                              </span>
+                              <LogOut className="h-4 w-4" />
+                              Sign out
                             </button>
                           </div>
                         </motion.div>
-                      )}
+                      ) : null}
                     </AnimatePresence>
                   </div>
                 </>
               ) : (
-                <div className="flex items-center gap-2">
+                <div className="hidden items-center gap-2 sm:flex">
                   <Link
                     to="/auth/login"
-                    className="hidden sm:block px-4 py-2 text-olive hover:text-terracotta font-medium transition-colors"
+                    className="rounded-full px-4 py-2 text-sm font-medium text-stone-700 transition hover:bg-stone-100 hover:text-charcoal"
                   >
-                    {language === "am" ? "ግባ" : "Sign In"}
+                    Sign in
                   </Link>
                   <Link
                     to="/auth/register"
-                    className="px-5 py-2.5 bg-terracotta text-white rounded-full font-medium hover:bg-clay transition-all shadow-sm hover:shadow-md"
+                    className="rounded-full bg-terracotta px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-clay"
                   >
-                    {language === "am" ? "ተመዝገብ" : "Join Orginization"}
+                    Join Reunite
                   </Link>
                 </div>
               )}
 
-              {/* Mobile Menu Button */}
               <button
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="md:hidden p-2 text-charcoal rounded-full hover:bg-cream transition-colors"
+                type="button"
+                onClick={() => setIsMobileMenuOpen((current) => !current)}
+                className="rounded-full p-2 text-charcoal transition hover:bg-stone-100 md:hidden"
+                aria-label="Toggle menu"
               >
                 {isMobileMenuOpen ? (
-                  <X className="w-6 h-6" />
+                  <X className="h-6 w-6" />
                 ) : (
-                  <Menu className="w-6 h-6" />
+                  <Menu className="h-6 w-6" />
                 )}
               </button>
             </div>
@@ -359,114 +389,127 @@ export const MainHeader = () => {
         </nav>
       </header>
 
-      {/* Mobile Menu */}
       <AnimatePresence>
-        {isMobileMenuOpen && (
+        {isMobileMenuOpen ? (
           <motion.div
             initial={{ opacity: 0, x: "100%" }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: "100%" }}
-            transition={{ type: "spring", damping: 30 }}
             className="fixed inset-0 z-40 md:hidden"
           >
             <div
-              className="absolute inset-0 bg-black/50"
+              className="absolute inset-0 bg-black/40"
               onClick={() => setIsMobileMenuOpen(false)}
             />
-
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              className="absolute right-0 top-0 bottom-0 w-80 bg-warm-white shadow-xl"
-            >
-              <div className="p-6">
-                <div className="flex items-center justify-between mb-8">
-                  <button
+            <div className="absolute right-0 top-0 h-full w-[20rem] overflow-y-auto bg-white px-5 py-6 shadow-2xl">
+              <div className="space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
+                  Missing-person operations
+                </p>
+                {visiblePrimaryLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 text-stone hover:text-charcoal"
-                  ></button>
-                </div>
+                    className={`block rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                      isActive(link.path)
+                        ? "bg-terracotta/10 text-terracotta"
+                        : "text-stone-700 hover:bg-stone-50"
+                    }`}
+                  >
+                    {language === "am" ? link.label.am : link.label.en}
+                  </Link>
+                ))}
+              </div>
 
-                <nav className="space-y-2">
-                  {navLinks.map((link) => {
-                    const Icon = link.icon;
-                    const active = isActive(link.path);
+              <div className="mt-6 space-y-2">
+                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-stone-500">
+                  Reconnect
+                </p>
+                {reconnectLinks.map((link) => (
+                  <Link
+                    key={link.path}
+                    to={link.path}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className={`block rounded-2xl px-4 py-3 text-sm font-medium transition ${
+                      isActive(link.path)
+                        ? "bg-terracotta/10 text-terracotta"
+                        : "text-stone-700 hover:bg-stone-50"
+                    }`}
+                  >
+                    {language === "am" ? link.label.am : link.label.en}
+                  </Link>
+                ))}
+              </div>
 
-                    return (
-                      <Link
-                        key={link.path}
-                        to={link.path}
-                        onClick={() => setIsMobileMenuOpen(false)}
-                        className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                          active
-                            ? "bg-terracotta/10 text-terracotta"
-                            : "hover:bg-cream text-charcoal"
+              <div className="mt-6 rounded-3xl border border-stone-200 p-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-charcoal">
+                    Language
+                  </span>
+                  <div className="flex gap-2">
+                    {[
+                      { code: "en", label: "EN" },
+                      { code: "am", label: "አማ" },
+                    ].map((item) => (
+                      <button
+                        key={item.code}
+                        type="button"
+                        onClick={() => setLanguage(item.code)}
+                        className={`rounded-full px-3 py-1.5 text-xs font-semibold ${
+                          language === item.code
+                            ? "bg-terracotta text-white"
+                            : "bg-stone-100 text-stone-600"
                         }`}
                       >
-                        <Icon className="w-5 h-5" />
-                        <div>
-                          <p className="font-medium">
-                            {language === "am" ? link.label.am : link.label.en}
-                          </p>
-                          <p className="text-xs text-stone">
-                            {language === "am"
-                              ? link.description.am
-                              : link.description.en}
-                          </p>
-                        </div>
-                      </Link>
-                    );
-                  })}
-
-                  {isAuthenticated && (
-                    <Link
-                      to="/wanted/claims"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-cream text-charcoal"
-                    >
-                      <Inbox className="w-5 h-5" />
-                      <div className="flex-1">
-                        <p className="font-medium">
-                          {language === "am" ? "ጥያቄዎች" : "Claims"}
-                        </p>
-                      </div>
-                      {pendingClaimsCount > 0 && (
-                        <span className="bg-terracotta text-white text-xs px-2 py-0.5 rounded-full">
-                          {pendingClaimsCount}
-                        </span>
-                      )}
-                    </Link>
-                  )}
-                </nav>
-
-                {!isAuthenticated && (
-                  <div className="mt-8 p-4 bg-cream rounded-xl">
-                    <p className="text-sm text-charcoal mb-3">
-                      {language === "am"
-                        ? "ለመጀመር ይቀላቀሉ"
-                        : "Join to start reconnecting"}
-                    </p>
-                    <Link
-                      to="/auth/register"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block w-full py-3 bg-terracotta text-white rounded-full font-medium text-center"
-                    >
-                      {language === "am" ? "ተመዝገብ" : "Sign Up Free"}
-                    </Link>
-                    <Link
-                      to="/auth/login"
-                      onClick={() => setIsMobileMenuOpen(false)}
-                      className="block w-full py-3 text-olive font-medium text-center mt-2"
-                    >
-                      {language === "am" ? "ግባ" : "Sign In"}
-                    </Link>
+                        {item.label}
+                      </button>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
-            </motion.div>
+
+              {isAuthenticated ? (
+                <div className="mt-6 space-y-2">
+                  <Link
+                    to="/wanted/profile"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block rounded-2xl px-4 py-3 text-sm font-medium text-stone-700 transition hover:bg-stone-50"
+                  >
+                    Profile
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      setIsMobileMenuOpen(false);
+                      await handleLogout();
+                    }}
+                    className="block w-full rounded-2xl px-4 py-3 text-left text-sm font-medium text-red-600 transition hover:bg-red-50"
+                  >
+                    Sign out
+                  </button>
+                </div>
+              ) : (
+                <div className="mt-6 space-y-2">
+                  <Link
+                    to="/auth/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block rounded-2xl border border-stone-200 px-4 py-3 text-center text-sm font-medium text-stone-700"
+                  >
+                    Sign in
+                  </Link>
+                  <Link
+                    to="/auth/register"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block rounded-2xl bg-terracotta px-4 py-3 text-center text-sm font-semibold text-white"
+                  >
+                    Join Reunite
+                  </Link>
+                </div>
+              )}
+            </div>
           </motion.div>
-        )}
+        ) : null}
       </AnimatePresence>
 
       <div className="h-16 md:h-20" />

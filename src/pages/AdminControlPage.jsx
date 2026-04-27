@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
-import { RefreshCw, Send, Sparkles } from "lucide-react";
+import { CheckCircle2, RefreshCw, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import api from "../services/api";
 import { caseService } from "../services/caseService";
 import integrationService from "../services/integrationService";
 import { formatRelativeTime, getCaseAddress } from "../lib/caseFormatting";
+import { wantedApi } from "../features/wanted/services/wantedApi";
 
 const defaultBroadcast = {
   platform: "all",
@@ -25,9 +26,11 @@ export const AdminControlPage = () => {
   const [predictionPreview, setPredictionPreview] = useState(null);
   const [broadcastForm, setBroadcastForm] = useState(defaultBroadcast);
   const [scrapeUrl, setScrapeUrl] = useState("");
+  const [wantedPosts, setWantedPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [broadcasting, setBroadcasting] = useState(false);
   const [runningScrape, setRunningScrape] = useState(false);
+  const [updatingWantedPostId, setUpdatingWantedPostId] = useState(null);
 
   const integrationCards = useMemo(
     () => [
@@ -56,7 +59,7 @@ export const AdminControlPage = () => {
   const loadDashboard = async () => {
     setLoading(true);
     try {
-      const [statsRes, analyticsRes, casesRes, languagesRes, monitoringRes, schoolRes, broadcastRes, scraperRes] =
+      const [statsRes, analyticsRes, casesRes, languagesRes, monitoringRes, schoolRes, broadcastRes, scraperRes, wantedPostsRes] =
         await Promise.allSettled([
           api.get("/dashboard/stats"),
           api.get("/dashboard/analytics", { params: { range: "24h" } }),
@@ -66,6 +69,7 @@ export const AdminControlPage = () => {
           integrationService.getSchoolNetworkStats(),
           api.get("/broadcast/stats"),
           api.get("/scrape/status"),
+          wantedApi.getPosts({ limit: 6 }),
         ]);
 
       const casesData =
@@ -93,6 +97,9 @@ export const AdminControlPage = () => {
       setScraperStatus(
         scraperRes.status === "fulfilled" ? scraperRes.value.data.data : null,
       );
+      setWantedPosts(
+        wantedPostsRes.status === "fulfilled" ? wantedPostsRes.value.data || [] : [],
+      );
 
       if (casesData.length > 0) {
         try {
@@ -100,7 +107,7 @@ export const AdminControlPage = () => {
             casesData[0],
           );
           setPredictionPreview(prediction.data || null);
-        } catch (error) {
+        } catch {
           setPredictionPreview(null);
         }
       }
@@ -110,7 +117,11 @@ export const AdminControlPage = () => {
   };
 
   useEffect(() => {
-    loadDashboard();
+    const bootstrap = async () => {
+      await loadDashboard();
+    };
+
+    bootstrap();
   }, []);
 
   const handleBroadcast = async (event) => {
@@ -129,7 +140,7 @@ export const AdminControlPage = () => {
       toast.success("Broadcast sent.");
       setBroadcastForm(defaultBroadcast);
       await loadDashboard();
-    } catch (error) {
+    } catch {
       toast.error("Unable to send broadcast.");
     } finally {
       setBroadcasting(false);
@@ -143,7 +154,7 @@ export const AdminControlPage = () => {
       const created = response.data?.data?.casesCreated ?? 0;
       toast.success(`Scrape finished. ${created} case(s) created.`);
       await loadDashboard();
-    } catch (error) {
+    } catch {
       toast.error("Unable to run the scraper.");
     } finally {
       setRunningScrape(false);
@@ -163,10 +174,25 @@ export const AdminControlPage = () => {
       toast.success("URL sent to the scraper.");
       setScrapeUrl("");
       await loadDashboard();
-    } catch (error) {
+    } catch {
       toast.error("Unable to scrape that URL.");
     } finally {
       setRunningScrape(false);
+    }
+  };
+
+  const handleMarkWantedReconnected = async (postId) => {
+    setUpdatingWantedPostId(postId);
+    try {
+      await wantedApi.markReconnected(postId);
+      toast.success("Reconnect post marked as reconnected.");
+      await loadDashboard();
+    } catch (error) {
+      toast.error(
+        error.response?.data?.message || "Unable to close that reconnect post.",
+      );
+    } finally {
+      setUpdatingWantedPostId(null);
     }
   };
 
@@ -268,6 +294,75 @@ export const AdminControlPage = () => {
                         >
                           Review
                         </a>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-stone-200 bg-white p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-semibold text-charcoal">
+                    Reconnect operations
+                  </h2>
+                  <p className="mt-1 text-sm text-stone-500">
+                    Close active reconnect posts when the people involved confirm
+                    they have found each other.
+                  </p>
+                </div>
+                <a
+                  href="/wanted"
+                  className="rounded-full border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta"
+                >
+                  Open reconnect hub
+                </a>
+              </div>
+
+              <div className="mt-5 space-y-4">
+                {wantedPosts.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-sm text-stone-500">
+                    No active reconnect posts loaded.
+                  </div>
+                ) : (
+                  wantedPosts.map((post) => (
+                    <div
+                      key={post._id}
+                      className="rounded-2xl border border-stone-200 p-4"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div className="min-w-0 flex-1">
+                          <p className="font-semibold text-charcoal">
+                            {post.personDetails?.personName || "Unknown person"}
+                          </p>
+                          <p className="mt-1 text-sm text-stone-500">
+                            {[post.city, post.country].filter(Boolean).join(", ")}
+                            {post.year ? ` • ${post.year}` : ""}
+                          </p>
+                          <p className="mt-2 line-clamp-2 text-sm text-stone-600">
+                            {post.memoryText?.en || post.memoryText?.am || ""}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <a
+                            href={`/wanted/post/${post._id}`}
+                            className="rounded-full border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta"
+                          >
+                            Review post
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => handleMarkWantedReconnected(post._id)}
+                            disabled={updatingWantedPostId === post._id}
+                            className="inline-flex items-center gap-2 rounded-full bg-success px-4 py-2 text-sm font-semibold text-white transition hover:bg-success/90 disabled:opacity-60"
+                          >
+                            <CheckCircle2 className="h-4 w-4" />
+                            {updatingWantedPostId === post._id
+                              ? "Closing..."
+                              : "Mark reconnected"}
+                          </button>
+                        </div>
                       </div>
                     </div>
                   ))

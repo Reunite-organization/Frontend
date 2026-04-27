@@ -10,6 +10,9 @@ export const getCaseCoordinates = (caseItem) =>
   caseItem?.lastSeen?.coordinates ||
   [];
 
+export const getCaseImageSource = (caseItem) =>
+  caseItem?.person?.imageUrl || caseItem?.person?.imageData || "";
+
 export const getCaseLastSeenAt = (caseItem) =>
   caseItem?.lastSeen?.timestamp || caseItem?.createdAt || null;
 
@@ -49,7 +52,7 @@ export const formatRelativeTime = (value) => {
 
   try {
     return formatDistanceToNow(new Date(value), { addSuffix: true });
-  } catch (error) {
+  } catch {
     return "Unknown";
   }
 };
@@ -59,15 +62,19 @@ export const formatDateTime = (value) => {
 
   try {
     return new Date(value).toLocaleString();
-  } catch (error) {
+  } catch {
     return "Unknown";
   }
 };
 
 export const buildGoogleMapsUrl = (coordinates, fallbackAddress = "") => {
   if (Array.isArray(coordinates) && coordinates.length === 2) {
-    const [lng, lat] = coordinates;
-    if (Number.isFinite(lat) && Number.isFinite(lng)) {
+    const [rawLng, rawLat] = coordinates;
+    const lng = Number(rawLng);
+    const lat = Number(rawLat);
+    const isDefaultZero = lng === 0 && lat === 0;
+
+    if (Number.isFinite(lat) && Number.isFinite(lng) && !isDefaultZero) {
       return `https://www.google.com/maps?q=${lat},${lng}`;
     }
   }

@@ -18,9 +18,16 @@ const instance = axios.create({
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("auth-token");
+    const volunteerDeviceId =
+      localStorage.getItem("reunite-volunteer-device-id") ||
+      localStorage.getItem("deviceId");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
+    }
+
+    if (volunteerDeviceId) {
+      config.headers["x-device-id"] = volunteerDeviceId;
     }
 
     if (typeof FormData !== "undefined" && config.data instanceof FormData) {

@@ -3,6 +3,8 @@ import { Bot, Loader2, Search, ShieldCheck, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import { aiService } from "../services/api";
 import { useLanguage } from "../lib/i18n";
+import { useAuth } from "../hooks/useAuth";
+import { isAdminRole } from "../lib/authRoles";
 
 const readFileAsBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -17,6 +19,7 @@ const readFileAsBase64 = (file) =>
 
 export const AIDeskPage = () => {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const [assistantInput, setAssistantInput] = useState("");
   const [assistantMessages, setAssistantMessages] = useState([
     {
@@ -34,6 +37,7 @@ export const AIDeskPage = () => {
   const [verifyFiles, setVerifyFiles] = useState({ file1: null, file2: null });
   const [verifyResult, setVerifyResult] = useState(null);
   const [verifyLoading, setVerifyLoading] = useState(false);
+  const canVerifyFaces = isAdminRole(user?.role);
 
   const handleAssistant = async () => {
     const message = assistantInput.trim();
@@ -63,7 +67,7 @@ export const AIDeskPage = () => {
             "The assistant did not return structured guidance.",
         },
       ]);
-    } catch (error) {
+    } catch {
       toast.error("AI assistant request failed.");
     } finally {
       setAssistantLoading(false);
@@ -83,7 +87,7 @@ export const AIDeskPage = () => {
         language,
       });
       setExtractResult(response.data || response);
-    } catch (error) {
+    } catch {
       toast.error("AI extraction failed.");
     } finally {
       setExtractLoading(false);
@@ -105,7 +109,7 @@ export const AIDeskPage = () => {
 
       const response = await aiService.verifyFaces({ imageData1, imageData2 });
       setVerifyResult(response.data || response);
-    } catch (error) {
+    } catch {
       toast.error("Face verification failed.");
     } finally {
       setVerifyLoading(false);
@@ -150,6 +154,9 @@ export const AIDeskPage = () => {
                   }`}
                 >
                   {message.text}
+                  <div className="mt-2 text-[11px] opacity-70">
+                    {message.text.length} chars
+                  </div>
                 </div>
               ))}
             </div>
@@ -200,9 +207,14 @@ export const AIDeskPage = () => {
               Extract details
             </button>
             {extractResult ? (
-              <pre className="mt-4 overflow-x-auto rounded-3xl bg-stone-50 p-4 text-xs leading-6 text-stone-700">
-                {JSON.stringify(extractResult, null, 2)}
-              </pre>
+              <>
+                <p className="mt-4 text-xs text-stone-500">
+                  Characters returned: {JSON.stringify(extractResult).length}
+                </p>
+                <pre className="mt-2 overflow-x-auto rounded-3xl bg-stone-50 p-4 text-xs leading-6 text-stone-700">
+                  {JSON.stringify(extractResult, null, 2)}
+                </pre>
+              </>
             ) : null}
           </div>
         </div>
@@ -250,11 +262,21 @@ export const AIDeskPage = () => {
             <button
               type="button"
               onClick={handleVerify}
-              disabled={verifyLoading}
+              disabled={verifyLoading || !canVerifyFaces}
               className="mt-4 rounded-full bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-clay disabled:opacity-60"
             >
-              {verifyLoading ? "Verifying..." : "Run face verification"}
+              {verifyLoading
+                ? "Verifying..."
+                : canVerifyFaces
+                  ? "Run face verification"
+                  : "Admin only"}
             </button>
+
+            {!canVerifyFaces ? (
+              <p className="mt-3 text-sm text-stone-500">
+                Face verification is restricted to admin and coordinator accounts.
+              </p>
+            ) : null}
 
             {verifyResult ? (
               <pre className="mt-4 overflow-x-auto rounded-3xl bg-stone-50 p-4 text-xs leading-6 text-stone-700">

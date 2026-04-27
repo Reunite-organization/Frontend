@@ -1,10 +1,12 @@
 import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Loader2, MapPin, Sparkles, Upload } from "lucide-react";
+import { Loader2, MapPin, Mic, Sparkles, Upload } from "lucide-react";
 import { toast } from "sonner";
 import api, { aiService } from "../services/api";
 import { useLanguage } from "../lib/i18n";
 import { parseCommaSeparated } from "../lib/caseFormatting";
+import VoiceInput from "../features/report/VoiceInput";
+import { geocodeLocation } from "../services/locationService";
 
 const initialForm = {
   missingPersonName: "",
@@ -14,7 +16,6 @@ const initialForm = {
   description: "",
   lastSeenLocation: "",
   lastSeenDate: "",
-  lastSeenCoordinates: "",
   reporterName: "",
   reporterPhone: "",
   reporterRelation: "",
@@ -26,15 +27,18 @@ export const ReportCasePage = () => {
   const { language } = useLanguage();
   const [form, setForm] = useState(initialForm);
   const [photo, setPhoto] = useState(null);
+  const [voiceText, setVoiceText] = useState("");
+  const [resolvedLocation, setResolvedLocation] = useState(null);
   const [loading, setLoading] = useState(false);
   const [extracting, setExtracting] = useState(false);
+  const [resolvingLocation, setResolvingLocation] = useState(false);
   const [aiPreview, setAiPreview] = useState(null);
 
   const helperText = useMemo(
     () =>
       language === "am"
-        ? "ይህ ቅጽ በቀጥታ ወደ backend report endpoint ይላካል።"
-        : "This form posts directly into the backend missing-person report flow.",
+        ? "This report goes straight into the missing-person response workflow, with Amharic voice-to-text and location lookup."
+        : "This form posts directly into the backend missing-person report flow, with voice-to-text and address-based map lookup.",
     [language],
   );
 
@@ -45,35 +49,36 @@ export const ReportCasePage = () => {
     }));
   };
 
-  const captureCoordinates = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported in this browser.");
+  const handleResolveLocation = async () => {
+    if (!form.lastSeenLocation.trim()) {
+      toast.error("Add the reported location first.");
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        updateField(
-          "lastSeenCoordinates",
-          `${position.coords.longitude}, ${position.coords.latitude}`,
-        );
-        toast.success("Coordinates added to the report.");
-      },
-      () => toast.error("Unable to capture location."),
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
+    setResolvingLocation(true);
+    try {
+      const result = await geocodeLocation(form.lastSeenLocation);
+      setResolvedLocation(result);
+      updateField("lastSeenLocation", result.address || form.lastSeenLocation);
+      toast.success("Location found on the map.");
+    } catch {
+      toast.error("Unable to find that location yet.");
+    } finally {
+      setResolvingLocation(false);
+    }
   };
 
   const handleAiExtract = async () => {
-    if (!form.description.trim()) {
-      toast.error("Add a description first so AI can extract details.");
+    const content = voiceText || form.description;
+    if (!content.trim()) {
+      toast.error("Add a description or voice note first.");
       return;
     }
 
     setExtracting(true);
     try {
       const response = await aiService.extractInfo({
-        text: form.description,
+        text: content,
         language,
       });
 
@@ -98,7 +103,7 @@ export const ReportCasePage = () => {
       updateField("gender", extracted.gender || form.gender);
 
       toast.success("AI details extracted into the report.");
-    } catch (error) {
+    } catch {
       toast.error("AI extraction failed.");
     } finally {
       setExtracting(false);
@@ -115,10 +120,29 @@ export const ReportCasePage = () => {
 
     setLoading(true);
     try {
+      let locationForSubmit = resolvedLocation;
+
+      if (!locationForSubmit) {
+        try {
+          locationForSubmit = await geocodeLocation(form.lastSeenLocation);
+          setResolvedLocation(locationForSubmit);
+        } catch {
+          locationForSubmit = null;
+        }
+      }
+
       const payload = new FormData();
       Object.entries(form).forEach(([key, value]) => {
         payload.append(key, value);
       });
+      payload.set("description", voiceText || form.description);
+
+      if (locationForSubmit) {
+        payload.append(
+          "lastSeenCoordinates",
+          `${locationForSubmit.longitude}, ${locationForSubmit.latitude}`,
+        );
+      }
 
       if (photo) {
         payload.append("files", photo);
@@ -231,17 +255,41 @@ export const ReportCasePage = () => {
 
                 <button
                   type="button"
-                  onClick={captureCoordinates}
-                  className="inline-flex items-center gap-2 rounded-full border border-stone-200 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta"
+                  onClick={handleResolveLocation}
+                  disabled={resolvingLocation}
+                  className="inline-flex items-center gap-2 rounded-full border border-stone-200 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta disabled:opacity-60"
                 >
                   <MapPin className="h-4 w-4" />
-                  Use current coordinates
+                  {resolvingLocation ? "Finding location..." : "Find on map"}
                 </button>
+              </div>
+
+              <div className="rounded-3xl border border-stone-200 p-5">
+                <div className="flex items-center gap-2 text-sm font-semibold text-charcoal">
+                  <Mic className="h-4 w-4 text-terracotta" />
+                  Voice to text
+                </div>
+                <div className="mt-4">
+                  <VoiceInput
+                    language={language === "am" ? "am-ET" : "en-US"}
+                    onTranscript={(text) => {
+                      setVoiceText(text);
+                      if (!form.description.trim()) {
+                        updateField("description", text);
+                      }
+                    }}
+                  />
+                </div>
               </div>
 
               {aiPreview ? (
                 <div className="rounded-3xl border border-terracotta/20 bg-terracotta/5 p-5 text-sm text-stone-700">
-                  <p className="font-semibold text-charcoal">AI extraction preview</p>
+                  <p className="font-semibold text-charcoal">
+                    AI extraction preview
+                  </p>
+                  <p className="mt-2 text-xs text-stone-500">
+                    Characters returned: {JSON.stringify(aiPreview).length}
+                  </p>
                   <div className="mt-3 grid gap-2 sm:grid-cols-2">
                     <p>Name: {aiPreview.name || "Not extracted"}</p>
                     <p>Age: {aiPreview.age || "Not extracted"}</p>
@@ -256,7 +304,10 @@ export const ReportCasePage = () => {
                     </p>
                     {aiPreview.urgencyIndicators?.length ? (
                       <p className="sm:col-span-2">
-                        Urgency: {parseCommaSeparated(aiPreview.urgencyIndicators).join(", ")}
+                        Urgency:{" "}
+                        {parseCommaSeparated(aiPreview.urgencyIndicators).join(
+                          ", ",
+                        )}
                       </p>
                     ) : null}
                   </div>
@@ -267,26 +318,24 @@ export const ReportCasePage = () => {
             <div className="space-y-4">
               <input
                 value={form.lastSeenLocation}
-                onChange={(event) =>
-                  updateField("lastSeenLocation", event.target.value)
-                }
+                onChange={(event) => {
+                  setResolvedLocation(null);
+                  updateField("lastSeenLocation", event.target.value);
+                }}
                 placeholder="Last seen address or landmark"
                 className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
               />
+              {resolvedLocation ? (
+                <div className="rounded-2xl bg-stone-50 px-4 py-3 text-sm text-stone-600">
+                  Map location ready: {resolvedLocation.address}
+                </div>
+              ) : null}
               <input
                 value={form.lastSeenDate}
                 onChange={(event) =>
                   updateField("lastSeenDate", event.target.value)
                 }
                 type="datetime-local"
-                className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
-              />
-              <input
-                value={form.lastSeenCoordinates}
-                onChange={(event) =>
-                  updateField("lastSeenCoordinates", event.target.value)
-                }
-                placeholder="Longitude, Latitude"
                 className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
               />
 

@@ -2,15 +2,18 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { Search, MapPin, Clock, ArrowRight, ShieldAlert } from "lucide-react";
 import { caseService } from "../services/caseService";
+import { useAuth } from "../hooks/useAuth";
 import {
   formatDateTime,
   formatRelativeTime,
   getCaseAddress,
+  getCaseImageSource,
   getCaseLastSeenAt,
   getCaseSummary,
   getPriorityClasses,
   getStatusClasses,
 } from "../lib/caseFormatting";
+import { isAdminRole } from "../lib/authRoles";
 
 const defaultStats = {
   total: 0,
@@ -19,6 +22,7 @@ const defaultStats = {
 };
 
 export const MissingCasesPage = () => {
+  const { user } = useAuth();
   const [cases, setCases] = useState([]);
   const [stats, setStats] = useState(defaultStats);
   const [loading, setLoading] = useState(true);
@@ -39,6 +43,7 @@ export const MissingCasesPage = () => {
     () => stats.byStatus.find((item) => item._id === "active")?.highPriority || 0,
     [stats],
   );
+  const canAccessAdmin = isAdminRole(user?.role);
 
   const loadStats = async () => {
     const response = await caseService.getStats();
@@ -89,12 +94,14 @@ export const MissingCasesPage = () => {
                 >
                   Report Missing Person
                 </Link>
-                <Link
-                  to="/admin"
-                  className="rounded-full border border-stone-200 px-5 py-3 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta"
-                >
-                  Open Command Center
-                </Link>
+                {canAccessAdmin ? (
+                  <Link
+                    to="/admin"
+                    className="rounded-full border border-stone-200 px-5 py-3 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta"
+                  >
+                    Open Command Center
+                  </Link>
+                ) : null}
               </div>
             </div>
 
@@ -204,6 +211,13 @@ export const MissingCasesPage = () => {
                 className="block rounded-3xl border border-stone-200 bg-white p-6 transition hover:border-terracotta/30 hover:shadow-lg"
               >
                 <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
+                  {getCaseImageSource(caseItem) ? (
+                    <img
+                      src={getCaseImageSource(caseItem)}
+                      alt={caseItem.person?.name || "Case"}
+                      className="h-28 w-28 rounded-2xl object-cover"
+                    />
+                  ) : null}
                   <div className="space-y-4">
                     <div className="flex flex-wrap items-center gap-2">
                       <span

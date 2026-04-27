@@ -19,6 +19,7 @@ import { ForgotPasswordPage } from "../features/auth/ForgotPasswordPage";
 import { ResetPasswordPage } from "../features/auth/ResetPasswordPage";
 import { CreateProfilePage } from "../features/wanted/components/profile/CreateProfilePage";
 import { ProtectedRoute } from "./ProtectedRoute";
+import { AdminRoute } from "./RoleRoute";
 import { CreateStory } from "../features/wanted/stories/CreateStory";
 
 const LegacyCaseRedirect = () => {
@@ -37,7 +38,9 @@ export const Router = () => {
       <Route path="/report" element={<ReportCasePage />} />
       <Route path="/volunteers" element={<VolunteerOperationsPage />} />
       <Route path="/volunteer" element={<Navigate to="/volunteers" replace />} />
-      <Route path="/admin" element={<AdminControlPage />} />
+      <Route element={<AdminRoute />}>
+        <Route path="/admin" element={<AdminControlPage />} />
+      </Route>
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
       <Route path="/ai" element={<AIDeskPage />} />
 

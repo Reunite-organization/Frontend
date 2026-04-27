@@ -1,101 +1,190 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Heart,  Mail, Globe, Shield, X, Share2, Camera } from 'lucide-react';
-import { useLanguage } from '../../lib/i18n';
+import React from "react";
+import { Link } from "react-router-dom";
+import { Camera, Globe, Mail, Share2, Shield, X } from "lucide-react";
+import { useLanguage } from "../../lib/i18n";
+import { useAuth } from "../../hooks/useAuth";
+import { isAdminRole } from "../../lib/authRoles";
 
 export const MainFooter = () => {
   const { language } = useLanguage();
+  const { user } = useAuth();
   const year = new Date().getFullYear();
+  const canAccessAdmin = isAdminRole(user?.role);
 
   return (
     <footer className="bg-charcoal text-white/80">
       <div className="container py-12">
-        <div className="grid md:grid-cols-4 gap-8 mb-12">
-          {/* Brand */}
+        <div className="mb-12 grid gap-8 md:grid-cols-4">
           <div className="col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <Heart className="w-7 h-7 text-terracotta" />
+            <Link to="/" className="mb-4 flex items-center gap-2">
               <span className="font-display text-xl font-bold text-white">
                 Reunite
               </span>
             </Link>
-            <p className="text-sm text-white/60 mb-4">
-              {language === 'am'
-                ? 'ሰዎችን በትዝታ፣ በማህበረሰብ እና በእምነት እንደገና ማገናኘት።'
-                : 'Reconnecting people through memory, community, and trust.'
-              }
+            <p className="mb-4 text-sm text-white/60">
+              {language === "am"
+                ? "Reconnecting people through memory, community, and trust."
+                : "Reconnecting people through memory, community, and trust."}
             </p>
             <div className="flex gap-3">
-              <a href="https://twitter.com/reunite" className="p-2 bg-white/10 rounded-full hover:bg-terracotta transition-colors">
-                <X className="w-4 h-4" />
+              <a
+                href="https://twitter.com/reunite"
+                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-terracotta"
+              >
+                <X className="h-4 w-4" />
               </a>
-              <a href="https://facebook.com/reunite" className="p-2 bg-white/10 rounded-full hover:bg-terracotta transition-colors">
-                <Share2 className="w-4 h-4" />
+              <a
+                href="https://facebook.com/reunite"
+                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-terracotta"
+              >
+                <Share2 className="h-4 w-4" />
               </a>
-              <a href="https://instagram.com/reunite" className="p-2 bg-white/10 rounded-full hover:bg-terracotta transition-colors">
-                <Camera className="w-4 h-4" />
+              <a
+                href="https://instagram.com/reunite"
+                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-terracotta"
+              >
+                <Camera className="h-4 w-4" />
               </a>
             </div>
           </div>
 
-          {/* Platform */}
           <div>
-            <h3 className="font-display text-white mb-4">
-              {language === 'am' ? 'መድረክ' : 'Platform'}
+            <h3 className="mb-4 font-display text-white">
+              {language === "am" ? "Platform" : "Platform"}
             </h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/wanted" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'አስስ' : 'Browse'}</Link></li>
-              <li><Link to="/wanted/create" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'ልጥፍ ፍጠር' : 'Create Post'}</Link></li>
-              <li><Link to="/stories" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'የስኬት ታሪኮች' : 'Success Stories'}</Link></li>
-              <li><Link to="/how-it-works" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'እንዴት እንደሚሰራ' : 'How It Works'}</Link></li>
+              <li>
+                <Link
+                  to="/cases"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Cases" : "Cases"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/report"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Report Missing" : "Report Missing"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/wanted"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Reconnect Hub" : "Reconnect Hub"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/wanted/stories"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Success Stories" : "Success Stories"}
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Company */}
           <div>
-            <h3 className="font-display text-white mb-4">
-              {language === 'am' ? 'ኩባንያ' : 'Company'}
+            <h3 className="mb-4 font-display text-white">
+              {language === "am" ? "Operations" : "Operations"}
             </h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/about" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'ስለ እኛ' : 'About'}</Link></li>
-              <li><Link to="/mission" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'ተልዕኳችን' : 'Our Mission'}</Link></li>
-              <li><Link to="/contact" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'ያግኙን' : 'Contact'}</Link></li>
-              <li><Link to="/careers" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'ስራዎች' : 'Careers'}</Link></li>
+              <li>
+                <Link
+                  to="/volunteers"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Volunteer Response" : "Volunteer Response"}
+                </Link>
+              </li>
+              {canAccessAdmin ? (
+                <li>
+                  <Link
+                    to="/admin"
+                    className="text-white/60 transition-colors hover:text-white"
+                  >
+                    {language === "am" ? "Command Center" : "Command Center"}
+                  </Link>
+                </li>
+              ) : null}
+              <li>
+                <Link
+                  to="/ai"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "AI Desk" : "AI Desk"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/how-it-works"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "How It Works" : "How It Works"}
+                </Link>
+              </li>
             </ul>
           </div>
 
-          {/* Legal */}
           <div>
-            <h3 className="font-display text-white mb-4">
-              {language === 'am' ? 'ህጋዊ' : 'Legal'}
+            <h3 className="mb-4 font-display text-white">
+              {language === "am" ? "Legal" : "Legal"}
             </h3>
             <ul className="space-y-2 text-sm">
-              <li><Link to="/privacy" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'የግላዊነት ፖሊሲ' : 'Privacy'}</Link></li>
-              <li><Link to="/terms" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'የአገልግሎት ውል' : 'Terms'}</Link></li>
-              <li><Link to="/safety" className="text-white/60 hover:text-white transition-colors">{language === 'am' ? 'ደህንነት' : 'Safety'}</Link></li>
+              <li>
+                <Link
+                  to="/privacy-policy"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Privacy" : "Privacy"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/terms-of-service"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Terms" : "Terms"}
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Contact" : "Contact"}
+                </Link>
+              </li>
             </ul>
           </div>
         </div>
 
-        {/* Trust Badges */}
-        <div className="flex flex-wrap items-center justify-center gap-6 py-6 border-t border-white/10">
+        <div className="flex flex-wrap items-center justify-center gap-6 border-t border-white/10 py-6">
           <div className="flex items-center gap-2 text-white/40">
-            <Shield className="w-4 h-4" />
-            <span className="text-xs">{language === 'am' ? 'ደህንነቱ የተጠበቀ' : 'Secure & Private'}</span>
+            <Shield className="h-4 w-4" />
+            <span className="text-xs">
+              {language === "am" ? "Secure & Private" : "Secure & Private"}
+            </span>
           </div>
           <div className="flex items-center gap-2 text-white/40">
-            <Globe className="w-4 h-4" />
-            <span className="text-xs">{language === 'am' ? '89+ ሀገራት' : '89+ Countries'}</span>
+            <Globe className="h-4 w-4" />
+            <span className="text-xs">
+              {language === "am" ? "Global reach" : "Global reach"}
+            </span>
           </div>
           <div className="flex items-center gap-2 text-white/40">
-            <Mail className="w-4 h-4" />
+            <Mail className="h-4 w-4" />
             <span className="text-xs">support@reunite.com</span>
           </div>
         </div>
 
-        {/* Copyright */}
-        <div className="text-center text-xs text-white/30 mt-6">
-          © {year} Reunite. {language === 'am' ? 'መብቱ በህግ የተጠበቀ ነው።' : 'All rights reserved.'}
+        <div className="mt-6 text-center text-xs text-white/30">
+          &copy; {year} Reunite.{" "}
+          {language === "am" ? "All rights reserved." : "All rights reserved."}
         </div>
       </div>
     </footer>

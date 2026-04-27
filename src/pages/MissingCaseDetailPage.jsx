@@ -14,46 +14,58 @@ import { toast } from "sonner";
 import api from "../services/api";
 import { caseService } from "../services/caseService";
 import { useAuth } from "../hooks/useAuth";
+import { geocodeLocation } from "../services/locationService";
 import {
   buildGoogleMapsUrl,
   formatDateTime,
   formatRelativeTime,
   getCaseAddress,
   getCaseCoordinates,
+  getCaseImageSource,
   getCaseLastSeenAt,
   getCaseSummary,
   getPriorityClasses,
   getStatusClasses,
   parseCommaSeparated,
 } from "../lib/caseFormatting";
+import { isAdminRole, isVolunteerRole } from "../lib/authRoles";
 
 const initialSighting = {
   address: "",
   description: "",
   clothing: "",
   confidence: 70,
-  lat: "",
-  lng: "",
 };
 
 export const MissingCaseDetailPage = () => {
   const { id } = useParams();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const [caseData, setCaseData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [strategy, setStrategy] = useState(null);
   const [matches, setMatches] = useState([]);
   const [loadingMatches, setLoadingMatches] = useState(false);
   const [sightingForm, setSightingForm] = useState(initialSighting);
+  const [resolvedSightingLocation, setResolvedSightingLocation] = useState(null);
   const [submittingSighting, setSubmittingSighting] = useState(false);
   const [resolving, setResolving] = useState(false);
+  const [resolvingSightingLocation, setResolvingSightingLocation] =
+    useState(false);
+
+  const volunteerDeviceId =
+    typeof window !== "undefined"
+      ? window.localStorage.getItem("reunite-volunteer-device-id")
+      : "";
+  const canManageCase = isAuthenticated && isAdminRole(user?.role);
+  const canSubmitSighting =
+    isVolunteerRole(user?.role) || Boolean(volunteerDeviceId);
 
   const loadCase = async () => {
     setLoading(true);
     try {
       const response = await caseService.getCaseById(id);
       setCaseData(response.data);
-    } catch (error) {
+    } catch {
       toast.error("Unable to load this case.");
     } finally {
       setLoading(false);
@@ -64,7 +76,7 @@ export const MissingCaseDetailPage = () => {
     try {
       const response = await api.get(`/search-strategy/${caseId}`);
       setStrategy(response.data.data || null);
-    } catch (error) {
+    } catch {
       setStrategy(null);
     }
   };
@@ -99,7 +111,7 @@ export const MissingCaseDetailPage = () => {
       );
       setStrategy(response.data.data || null);
       toast.success("Search strategy generated.");
-    } catch (error) {
+    } catch {
       toast.error("Unable to generate search strategy.");
     }
   };
@@ -109,51 +121,58 @@ export const MissingCaseDetailPage = () => {
     try {
       const response = await caseService.findMatches(caseData.caseId);
       setMatches(response.data || []);
-    } catch (error) {
+    } catch {
       toast.error("Unable to load potential matches.");
     } finally {
       setLoadingMatches(false);
     }
   };
 
-  const captureCoordinates = () => {
-    if (!navigator.geolocation) {
-      toast.error("Geolocation is not supported in this browser.");
+  const resolveSightingLocation = async () => {
+    if (!sightingForm.address.trim()) {
+      toast.error("Add the sighting location first.");
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        setSightingForm((current) => ({
-          ...current,
-          lat: String(position.coords.latitude),
-          lng: String(position.coords.longitude),
-        }));
-        toast.success("Your current coordinates were added.");
-      },
-      () => toast.error("Unable to capture your current location."),
-      { enableHighAccuracy: true, timeout: 10000 },
-    );
+    setResolvingSightingLocation(true);
+    try {
+      const resolved = await geocodeLocation(sightingForm.address);
+      setResolvedSightingLocation(resolved);
+      setSightingForm((current) => ({
+        ...current,
+        address: resolved.address || current.address,
+      }));
+      toast.success("Sighting location found on the map.");
+    } catch {
+      toast.error("Unable to find that sighting location.");
+    } finally {
+      setResolvingSightingLocation(false);
+    }
   };
 
   const handleSubmitSighting = async (event) => {
     event.preventDefault();
     if (!caseData?.caseId) return;
-
-    const lat = Number(sightingForm.lat);
-    const lng = Number(sightingForm.lng);
-
-    if (!Number.isFinite(lat) || !Number.isFinite(lng)) {
-      toast.error("Please add valid latitude and longitude for the sighting.");
+    if (!sightingForm.address.trim()) {
+      toast.error("A sighting location is required.");
       return;
     }
 
     setSubmittingSighting(true);
     try {
+      let locationForSubmit = resolvedSightingLocation;
+      if (!locationForSubmit) {
+        locationForSubmit = await geocodeLocation(sightingForm.address);
+        setResolvedSightingLocation(locationForSubmit);
+      }
+
       await caseService.addSighting(caseData.caseId, {
         location: {
-          coordinates: [lng, lat],
-          address: sightingForm.address,
+          coordinates: [
+            locationForSubmit.longitude,
+            locationForSubmit.latitude,
+          ],
+          address: locationForSubmit.address || sightingForm.address,
         },
         description: sightingForm.description,
         clothing: parseCommaSeparated(sightingForm.clothing),
@@ -162,9 +181,12 @@ export const MissingCaseDetailPage = () => {
 
       toast.success("Sighting recorded.");
       setSightingForm(initialSighting);
+      setResolvedSightingLocation(null);
       await loadCase();
     } catch (error) {
-      toast.error("Unable to submit the sighting.");
+      toast.error(
+        error?.response?.data?.error || "Unable to submit the sighting.",
+      );
     } finally {
       setSubmittingSighting(false);
     }
@@ -181,7 +203,7 @@ export const MissingCaseDetailPage = () => {
       });
       toast.success("Case status updated.");
       await loadCase();
-    } catch (error) {
+    } catch {
       toast.error("Unable to update the case status.");
     } finally {
       setResolving(false);
@@ -289,7 +311,7 @@ export const MissingCaseDetailPage = () => {
                 <Share2 className="h-4 w-4" />
                 Share
               </button>
-              {caseData.status === "active" && isAuthenticated ? (
+              {caseData.status === "active" && canManageCase ? (
                 <>
                   <button
                     type="button"
@@ -320,6 +342,13 @@ export const MissingCaseDetailPage = () => {
             <h2 className="text-xl font-semibold text-charcoal">
               Person and case information
             </h2>
+            {getCaseImageSource(caseData) ? (
+              <img
+                src={getCaseImageSource(caseData)}
+                alt={caseData.person?.name || "Case"}
+                className="mt-5 h-64 w-full rounded-3xl object-cover"
+              />
+            ) : null}
             <div className="mt-5 grid gap-4 sm:grid-cols-2">
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-stone-500">
@@ -352,7 +381,8 @@ export const MissingCaseDetailPage = () => {
                   Description
                 </p>
                 <p className="mt-2 text-sm leading-7 text-stone-700">
-                  {caseData.person?.description || "No long-form description yet."}
+                  {caseData.person?.description ||
+                    "No long-form description yet."}
                 </p>
               </div>
             </div>
@@ -413,12 +443,14 @@ export const MissingCaseDetailPage = () => {
                             {zone.type || "Search zone"}
                           </p>
                           <p className="mt-1 text-sm text-stone-500">
-                            {zone.searchMethod || "Manual review"} •{" "}
+                            {zone.searchMethod || "Manual review"} -{" "}
                             {zone.recommendedSearchers || 0} responders
                           </p>
                         </div>
                         <p className="text-sm font-semibold text-terracotta">
-                          {zone.probability?.toFixed?.(1) || zone.probability || 0}
+                          {zone.probability?.toFixed?.(1) ||
+                            zone.probability ||
+                            0}
                           %
                         </p>
                       </div>
@@ -433,62 +465,64 @@ export const MissingCaseDetailPage = () => {
             )}
           </div>
 
-          <div className="rounded-3xl border border-stone-200 bg-white p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-semibold text-charcoal">
-                  Potential matches
-                </h2>
-                <p className="mt-1 text-sm text-stone-500">
-                  Run the matching engine against other backend cases.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={handleFindMatches}
-                disabled={loadingMatches}
-                className="inline-flex items-center gap-2 rounded-full border border-stone-200 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta disabled:opacity-60"
-              >
-                <Sparkles className="h-4 w-4" />
-                {loadingMatches ? "Checking..." : "Find matches"}
-              </button>
-            </div>
-
-            <div className="mt-5 space-y-3">
-              {matches.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-sm text-stone-500">
-                  No match results loaded yet.
+          {canManageCase ? (
+            <div className="rounded-3xl border border-stone-200 bg-white p-6">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-semibold text-charcoal">
+                    Potential matches
+                  </h2>
+                  <p className="mt-1 text-sm text-stone-500">
+                    Run the matching engine against other backend cases.
+                  </p>
                 </div>
-              ) : (
-                matches.map((match) => (
-                  <div
-                    key={match.caseId}
-                    className="rounded-2xl border border-stone-200 p-4"
-                  >
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div>
-                        <p className="font-semibold text-charcoal">
-                          {match.caseId}
-                        </p>
-                        <p className="mt-1 text-sm text-stone-500">
-                          Confidence band: {match.confidence}
-                        </p>
-                      </div>
-                      <Link
-                        to={`/cases/${match.caseId}`}
-                        className="rounded-full bg-charcoal px-4 py-2 text-sm font-semibold text-white"
-                      >
-                        Review case
-                      </Link>
-                    </div>
-                    <p className="mt-3 text-sm text-stone-600">
-                      Match score: {Math.round((match.score || 0) * 100)}%
-                    </p>
+                <button
+                  type="button"
+                  onClick={handleFindMatches}
+                  disabled={loadingMatches}
+                  className="inline-flex items-center gap-2 rounded-full border border-stone-200 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta disabled:opacity-60"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  {loadingMatches ? "Checking..." : "Find matches"}
+                </button>
+              </div>
+
+              <div className="mt-5 space-y-3">
+                {matches.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-sm text-stone-500">
+                    No match results loaded yet.
                   </div>
-                ))
-              )}
+                ) : (
+                  matches.map((match) => (
+                    <div
+                      key={match.caseId}
+                      className="rounded-2xl border border-stone-200 p-4"
+                    >
+                      <div className="flex flex-wrap items-center justify-between gap-3">
+                        <div>
+                          <p className="font-semibold text-charcoal">
+                            {match.caseId}
+                          </p>
+                          <p className="mt-1 text-sm text-stone-500">
+                            Confidence band: {match.confidence}
+                          </p>
+                        </div>
+                        <Link
+                          to={`/cases/${match.caseId}`}
+                          className="rounded-full bg-charcoal px-4 py-2 text-sm font-semibold text-white"
+                        >
+                          Review case
+                        </Link>
+                      </div>
+                      <p className="mt-3 text-sm text-stone-600">
+                        Match score: {Math.round((match.score || 0) * 100)}%
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
             </div>
-          </div>
+          ) : null}
         </div>
 
         <div className="space-y-6">
@@ -507,7 +541,9 @@ export const MissingCaseDetailPage = () => {
                 <p className="text-xs uppercase tracking-[0.2em] text-stone-500">
                   Timestamp
                 </p>
-                <p className="mt-2">{formatDateTime(getCaseLastSeenAt(caseData))}</p>
+                <p className="mt-2">
+                  {formatDateTime(getCaseLastSeenAt(caseData))}
+                </p>
               </div>
               <div>
                 <p className="text-xs uppercase tracking-[0.2em] text-stone-500">
@@ -537,20 +573,16 @@ export const MissingCaseDetailPage = () => {
                 {weatherRisk.weather?.description ? (
                   <p>
                     Conditions: {weatherRisk.weather.description} at{" "}
-                    {weatherRisk.weather.temp}°C
+                    {weatherRisk.weather.temp} C
                   </p>
                 ) : null}
-                {weatherRisk.details?.length ? (
-                  <p>{weatherRisk.details[0]}</p>
-                ) : null}
+                {weatherRisk.details?.length ? <p>{weatherRisk.details[0]}</p> : null}
               </div>
             </div>
           ) : null}
 
           <div className="rounded-3xl border border-stone-200 bg-white p-6">
-            <h2 className="text-xl font-semibold text-charcoal">
-              Sightings
-            </h2>
+            <h2 className="text-xl font-semibold text-charcoal">Sightings</h2>
             <div className="mt-5 space-y-3">
               {(caseData.sightings || []).length === 0 ? (
                 <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-sm text-stone-500">
@@ -572,93 +604,92 @@ export const MissingCaseDetailPage = () => {
                       {sighting.description || "No details provided."}
                     </p>
                     <p className="mt-2 text-sm text-stone-500">
-                      {sighting.location?.address || "No address provided"} •{" "}
+                      {sighting.location?.address || "No address provided"} -{" "}
                       {sighting.confidence || 0}% confidence
                     </p>
+                    <a
+                      href={buildGoogleMapsUrl(
+                        sighting.location?.coordinates,
+                        sighting.location?.address,
+                      )}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="mt-3 inline-flex rounded-full border border-stone-200 px-3 py-1.5 text-xs font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta"
+                    >
+                      Open sighting location
+                    </a>
                   </div>
                 ))
               )}
             </div>
           </div>
 
-          <form
-            onSubmit={handleSubmitSighting}
-            className="rounded-3xl border border-stone-200 bg-white p-6"
-          >
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h2 className="text-xl font-semibold text-charcoal">
-                  Submit a sighting
-                </h2>
-                <p className="mt-1 text-sm text-stone-500">
-                  This is wired to the backend sighting endpoint for this case.
-                </p>
+          {canSubmitSighting ? (
+            <form
+              onSubmit={handleSubmitSighting}
+              className="rounded-3xl border border-stone-200 bg-white p-6"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h2 className="text-xl font-semibold text-charcoal">
+                    Submit a sighting
+                  </h2>
+                  <p className="mt-1 text-sm text-stone-500">
+                    Volunteers and admins can submit verified sightings for this
+                    case.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={resolveSightingLocation}
+                  disabled={resolvingSightingLocation}
+                  className="rounded-full border border-stone-200 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta disabled:opacity-60"
+                >
+                  {resolvingSightingLocation
+                    ? "Finding location..."
+                    : "Find sighting on map"}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={captureCoordinates}
-                className="rounded-full border border-stone-200 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta"
-              >
-                Use my location
-              </button>
-            </div>
 
-            <div className="mt-5 grid gap-4">
-              <input
-                value={sightingForm.address}
-                onChange={(event) =>
-                  setSightingForm((current) => ({
-                    ...current,
-                    address: event.target.value,
-                  }))
-                }
-                placeholder="Sighting address"
-                className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
-              />
-              <textarea
-                value={sightingForm.description}
-                onChange={(event) =>
-                  setSightingForm((current) => ({
-                    ...current,
-                    description: event.target.value,
-                  }))
-                }
-                rows={4}
-                placeholder="What did you see?"
-                className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
-              />
-              <input
-                value={sightingForm.clothing}
-                onChange={(event) =>
-                  setSightingForm((current) => ({
-                    ...current,
-                    clothing: event.target.value,
-                  }))
-                }
-                placeholder="Clothing details, comma separated"
-                className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
-              />
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="mt-5 grid gap-4">
                 <input
-                  value={sightingForm.lat}
+                  value={sightingForm.address}
+                  onChange={(event) => {
+                    setResolvedSightingLocation(null);
+                    setSightingForm((current) => ({
+                      ...current,
+                      address: event.target.value,
+                    }));
+                  }}
+                  placeholder="Sighting address"
+                  className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+                />
+                {resolvedSightingLocation ? (
+                  <div className="rounded-2xl bg-stone-50 px-4 py-3 text-sm text-stone-600">
+                    Map location ready: {resolvedSightingLocation.address}
+                  </div>
+                ) : null}
+                <textarea
+                  value={sightingForm.description}
                   onChange={(event) =>
                     setSightingForm((current) => ({
                       ...current,
-                      lat: event.target.value,
+                      description: event.target.value,
                     }))
                   }
-                  placeholder="Latitude"
+                  rows={4}
+                  placeholder="What did you see?"
                   className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
                 />
                 <input
-                  value={sightingForm.lng}
+                  value={sightingForm.clothing}
                   onChange={(event) =>
                     setSightingForm((current) => ({
                       ...current,
-                      lng: event.target.value,
+                      clothing: event.target.value,
                     }))
                   }
-                  placeholder="Longitude"
+                  placeholder="Clothing details, comma separated"
                   className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
                 />
                 <input
@@ -673,23 +704,27 @@ export const MissingCaseDetailPage = () => {
                   className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
                 />
               </div>
-            </div>
 
-            <button
-              type="submit"
-              disabled={submittingSighting}
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-clay disabled:opacity-60"
-            >
-              {submittingSighting ? (
-                <>
-                  <RefreshCw className="h-4 w-4 animate-spin" />
-                  Submitting...
-                </>
-              ) : (
-                "Submit sighting"
-              )}
-            </button>
-          </form>
+              <button
+                type="submit"
+                disabled={submittingSighting}
+                className="mt-5 inline-flex items-center gap-2 rounded-full bg-terracotta px-5 py-3 text-sm font-semibold text-white transition hover:bg-clay disabled:opacity-60"
+              >
+                {submittingSighting ? (
+                  <>
+                    <RefreshCw className="h-4 w-4 animate-spin" />
+                    Submitting...
+                  </>
+                ) : (
+                  "Submit sighting"
+                )}
+              </button>
+            </form>
+          ) : (
+            <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-6 text-sm text-stone-500">
+              Sightings can only be submitted by admins or registered volunteers.
+            </div>
+          )}
         </div>
       </section>
     </div>

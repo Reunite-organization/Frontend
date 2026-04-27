@@ -1,4 +1,5 @@
 import { io } from 'socket.io-client';
+import { socketServerUrl } from '../../../lib/apiConfig';
 
 class SocketClient {
   constructor() {
@@ -13,7 +14,7 @@ class SocketClient {
       return;
     }
 
-    const socketUrl = import.meta.env.VITE_API_URL || window.location.origin;
+    const socketUrl = socketServerUrl;
 
     // Clean up existing socket
     if (this.socket) {

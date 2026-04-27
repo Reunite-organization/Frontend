@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import speechService from "@/services/speechService";
-import { aiService } from "@/services/api";
+import api, { aiService } from "@/services/api";
 import { useI18n } from "@/contexts/I18nContext";
 
 const Report = () => {
@@ -97,19 +97,8 @@ const Report = () => {
         }
       });
 
-      const backendBase = import.meta.env.VITE_API_URL
-        ? import.meta.env.VITE_API_URL.replace(/\/$/, "")
-        : "";
-      const endpoint = backendBase
-        ? `${backendBase}/api/cases/report`
-        : "/api/cases/report";
-
-      const response = await fetch(endpoint, {
-        method: "POST",
-        body: submitData,
-      });
-
-      const data = await response.json();
+      const response = await api.post("/cases/report", submitData);
+      const data = response.data;
 
       if (data.success) {
         toast.success(

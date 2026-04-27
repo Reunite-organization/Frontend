@@ -2,6 +2,7 @@
 import { Check, CheckCheck, Clock, Image, File, Play } from 'lucide-react';
 import { formatMessageTime } from '../../utils/formatters';
 import { useAuth } from '../../../../hooks/useAuth';
+import { apiBaseUrl } from '../../../../lib/apiConfig';
 import { useState } from 'react';
 
 const MessageStatus = ({ message, isOwn }) => {
@@ -25,10 +26,6 @@ const MessageContent = ({ message }) => {
   
 case 'photo': {
   const rawUrl = message.metadata?.photoUrl || message.content;
-  
-  const apiBaseUrl = import.meta.env.VITE_API_URL || 
-                     import.meta.env.VITE_BACKEND_URL || 
-                     'http://localhost:5500';
   
   let photoUrl = rawUrl;
   
