@@ -519,26 +519,7 @@ const FinalCTASection = () => {
               : "Choose your path — we're here to help you reconnect."}
           </p>
 
-          <div className="flex flex-wrap justify-center gap-4">
-            <Link to="/cases">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-red-500 hover:bg-red-600 rounded-full font-semibold shadow-lg"
-              >
-                 {language === "am" ? "የጠፉቦትን ሰው ይፈልጉ " : "Find Missing Person"}
-              </motion.button>
-            </Link>
-
-            <Link to="/wanted">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 bg-amber-500 hover:bg-amber-600 rounded-full font-semibold shadow-lg"
-              >
-                 {language === "am" ? "ከተራራቁት ሰዎች ጋር ይገናኙ" : "Reconnect With Someone"}
-              </motion.button>
-            </Link>
+          <div className="flex flex-wrap justify-center gap-4"> 
             <div className=""
             ><Link to="/auth/register">
               <motion.button

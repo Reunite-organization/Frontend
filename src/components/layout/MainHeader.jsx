@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
-import reuniteImg from '../../assets/reunite.png';
+import reuniteImg from "../../assets/reunite.png";
 import {
   Bot,
   ChevronDown,
@@ -26,7 +26,10 @@ import { isAdminRole } from "../../lib/authRoles";
 const primaryLinks = [
   { path: "/cases", label: { en: "Cases", am: "ኬሶች" } },
   { path: "/report", label: { en: "Report Missing", am: "የጠፉ ሰዎችን ያመልክቱ" } },
-  { path: "/volunteers", label: { en: "Volunteer Response", am: "የበጎ ፈቃደኞች ምላሽ" } },
+  {
+    path: "/volunteers",
+    label: { en: "Volunteer Response", am: "የበጎ ፈቃደኞች ምላሽ" },
+  },
   { path: "/admin", label: { en: "Command Center", am: "Command Center" } },
   { path: "/ai", label: { en: "Help", am: "ዕርዳታ" }, icon: Bot },
 ];
@@ -156,11 +159,11 @@ export const MainHeader = () => {
             : "bg-transparent"
         }`}
       >
-        <nav className="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
+        <nav className="mx-auto max-w-8xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between md:h-20">
             <Link to="/" className="flex items-center gap-3">
               <div className="relative" ref={reconnectMenuRef}>
-              <img src={reuniteImg} alt="Reunite" width={50}/>
+                <img src={reuniteImg} alt="Reunite" width={50} />
               </div>
               <div>
                 <div className="font-display text-xl font-bold text-charcoal md:text-2xl">
@@ -304,10 +307,15 @@ export const MainHeader = () => {
                     <MessageCircle className="h-5 w-5" />
                   </Link>
 
-                  <div className="relative hidden sm:block" ref={profileMenuRef}>
+                  <div
+                    className="relative hidden sm:block"
+                    ref={profileMenuRef}
+                  >
                     <button
                       type="button"
-                      onClick={() => setIsProfileMenuOpen((current) => !current)}
+                      onClick={() =>
+                        setIsProfileMenuOpen((current) => !current)
+                      }
                       className="inline-flex items-center gap-2 rounded-full p-1.5 transition hover:bg-stone-100"
                     >
                       <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-terracotta to-sahara text-sm font-semibold text-white">
@@ -324,7 +332,6 @@ export const MainHeader = () => {
                           "R"
                         )}
                       </div>
-                      <Settings className="h-4 w-4 text-stone-500" />
                       <ChevronDown className="h-4 w-4 text-stone-500" />
                     </button>
 
@@ -338,14 +345,19 @@ export const MainHeader = () => {
                         >
                           <div className="rounded-2xl bg-stone-50 p-4">
                             <p className="font-semibold text-charcoal">
-                              {profile?.realName || user?.name || "Reunite user"}
+                              {profile?.realName ||
+                                user?.name ||
+                                "Reunite user"}
                             </p>
                             <p className="mt-1 text-sm text-stone-500">
                               {user?.email || user?.phone || "Authenticated"}
                             </p>
                             {profile?.trustScore ? (
                               <div className="mt-3">
-                                <TrustBadge score={profile.trustScore} size="sm" />
+                                <TrustBadge
+                                  score={profile.trustScore}
+                                  size="sm"
+                                />
                               </div>
                             ) : null}
                           </div>
@@ -377,6 +389,15 @@ export const MainHeader = () => {
                                 Command Center
                               </Link>
                             ) : null}
+
+                            <Link
+                              to="/settings"
+                              onClick={() => setIsProfileMenuOpen(false)}
+                              className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-stone-700 transition hover:bg-stone-50"
+                            >
+                              <Settings className="h-4 w-4" />
+                              Settings
+                            </Link>
                             <button
                               type="button"
                               onClick={handleLogout}

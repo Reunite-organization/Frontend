@@ -71,8 +71,6 @@ export const Router = () => {
       <Route path="/read-more" element={<ReadMorePage />} />
       <Route path="/faq" element={<FAQPage />} />{" "}
       <Route path="/how-it-works" element={<div>How It Works</div>} />
-      <Route path="/about" element={<div>About</div>} />
-      <Route path="/mission" element={<div>Mission</div>} />
       <Route path="/contact" element={<div>Contact</div>} />
       <Route path="/privacy-policy" element={<div>Privacy Policy</div>} />
       <Route path="/terms-of-service" element={<div>Terms of Service</div>} />

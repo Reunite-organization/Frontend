@@ -253,10 +253,7 @@ export default function CaseDetail() {
           <TabsTrigger value="volunteers">Volunteers</TabsTrigger>
           <TabsTrigger value="matches">Potential Matches</TabsTrigger>
           <TabsTrigger value="updates">Updates</TabsTrigger>
-          <TabsTrigger value="strategy">
-            <Target className="w-4 h-4 mr-2" />
-            Search Strategy
-          </TabsTrigger>
+          
           <TabsTrigger value="weather">
             <Cloud className="w-4 h-4 mr-2" />
             Weather

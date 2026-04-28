@@ -40,11 +40,7 @@ export const VolunteerOperationsPage = () => {
 
   const readiness = useMemo(
     () => [
-      {
-        label: "Volunteer device ID",
-        value: volunteer.deviceId,
-      },
-      {
+    {
         label: "Location status",
         value: location ? "Captured" : "Waiting",
       },
@@ -198,17 +194,6 @@ export const VolunteerOperationsPage = () => {
                   }))
                 }
                 placeholder="Volunteer phone"
-                className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
-              />
-              <input
-                value={volunteer.deviceId}
-                onChange={(event) =>
-                  setVolunteer((current) => ({
-                    ...current,
-                    deviceId: event.target.value,
-                  }))
-                }
-                placeholder="Device ID"
                 className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
               />
             </div>
