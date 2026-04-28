@@ -7,6 +7,12 @@ export const clearStoredAuth = () => {
   localStorage.removeItem("user-data");
 };
 
+const buildLoginRedirectPath = () => {
+  if (typeof window === "undefined") return "/auth/login";
+  const current = `${window.location.pathname || "/"}${window.location.search || ""}${window.location.hash || ""}`;
+  return `/auth/login?redirect=${encodeURIComponent(current)}`;
+};
+
 const instance = axios.create({
   baseURL: apiBaseUrl,
   timeout: 30000,
@@ -60,7 +66,7 @@ instance.interceptors.response.use(
         if (!refreshToken) {
           clearStoredAuth();
           if (typeof window !== "undefined") {
-            window.location.assign("/auth/login");
+            window.location.assign(buildLoginRedirectPath());
           }
           return Promise.reject(error);
         }
@@ -75,7 +81,7 @@ instance.interceptors.response.use(
       } catch (refreshError) {
         clearStoredAuth();
         if (typeof window !== "undefined") {
-          window.location.assign("/auth/login");
+          window.location.assign(buildLoginRedirectPath());
         }
         return Promise.reject(refreshError);
       }

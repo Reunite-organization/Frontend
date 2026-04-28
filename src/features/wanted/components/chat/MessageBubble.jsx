@@ -1,5 +1,5 @@
 ﻿import { motion } from 'framer-motion';
-import { Check, CheckCheck, Clock, Image, File, Play } from 'lucide-react';
+import { Check, CheckCheck, Clock, Image, File, Trash2 } from 'lucide-react';
 import { formatMessageTime } from '../../utils/formatters';
 import { useAuth } from '../../../../hooks/useAuth';
 import { apiBaseUrl } from '../../../../lib/apiConfig';
@@ -21,26 +21,20 @@ const MessageStatus = ({ message, isOwn }) => {
   );
 };
 
+const resolveMediaUrl = (input) => {
+  if (!input) return "";
+  if (String(input).startsWith("/")) {
+    return `${apiBaseUrl}${input}`;
+  }
+  return String(input).replace(/http:\/\/localhost:5173/g, apiBaseUrl);
+};
+
 const MessageContent = ({ message }) => {
   switch (message.type) {
   
 case 'photo': {
   const rawUrl = message.metadata?.photoUrl || message.content;
-  
-  let photoUrl = rawUrl;
-  
-  if (photoUrl && photoUrl.startsWith('/')) {
-    photoUrl = `${apiBaseUrl}${photoUrl}`;
-  }
-  
-  if (photoUrl?.includes('localhost:5173')) {
-    photoUrl = photoUrl.replace(/http:\/\/localhost:5173/, apiBaseUrl);
-  }
-  
-  console.log('🖼️ Photo URL:', {
-    raw: rawUrl,
-    display: photoUrl,
-  });
+  const photoUrl = resolveMediaUrl(rawUrl);
   
   return (
     <div className="relative group -mx-2 -my-1.5">
@@ -50,10 +44,7 @@ case 'photo': {
         className="max-w-[220px] max-h-[220px] rounded-lg object-cover cursor-pointer shadow-sm"
         loading="lazy"
         onClick={() => window.open(photoUrl, '_blank')}
-        onLoad={() => console.log('✅ Photo loaded:', photoUrl)}
         onError={(e) => {
-          console.error('❌ Failed to load photo:', photoUrl);
-          // Show fallback
           e.target.style.display = 'none';
           const fallback = e.target.parentElement?.querySelector('.photo-fallback');
           if (fallback) fallback.classList.remove('hidden');
@@ -76,17 +67,19 @@ case 'photo': {
   );
 }
     case 'voice':
+      const voiceUrl = resolveMediaUrl(
+        message.metadata?.voiceUrl || message.content,
+      );
       return (
         <div className="flex items-center gap-2.5">
-          <button className="w-9 h-9 rounded-full bg-white/20 hover:bg-white/30 transition-colors flex items-center justify-center">
-            <Play className="w-3.5 h-3.5 fill-current" />
-          </button>
-          <div className="flex-1 min-w-[120px]">
-            <div className="h-1 bg-white/20 rounded-full overflow-hidden">
-              <div className="h-full w-2/3 bg-white/60 rounded-full" />
-            </div>
+          <div className="flex-1 min-w-[180px]">
+            <audio controls preload="metadata" className="h-9 w-full">
+              <source src={voiceUrl} />
+            </audio>
             <span className="text-[11px] opacity-70 mt-0.5 block">
-              {message.metadata?.voiceDuration || '0:00'}
+              {message.metadata?.voiceDuration
+                ? `${message.metadata.voiceDuration}s`
+                : 'Voice message'}
             </span>
           </div>
         </div>
@@ -131,7 +124,7 @@ case 'photo': {
   }
 };
 
-export const MessageBubble = ({ message, isOwn, showAvatar, previousMessage }) => {
+export const MessageBubble = ({ message, isOwn, showAvatar, previousMessage, onDelete }) => {
   const { user } = useAuth();
   const [isHovered, setIsHovered] = useState(false);
 
@@ -199,7 +192,7 @@ export const MessageBubble = ({ message, isOwn, showAvatar, previousMessage }) =
             <MessageContent message={message} />
           </div>
 
-          {/* Timestamp & Status */}
+          {/* Timestamp, Status, and Actions */}
           <div
             className={`
               flex items-center gap-1 px-1 mt-0.5
@@ -209,6 +202,16 @@ export const MessageBubble = ({ message, isOwn, showAvatar, previousMessage }) =
               ${isOwn ? 'flex-row-reverse' : 'flex-row'}
             `}
           >
+            {isOwn && onDelete ? (
+              <button
+                type="button"
+                onClick={() => onDelete(message)}
+                className="rounded p-0.5 text-stone/60 transition hover:bg-red-50 hover:text-red-600"
+                aria-label="Delete message"
+              >
+                <Trash2 className="h-3 w-3" />
+              </button>
+            ) : null}
             <span>{formatMessageTime(message.createdAt)}</span>
             <MessageStatus message={message} isOwn={isOwn} />
           </div>

@@ -93,6 +93,8 @@ export const wantedApi = {
       .then((res) => res.data.data),
   leaveChat: (roomId) =>
     axios.post(`/api/wanted/chat/${roomId}/leave`).then((res) => res.data),
+  deleteMessage: (messageId) =>
+    axios.delete(`/api/wanted/chat/messages/${messageId}`).then((res) => res.data),
   
   uploadVoiceMessage: (formData) =>
     axios

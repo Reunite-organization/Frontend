@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import reuniteImg from '../../assets/reunite.png';
@@ -12,6 +12,7 @@ import {
   Menu,
   MessageCircle,
   Shield,
+  Settings,
   User,
   Users,
   X,
@@ -77,6 +78,9 @@ export const MainHeader = () => {
   const [isReconnectMenuOpen, setIsReconnectMenuOpen] = useState(false);
   const [pendingClaimsCount, setPendingClaimsCount] = useState(0);
   const canAccessAdmin = isAdminRole(user?.role);
+  const reconnectMenuRef = useRef(null);
+  const langMenuRef = useRef(null);
+  const profileMenuRef = useRef(null);
   const visiblePrimaryLinks = primaryLinks.filter(
     (link) => link.path !== "/admin" || canAccessAdmin,
   );
@@ -112,6 +116,28 @@ export const MainHeader = () => {
     return () => window.clearInterval(interval);
   }, [isAuthenticated, profile]);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        reconnectMenuRef.current &&
+        !reconnectMenuRef.current.contains(event.target)
+      ) {
+        setIsReconnectMenuOpen(false);
+      }
+      if (langMenuRef.current && !langMenuRef.current.contains(event.target)) {
+        setIsLangMenuOpen(false);
+      }
+      if (
+        profileMenuRef.current &&
+        !profileMenuRef.current.contains(event.target)
+      ) {
+        setIsProfileMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(`${path}/`);
 
@@ -133,7 +159,7 @@ export const MainHeader = () => {
         <nav className="mx-auto max-w-9xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between md:h-20">
             <Link to="/" className="flex items-center gap-3">
-              <div className="relative">
+              <div className="relative" ref={reconnectMenuRef}>
               <img src={reuniteImg} alt="Reunite" width={50}/>
               </div>
               <div>
@@ -212,7 +238,7 @@ export const MainHeader = () => {
             </div>
 
             <div className="flex items-center gap-2">
-              <div className="relative hidden sm:block">
+              <div className="relative hidden sm:block" ref={langMenuRef}>
                 <button
                   type="button"
                   onClick={() => setIsLangMenuOpen((current) => !current)}
@@ -278,18 +304,27 @@ export const MainHeader = () => {
                     <MessageCircle className="h-5 w-5" />
                   </Link>
 
-                  <div className="relative hidden sm:block">
+                  <div className="relative hidden sm:block" ref={profileMenuRef}>
                     <button
                       type="button"
                       onClick={() => setIsProfileMenuOpen((current) => !current)}
                       className="inline-flex items-center gap-2 rounded-full p-1.5 transition hover:bg-stone-100"
                     >
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-terracotta to-sahara text-sm font-semibold text-white">
-                        {profile?.realName?.[0]?.toUpperCase() ||
+                      <div className="flex h-10 w-10 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-terracotta to-sahara text-sm font-semibold text-white">
+                        {profile?.avatarUrl ? (
+                          <img
+                            src={profile.avatarUrl}
+                            alt={profile?.realName || user?.name || "Profile"}
+                            className="h-full w-full object-cover"
+                          />
+                        ) : (
+                          profile?.realName?.[0]?.toUpperCase() ||
                           user?.name?.[0]?.toUpperCase() ||
                           user?.email?.[0]?.toUpperCase() ||
-                          "R"}
+                          "R"
+                        )}
                       </div>
+                      <Settings className="h-4 w-4 text-stone-500" />
                       <ChevronDown className="h-4 w-4 text-stone-500" />
                     </button>
 

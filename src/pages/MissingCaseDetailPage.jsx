@@ -58,7 +58,7 @@ export const MissingCaseDetailPage = () => {
       : "";
   const canManageCase = isAuthenticated && isAdminRole(user?.role);
   const canSubmitSighting =
-    isVolunteerRole(user?.role) || Boolean(volunteerDeviceId);
+    isAuthenticated || isVolunteerRole(user?.role) || Boolean(volunteerDeviceId);
 
   const loadCase = async () => {
     setLoading(true);
@@ -570,13 +570,48 @@ export const MissingCaseDetailPage = () => {
                     {weatherRisk.riskLevel || weatherRisk.level || "Unknown"}
                   </span>
                 </p>
+                {typeof weatherRisk.score === "number" ? (
+                  <p>
+                    Risk score:{" "}
+                    <span className="font-semibold">{weatherRisk.score}/100</span>
+                  </p>
+                ) : null}
+                {typeof weatherRisk.boost === "number" ? (
+                  <p>
+                    Priority boost:{" "}
+                    <span className="font-semibold">+{weatherRisk.boost}</span>
+                  </p>
+                ) : null}
                 {weatherRisk.weather?.description ? (
                   <p>
                     Conditions: {weatherRisk.weather.description} at{" "}
                     {weatherRisk.weather.temp} C
                   </p>
                 ) : null}
+                {weatherRisk.weather ? (
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    {typeof weatherRisk.weather.feelsLike === "number" ? (
+                      <p>Feels like: {weatherRisk.weather.feelsLike} C</p>
+                    ) : null}
+                    {typeof weatherRisk.weather.humidity === "number" ? (
+                      <p>Humidity: {weatherRisk.weather.humidity}%</p>
+                    ) : null}
+                    {typeof weatherRisk.weather.windSpeed === "number" ? (
+                      <p>Wind: {weatherRisk.weather.windSpeed} m/s</p>
+                    ) : null}
+                    {typeof weatherRisk.weather.visibility === "number" ? (
+                      <p>Visibility: {weatherRisk.weather.visibility} m</p>
+                    ) : null}
+                  </div>
+                ) : null}
                 {weatherRisk.details?.length ? <p>{weatherRisk.details[0]}</p> : null}
+                {weatherRisk.details?.length > 1 ? (
+                  <ul className="list-disc space-y-1 pl-5 text-xs text-stone-600">
+                    {weatherRisk.details.slice(1, 4).map((detail) => (
+                      <li key={detail}>{detail}</li>
+                    ))}
+                  </ul>
+                ) : null}
               </div>
             </div>
           ) : null}
@@ -635,8 +670,7 @@ export const MissingCaseDetailPage = () => {
                     Submit a sighting
                   </h2>
                   <p className="mt-1 text-sm text-stone-500">
-                    Volunteers and admins can submit verified sightings for this
-                    case.
+                    Signed-in users can submit sightings for this case.
                   </p>
                 </div>
                 <button
@@ -722,7 +756,7 @@ export const MissingCaseDetailPage = () => {
             </form>
           ) : (
             <div className="rounded-3xl border border-dashed border-stone-300 bg-white p-6 text-sm text-stone-500">
-              Sightings can only be submitted by admins or registered volunteers.
+              Sign in to submit a sighting for this case.
             </div>
           )}
         </div>

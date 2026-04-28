@@ -11,6 +11,8 @@ import {
   StopCircle,
 } from "lucide-react";
 import { useLanguage } from "../../../../lib/i18n";
+import { toast } from "sonner";
+import { wantedApi } from "../../services/wantedApi";
 
 export const MessageInput = ({
   onSendMessage,

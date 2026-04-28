@@ -168,14 +168,25 @@ export const useChat = (roomId) => {
       );
     };
 
+    const handleMessageDeleted = ({ messageId }) => {
+      const currentRoomId = roomIdRef.current;
+      if (!currentRoomId || !messageId) return;
+      queryClient.setQueryData(
+        ["wanted", "chat", "messages", currentRoomId],
+        (old = []) => old.filter((msg) => msg._id !== messageId),
+      );
+    };
+
     socketClient.on("new-message", handleNewMessage);
     socketClient.on("user-typing", handleUserTyping);
     socketClient.on("messages-read", handleMessagesRead);
+    socketClient.on("message-deleted", handleMessageDeleted);
 
     return () => {
       socketClient.off("new-message", handleNewMessage);
       socketClient.off("user-typing", handleUserTyping);
       socketClient.off("messages-read", handleMessagesRead);
+      socketClient.off("message-deleted", handleMessageDeleted);
     };
   }, [queryClient]); 
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate, useLocation } from 'react-router-dom';
+import { Link, useNavigate, useLocation, useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
   Mail, 
@@ -18,6 +18,7 @@ export const LoginPage = () => {
   const { login } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   
   const [formData, setFormData] = useState({
     email: '',
@@ -28,7 +29,12 @@ export const LoginPage = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [loginError, setLoginError] = useState('');
 
-  const from = location.state?.from?.pathname || '/wanted';
+  const redirectTarget = searchParams.get("redirect");
+  const safeRedirect =
+    redirectTarget && redirectTarget.startsWith("/") && !redirectTarget.startsWith("//")
+      ? redirectTarget
+      : null;
+  const from = safeRedirect || location.state?.from?.pathname || '/wanted';
 
   const validate = () => {
     const newErrors = {};

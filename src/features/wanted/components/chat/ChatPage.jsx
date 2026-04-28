@@ -155,6 +155,20 @@ export const ChatPage = () => {
     }
   };
 
+  const handleDeleteMessage = async (message) => {
+    if (!message?._id || String(message._id).startsWith("temp-")) return;
+    try {
+      await wantedApi.deleteMessage(message._id);
+      toast.success(language === "am" ? "መልእክት ተሰርዟል" : "Message deleted");
+    } catch {
+      toast.error(
+        language === "am"
+          ? "መልእክት መሰረዝ አልተሳካም"
+          : "Unable to delete this message",
+      );
+    }
+  };
+
   const otherParticipant = currentRoom?.otherUser
     ? {
         profile: currentRoom.otherUser,
@@ -306,6 +320,7 @@ export const ChatPage = () => {
                 showAvatar={
                   index === 0 || messages[index - 1]?.sender !== msg.sender
                 }
+                onDelete={handleDeleteMessage}
               />
             ))}
           </AnimatePresence>

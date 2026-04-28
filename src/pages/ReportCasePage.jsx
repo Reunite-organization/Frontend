@@ -113,8 +113,16 @@ export const ReportCasePage = () => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
-    if (!form.missingPersonName.trim() || !form.lastSeenLocation.trim()) {
-      toast.error("Name and last seen location are required.");
+    if (
+      !form.missingPersonName.trim() ||
+      !form.lastSeenLocation.trim() ||
+      !form.reporterName.trim() ||
+      !form.reporterPhone.trim() ||
+      !form.reporterRelation.trim()
+    ) {
+      toast.error(
+        "Missing person name, last seen location, reporter name, phone, and relationship are required.",
+      );
       return;
     }
 
@@ -350,6 +358,7 @@ export const ReportCasePage = () => {
                       updateField("reporterName", event.target.value)
                     }
                     placeholder="Reporter name"
+                    required
                     className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
                   />
                   <input
@@ -358,6 +367,7 @@ export const ReportCasePage = () => {
                       updateField("reporterPhone", event.target.value)
                     }
                     placeholder="Reporter phone"
+                    required
                     className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
                   />
                   <input
@@ -366,6 +376,7 @@ export const ReportCasePage = () => {
                       updateField("reporterRelation", event.target.value)
                     }
                     placeholder="Relationship to missing person"
+                    required
                     className="w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
                   />
                   <input

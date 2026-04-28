@@ -62,12 +62,24 @@ export const aiService = {
 
 export const normalizeAssistantResponse = (payload) => {
   const result = payload?.data || payload;
-  const text =
+  const nestedResult = result?.data && typeof result.data === "object" ? result.data : null;
+  const textCandidate =
     result?.text ||
     result?.message ||
     result?.reply ||
     result?.content ||
+    nestedResult?.text ||
+    nestedResult?.message ||
+    nestedResult?.reply ||
+    nestedResult?.content ||
+    result?.output_text ||
+    result?.response ||
     "";
+  const text = typeof textCandidate === "string"
+    ? textCandidate
+    : textCandidate && typeof textCandidate === "object"
+      ? JSON.stringify(textCandidate)
+      : "";
 
   return {
     ...result,
@@ -75,8 +87,12 @@ export const normalizeAssistantResponse = (payload) => {
       typeof text === "string" && text.trim()
         ? text
         : "The assistant did not return structured guidance.",
-    actions: Array.isArray(result?.actions) ? result.actions : [],
-    language: result?.language || "en",
+    actions: Array.isArray(result?.actions)
+      ? result.actions
+      : Array.isArray(nestedResult?.actions)
+        ? nestedResult.actions
+        : [],
+    language: result?.language || nestedResult?.language || "en",
   };
 };
 

@@ -3,21 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Switch } from '@/components/ui/switch';
 import { 
   MessageCircle, 
-  Facebook, 
   Twitter, 
   RefreshCw, 
   Play,
-  Settings,
   AlertCircle
 } from 'lucide-react';
 import { toast } from 'sonner';
 import api from '@/services/api';
 
 export default function ScraperConfig() {
-  const [loading, setLoading] = useState(false);
   const [scraping, setScraping] = useState(false);
   const [status, setStatus] = useState(null);
   const [sources, setSources] = useState({
@@ -34,9 +30,12 @@ export default function ScraperConfig() {
   
   const loadStatus = async () => {
     try {
-      const response = await api.get('/scrape/status');
-      setStatus(response.data);
-      setSources(response.data.sources || sources);
+      const [statusRes, sourcesRes] = await Promise.all([
+        api.get('/scrape/status'),
+        api.get('/scrape/sources'),
+      ]);
+      setStatus(statusRes.data?.data || null);
+      setSources(sourcesRes.data?.data || { telegram: [], twitter: [] });
     } catch (error) {
       console.error('Failed to load status:', error);
     }
@@ -56,23 +55,35 @@ export default function ScraperConfig() {
     }
   };
   
-  const addSource = () => {
+  const addSource = async () => {
     if (!newSource.value) return;
     
-    setSources(prev => ({
-      ...prev,
-      [newSource.type]: [...prev[newSource.type], newSource.value]
-    }));
+    const next = {
+      ...sources,
+      [newSource.type]: [...(sources[newSource.type] || []), newSource.value]
+    };
+    setSources(next);
+    try {
+      await api.put('/scrape/sources', next);
+    } catch {
+      toast.error('Failed to persist source update');
+    }
     
     setNewSource({ ...newSource, value: '' });
     toast.success(`Added ${newSource.type} source`);
   };
   
-  const removeSource = (type, value) => {
-    setSources(prev => ({
-      ...prev,
-      [type]: prev[type].filter(s => s !== value)
-    }));
+  const removeSource = async (type, value) => {
+    const next = {
+      ...sources,
+      [type]: (sources[type] || []).filter((s) => s !== value),
+    };
+    setSources(next);
+    try {
+      await api.put('/scrape/sources', next);
+    } catch {
+      toast.error('Failed to persist source update');
+    }
   };
   
   return (
@@ -98,7 +109,7 @@ export default function ScraperConfig() {
           <div className="grid grid-cols-3 gap-4">
             <div className="p-4 bg-blue-50 rounded-lg">
               <p className="text-sm text-gray-600">Posts Scraped</p>
-              <p className="text-2xl font-bold">{status?.scrapedCount || 0}</p>
+              <p className="text-2xl font-bold">{status?.trackedCount || 0}</p>
             </div>
             <div className="p-4 bg-green-50 rounded-lg">
               <p className="text-sm text-gray-600">Status</p>
@@ -108,7 +119,7 @@ export default function ScraperConfig() {
             </div>
             <div className="p-4 bg-purple-50 rounded-lg">
               <p className="text-sm text-gray-600">Next Run</p>
-              <p className="text-lg font-medium">~15 min</p>
+                <p className="text-lg font-medium">{status?.schedule || 'Unknown'}</p>
             </div>
           </div>
         </CardContent>
@@ -193,10 +204,10 @@ export default function ScraperConfig() {
           <div className="text-sm text-yellow-800">
             <p className="font-medium mb-1">How it works:</p>
             <ul className="list-disc list-inside space-y-1">
-              <li>Scrapes public Telegram channels every 15 minutes</li>
+              <li>Scrapes public sources on an hourly schedule</li>
               <li>AI analyzes each post for missing person reports</li>
               <li>Only creates cases when confidence &gt; 60%</li>
-              <li>Auto-broadcasts to Our Main Telegram channel</li>
+              <li>Creates pending cases for admin moderation before broadcast</li>
             </ul>
           </div>
         </div>

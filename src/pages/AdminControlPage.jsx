@@ -23,6 +23,10 @@ export const AdminControlPage = () => {
   const [schoolStats, setSchoolStats] = useState(null);
   const [broadcastStats, setBroadcastStats] = useState(null);
   const [scraperStatus, setScraperStatus] = useState(null);
+  const [scraperSources, setScraperSources] = useState({ telegram: [], twitter: [] });
+  const [pendingModerationCases, setPendingModerationCases] = useState([]);
+  const [savingSources, setSavingSources] = useState(false);
+  const [moderatingCaseId, setModeratingCaseId] = useState(null);
   const [predictionPreview, setPredictionPreview] = useState(null);
   const [broadcastForm, setBroadcastForm] = useState(defaultBroadcast);
   const [scrapeUrl, setScrapeUrl] = useState("");
@@ -59,7 +63,7 @@ export const AdminControlPage = () => {
   const loadDashboard = async () => {
     setLoading(true);
     try {
-      const [statsRes, analyticsRes, casesRes, languagesRes, monitoringRes, schoolRes, broadcastRes, scraperRes, wantedPostsRes] =
+      const [statsRes, analyticsRes, casesRes, languagesRes, monitoringRes, schoolRes, broadcastRes, scraperRes, scraperSourcesRes, moderationRes, wantedPostsRes] =
         await Promise.allSettled([
           api.get("/dashboard/stats"),
           api.get("/dashboard/analytics", { params: { range: "24h" } }),
@@ -69,6 +73,8 @@ export const AdminControlPage = () => {
           integrationService.getSchoolNetworkStats(),
           api.get("/broadcast/stats"),
           api.get("/scrape/status"),
+          api.get("/scrape/sources"),
+          api.get("/cases/pending-verification"),
           wantedApi.getPosts({ limit: 6 }),
         ]);
 
@@ -96,6 +102,14 @@ export const AdminControlPage = () => {
       );
       setScraperStatus(
         scraperRes.status === "fulfilled" ? scraperRes.value.data.data : null,
+      );
+      setScraperSources(
+        scraperSourcesRes.status === "fulfilled"
+          ? scraperSourcesRes.value.data.data || { telegram: [], twitter: [] }
+          : { telegram: [], twitter: [] },
+      );
+      setPendingModerationCases(
+        moderationRes.status === "fulfilled" ? moderationRes.value.data.data || [] : [],
       );
       setWantedPosts(
         wantedPostsRes.status === "fulfilled" ? wantedPostsRes.value.data || [] : [],
@@ -158,6 +172,47 @@ export const AdminControlPage = () => {
       toast.error("Unable to run the scraper.");
     } finally {
       setRunningScrape(false);
+    }
+  };
+
+  const handleToggleScheduler = async (shouldStart) => {
+    setRunningScrape(true);
+    try {
+      await api.post(shouldStart ? "/scrape/scheduler/start" : "/scrape/scheduler/stop");
+      toast.success(shouldStart ? "Scraper scheduler started." : "Scraper scheduler stopped.");
+      await loadDashboard();
+    } catch {
+      toast.error("Unable to update scraper scheduler.");
+    } finally {
+      setRunningScrape(false);
+    }
+  };
+
+  const handleSaveSources = async () => {
+    setSavingSources(true);
+    try {
+      await api.put("/scrape/sources", scraperSources);
+      toast.success("Scraper sources saved.");
+      await loadDashboard();
+    } catch {
+      toast.error("Unable to save scraper sources.");
+    } finally {
+      setSavingSources(false);
+    }
+  };
+
+  const handleModerationDecision = async (caseId, decision) => {
+    setModeratingCaseId(caseId);
+    try {
+      await api.patch(`/cases/${caseId}/review`, { decision });
+      toast.success(
+        decision === "approve" ? "Scraped case approved." : "Scraped case rejected.",
+      );
+      await loadDashboard();
+    } catch {
+      toast.error("Unable to review this case.");
+    } finally {
+      setModeratingCaseId(null);
     }
   };
 
@@ -468,6 +523,56 @@ export const AdminControlPage = () => {
             </div>
 
             <div className="rounded-3xl border border-stone-200 bg-white p-6">
+              <h2 className="text-xl font-semibold text-charcoal">
+                Telegram/social moderation queue
+              </h2>
+              <div className="mt-5 space-y-3">
+                {pendingModerationCases.length === 0 ? (
+                  <div className="rounded-2xl border border-dashed border-stone-300 bg-stone-50 p-6 text-sm text-stone-500">
+                    No pending scraped cases waiting for moderation.
+                  </div>
+                ) : (
+                  pendingModerationCases.map((caseItem) => (
+                    <div
+                      key={caseItem._id}
+                      className="rounded-2xl border border-stone-200 p-4"
+                    >
+                      <p className="font-semibold text-charcoal">
+                        {caseItem.person?.name || "Unknown person"} ({caseItem.caseId})
+                      </p>
+                      <p className="mt-1 text-sm text-stone-500">
+                        Source: {caseItem.source?.type || "unknown"} •{" "}
+                        {caseItem.source?.url || "No source URL"}
+                      </p>
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleModerationDecision(caseItem.caseId, "approve")
+                          }
+                          disabled={moderatingCaseId === caseItem.caseId}
+                          className="rounded-full bg-success px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+                        >
+                          Approve
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() =>
+                            handleModerationDecision(caseItem.caseId, "reject")
+                          }
+                          disabled={moderatingCaseId === caseItem.caseId}
+                          className="rounded-full bg-error px-4 py-2 text-xs font-semibold text-white disabled:opacity-60"
+                        >
+                          Reject
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+
+            <div className="rounded-3xl border border-stone-200 bg-white p-6">
               <div className="flex flex-wrap items-center justify-between gap-3">
                 <h2 className="text-xl font-semibold text-charcoal">
                   Social scraping
@@ -481,6 +586,14 @@ export const AdminControlPage = () => {
                   <Sparkles className="h-4 w-4" />
                   Run full scrape
                 </button>
+                <button
+                  type="button"
+                  onClick={() => handleToggleScheduler(!scraperStatus?.schedulerStarted)}
+                  disabled={runningScrape}
+                  className="inline-flex items-center gap-2 rounded-full border border-stone-200 px-4 py-2.5 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta disabled:opacity-60"
+                >
+                  {scraperStatus?.schedulerStarted ? "Stop scheduler" : "Start scheduler"}
+                </button>
               </div>
 
               <div className="mt-5 rounded-2xl bg-stone-50 p-4 text-sm text-stone-700">
@@ -491,8 +604,52 @@ export const AdminControlPage = () => {
                   </span>
                 </p>
                 <p className="mt-2">
-                  Scraped count: {scraperStatus?.scrapedCount ?? 0}
+                  Tracked posts: {scraperStatus?.trackedCount ?? 0}
                 </p>
+                <p className="mt-2">
+                  Last errors: {scraperStatus?.lastRun?.errors?.length || 0}
+                </p>
+              </div>
+
+              <div className="mt-4 grid gap-3">
+                <textarea
+                  value={(scraperSources.telegram || []).join("\n")}
+                  onChange={(event) =>
+                    setScraperSources((current) => ({
+                      ...current,
+                      telegram: event.target.value
+                        .split("\n")
+                        .map((item) => item.trim())
+                        .filter(Boolean),
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Telegram channels, one per line"
+                  className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+                />
+                <textarea
+                  value={(scraperSources.twitter || []).join("\n")}
+                  onChange={(event) =>
+                    setScraperSources((current) => ({
+                      ...current,
+                      twitter: event.target.value
+                        .split("\n")
+                        .map((item) => item.trim())
+                        .filter(Boolean),
+                    }))
+                  }
+                  rows={4}
+                  placeholder="Twitter queries, one per line"
+                  className="rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+                />
+                <button
+                  type="button"
+                  onClick={handleSaveSources}
+                  disabled={savingSources}
+                  className="rounded-full bg-charcoal px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal/90 disabled:opacity-60"
+                >
+                  {savingSources ? "Saving..." : "Save source configuration"}
+                </button>
               </div>
 
               <form onSubmit={handleScrapeUrl} className="mt-4 grid gap-3">
