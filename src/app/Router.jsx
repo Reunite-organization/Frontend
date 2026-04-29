@@ -24,6 +24,7 @@ import { CreateStory } from "../features/wanted/stories/CreateStory";
 import ReadMorePage from "../components/ReadMorePage";
 import FAQPage from "../components/FAQPage";
 import MapPage from "../pages/Map";
+import SettingsPage from "../pages/SettingsPage";
 
 const LegacyCaseRedirect = () => {
   const { id } = useParams();
@@ -40,6 +41,7 @@ export const Router = () => {
       <Route element={<ProtectedRoute />}>
         <Route path="/report" element={<ReportCasePage />} />
         <Route path="/volunteers" element={<VolunteerOperationsPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Route>
       <Route
         path="/volunteer"

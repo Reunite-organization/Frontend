@@ -38,8 +38,15 @@ export const VolunteerOperationsPage = () => {
   const [nearbyCases, setNearbyCases] = useState([]);
   const [loadingCases, setLoadingCases] = useState(false);
   const [registering, setRegistering] = useState(false);
-  const [quickSighting, setQuickSighting] = useState("");
+  const [quickForm, setQuickForm] = useState({
+    description: "",
+    address: "",
+    confidence: 60,
+    clothing: "",
+    caseId: "",
+  });
   const [sendingSighting, setSendingSighting] = useState(false);
+  const [sendingSMSCaseId, setSendingSMSCaseId] = useState(null);
 
   useEffect(() => {
     setVolunteer((current) => ({
@@ -140,20 +147,54 @@ export const VolunteerOperationsPage = () => {
 
     setSendingSighting(true);
     try {
-      await api.post("/cases/quick", {
+      const response = await caseService.quickSighting({
         location: {
           lat: location.latitude,
           lng: location.longitude,
+          address: quickForm.address || undefined,
         },
-        description: quickSighting,
+        caseId: quickForm.caseId || undefined,
+        description: quickForm.description,
+        confidence: Number(quickForm.confidence) || 60,
+        clothing: quickForm.clothing
+          .split(",")
+          .map((item) => item.trim())
+          .filter(Boolean),
       });
-      setQuickSighting("");
-      toast.success("Quick sighting submitted.");
+      setQuickForm({
+        description: "",
+        address: "",
+        confidence: 60,
+        clothing: "",
+        caseId: "",
+      });
+      toast.success(
+        response?.caseId
+          ? `Quick sighting submitted for ${response.caseId}.`
+          : "Quick sighting submitted.",
+      );
       await loadNearbyCases(location);
     } catch (error) {
-      toast.error("Unable to send the quick sighting.");
+      toast.error(
+        error?.response?.data?.error || "Unable to send the quick sighting.",
+      );
     } finally {
       setSendingSighting(false);
+    }
+  };
+
+  const handleSendSMSUpdate = async (caseId) => {
+    setSendingSMSCaseId(caseId);
+    try {
+      await caseService.sendSMSUpdate(caseId, {
+        message:
+          "Volunteer update: possible sighting reported near this case. Please review case timeline.",
+      });
+      toast.success(`SMS update sent for ${caseId}.`);
+    } catch (error) {
+      toast.error(error?.response?.data?.error || "Unable to send SMS update.");
+    } finally {
+      setSendingSMSCaseId(null);
     }
   };
 
@@ -286,18 +327,77 @@ export const VolunteerOperationsPage = () => {
               Quick sighting
             </h2>
             <p className="mt-2 text-sm text-stone-500">
-              Sends one fast location-based sighting into the backend quick flow.
+              Sends a full quick sighting payload (location, confidence, clothing,
+              optional target case) into the backend quick flow.
             </p>
+            <select
+              value={quickForm.caseId}
+              onChange={(event) =>
+                setQuickForm((current) => ({
+                  ...current,
+                  caseId: event.target.value,
+                }))
+              }
+              className="mt-5 w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+            >
+              <option value="">Auto-match nearest case</option>
+              {nearbyCases.map((caseItem) => (
+                <option key={caseItem.caseId} value={caseItem.caseId}>
+                  {caseItem.caseId} - {caseItem.person?.name || "Unknown"}
+                </option>
+              ))}
+            </select>
+            <input
+              value={quickForm.address}
+              onChange={(event) =>
+                setQuickForm((current) => ({
+                  ...current,
+                  address: event.target.value,
+                }))
+              }
+              placeholder="Address or landmark (optional)"
+              className="mt-4 w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+            />
             <textarea
-              value={quickSighting}
-              onChange={(event) => setQuickSighting(event.target.value)}
+              value={quickForm.description}
+              onChange={(event) =>
+                setQuickForm((current) => ({
+                  ...current,
+                  description: event.target.value,
+                }))
+              }
               rows={4}
               placeholder="What did you just see?"
               className="mt-5 w-full rounded-3xl border border-stone-200 px-4 py-4 text-sm outline-none focus:border-terracotta"
             />
+            <input
+              type="number"
+              min="0"
+              max="100"
+              value={quickForm.confidence}
+              onChange={(event) =>
+                setQuickForm((current) => ({
+                  ...current,
+                  confidence: event.target.value,
+                }))
+              }
+              placeholder="Confidence (0-100)"
+              className="mt-4 w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+            />
+            <input
+              value={quickForm.clothing}
+              onChange={(event) =>
+                setQuickForm((current) => ({
+                  ...current,
+                  clothing: event.target.value,
+                }))
+              }
+              placeholder="Clothing details, comma separated"
+              className="mt-4 w-full rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+            />
             <button
               type="submit"
-              disabled={sendingSighting}
+              disabled={sendingSighting || !quickForm.description.trim()}
               className="mt-5 inline-flex items-center gap-2 rounded-full bg-charcoal px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal/90 disabled:opacity-60"
             >
               <Send className="h-4 w-4" />
@@ -376,6 +476,16 @@ export const VolunteerOperationsPage = () => {
                     >
                       Review case
                     </a>
+                    <button
+                      type="button"
+                      onClick={() => handleSendSMSUpdate(caseItem.caseId)}
+                      disabled={sendingSMSCaseId === caseItem.caseId}
+                      className="rounded-full border border-stone-200 px-4 py-2 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta disabled:opacity-60"
+                    >
+                      {sendingSMSCaseId === caseItem.caseId
+                        ? "Sending SMS..."
+                        : "Send SMS update"}
+                    </button>
                   </div>
                 </div>
               ))

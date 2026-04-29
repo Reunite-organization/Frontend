@@ -341,7 +341,6 @@ export const MainHeader = () => {
                           "R"
                         )}
                       </div>
-                      <Settings className="h-4 w-4 text-stone-500" />
                       <ChevronDown className="h-4 w-4 text-stone-500" />
                     </button>
 
@@ -383,6 +382,14 @@ export const MainHeader = () => {
                             >
                               <Users className="h-4 w-4" />
                               Volunteer response
+                            </Link>
+                            <Link
+                              to="/settings"
+                              onClick={() => setIsProfileMenuOpen(false)}
+                              className="flex items-center gap-3 rounded-2xl px-4 py-3 text-sm text-stone-700 transition hover:bg-stone-50"
+                            >
+                              <Settings className="h-4 w-4" />
+                              Settings
                             </Link>
                             {canAccessAdmin ? (
                               <Link

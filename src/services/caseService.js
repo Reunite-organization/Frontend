@@ -51,6 +51,18 @@ export const caseService = {
     return response.data;
   },
 
+  // Update case notification preferences
+  updateNotifications: async (caseId, payload) => {
+    const response = await api.patch(`/cases/${caseId}/notifications`, payload);
+    return response.data;
+  },
+
+  // Send an SMS update for a case
+  sendSMSUpdate: async (caseId, payload) => {
+    const response = await api.post(`/cases/${caseId}/sms`, payload);
+    return response.data;
+  },
+
   // Get high priority cases
   getHighPriorityCases: async () => {
     const response = await api.get("/cases/high-priority");

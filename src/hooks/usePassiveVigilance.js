@@ -122,7 +122,7 @@ export function usePassiveVigilance(enabled = true) {
   };
 
   // Quick sighting report (5-second interaction)
-  const quickSighting = async (location, description) => {
+  const quickSighting = async (location, details = {}) => {
     try {
       const latitude = location?.latitude ?? location?.lat;
       const longitude = location?.longitude ?? location?.lng;
@@ -131,12 +131,20 @@ export function usePassiveVigilance(enabled = true) {
         throw new Error("Invalid location for quick sighting");
       }
 
-      await caseService.quickSighting({
-        lat: latitude,
-        lng: longitude,
-        description,
+      const payload = {
+        location: {
+          lat: latitude,
+          lng: longitude,
+          address: details.address || undefined,
+        },
+        description: details.description || "",
+        confidence: Number(details.confidence) || 60,
+        clothing: Array.isArray(details.clothing) ? details.clothing : [],
+        caseId: details.caseId || undefined,
         timestamp: new Date().toISOString(),
-      });
+      };
+
+      await caseService.quickSighting(payload);
 
       toast.success("Sighting reported! Thank you!");
       return true;
