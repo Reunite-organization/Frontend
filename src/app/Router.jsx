@@ -23,6 +23,7 @@ import { AdminRoute } from "./RoleRoute";
 import { CreateStory } from "../features/wanted/stories/CreateStory";
 import ReadMorePage from "../components/ReadMorePage";
 import FAQPage from "../components/FAQPage";
+import MapPage from "../pages/Map";
 
 const LegacyCaseRedirect = () => {
   const { id } = useParams();
@@ -47,6 +48,7 @@ export const Router = () => {
       </Route>
       <Route path="/dashboard" element={<Navigate to="/admin" replace />} />
       <Route path="/ai" element={<AIDeskPage />} />
+      <Route path="/map" element={<MapPage />} />
       <Route path="/auth/login" element={<LoginPage />} />
       <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />

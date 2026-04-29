@@ -95,6 +95,17 @@
   50% { transform: translateY(-10px); }
 }
 
+@keyframes popupReveal {
+  0% {
+    opacity: 0;
+    transform: translateY(10px) scale(0.98);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
 /* Base Styles */
 @layer base {
   * {
@@ -204,6 +215,26 @@
   }
 }
 @layer utilities {
+  .city-map-marker {
+    background: transparent;
+    border: 0;
+  }
+
+  .city-map-marker__pin {
+    transition: transform 220ms ease, box-shadow 220ms ease;
+    transform-origin: center;
+  }
+
+  .city-map-marker:hover .city-map-marker__pin {
+    transform: scale(1.12);
+    box-shadow: 0 14px 28px rgba(44, 40, 37, 0.24);
+  }
+
+  .popup-card-enter {
+    animation: popupReveal 260ms ease-out;
+    transform-origin: bottom center;
+  }
+
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }

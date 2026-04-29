@@ -9,6 +9,7 @@ import {
   Heart,
   Inbox,
   LogOut,
+  Map,
   Menu,
   MessageCircle,
   Shield,
@@ -24,6 +25,13 @@ import { TrustBadge } from "../../features/wanted/components/profile/TrustBadge"
 import { isAdminRole } from "../../lib/authRoles";
 
 const primaryLinks = [
+  { path: "/", label: { en: "Home", am: "Home" } },
+  {
+    path: "/map",
+    label: { en: "Live Map", am: "Live Map" },
+    icon: Map,
+    badge: "New",
+  },
   { path: "/cases", label: { en: "Cases", am: "ኬሶች" } },
   { path: "/report", label: { en: "Report Missing", am: "የጠፉ ሰዎችን ያመልክቱ" } },
   {
@@ -189,6 +197,11 @@ export const MainHeader = () => {
                   <span className="inline-flex items-center gap-2">
                     {link.icon ? <link.icon className="h-4 w-4" /> : null}
                     {language === "am" ? link.label.am : link.label.en}
+                    {link.badge ? (
+                      <span className="rounded-full border border-stone-200 bg-stone-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-600">
+                        {link.badge}
+                      </span>
+                    ) : null}
                   </span>
                 </Link>
               ))}
@@ -474,7 +487,14 @@ export const MainHeader = () => {
                         : "text-stone-700 hover:bg-stone-50"
                     }`}
                   >
-                    {language === "am" ? link.label.am : link.label.en}
+                    <span className="inline-flex items-center gap-2">
+                      {language === "am" ? link.label.am : link.label.en}
+                      {link.badge ? (
+                        <span className="rounded-full border border-stone-200 bg-stone-100 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-stone-600">
+                          {link.badge}
+                        </span>
+                      ) : null}
+                    </span>
                   </Link>
                 ))}
               </div>

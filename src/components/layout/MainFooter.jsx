@@ -71,6 +71,14 @@ export const MainFooter = () => {
               </li>
               <li>
                 <Link
+                  to="/map"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "Live Map" : "Live Map"}
+                </Link>
+              </li>
+              <li>
+                <Link
                   to="/wanted"
                   className="text-white/60 transition-colors hover:text-white"
                 >
