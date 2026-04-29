@@ -54,6 +54,13 @@ export const MissingCaseDetailPage = () => {
 
   const canManageCase = isAuthenticated && isAdminRole(user?.role);
   const canSubmitSighting = isAuthenticated;
+  const isReporter =
+    isAuthenticated &&
+    caseData?.reportedBy?.user &&
+    String(caseData.reportedBy.user) === String(user?.id);
+
+  const [updatingNotifications, setUpdatingNotifications] = useState(false);
+  const [smsPhone, setSmsPhone] = useState("");
 
   const loadCase = async () => {
     setLoading(true);
@@ -86,6 +93,10 @@ export const MissingCaseDetailPage = () => {
     }
   }, [caseData?.caseId]);
 
+  useEffect(() => {
+    setSmsPhone(caseData?.notifications?.smsPhone || "");
+  }, [caseData?.notifications?.smsPhone]);
+
   const mapUrl = useMemo(() => {
     if (!caseData) return "https://www.google.com/maps";
     return buildGoogleMapsUrl(
@@ -93,6 +104,57 @@ export const MissingCaseDetailPage = () => {
       getCaseAddress(caseData),
     );
   }, [caseData]);
+
+  const handleToggleEmailUpdates = async () => {
+    if (!caseData?.caseId) return;
+    setUpdatingNotifications(true);
+    try {
+      const next = !Boolean(caseData.notifications?.emailEnabled);
+      await api.patch(`/cases/${caseData.caseId}/notifications`, {
+        emailEnabled: next,
+      });
+      toast.success(next ? "Email updates enabled." : "Email updates disabled.");
+      await loadCase();
+    } catch (error) {
+      toast.error(error?.response?.data?.error || "Unable to update notifications.");
+    } finally {
+      setUpdatingNotifications(false);
+    }
+  };
+
+  const handleToggleSMSUpdates = async () => {
+    if (!caseData?.caseId) return;
+    setUpdatingNotifications(true);
+    try {
+      const next = !Boolean(caseData.notifications?.smsEnabled);
+      await api.patch(`/cases/${caseData.caseId}/notifications`, {
+        smsEnabled: next,
+        smsPhone: smsPhone.trim() || undefined,
+      });
+      toast.success(next ? "SMS updates enabled." : "SMS updates disabled.");
+      await loadCase();
+    } catch (error) {
+      toast.error(error?.response?.data?.error || "Unable to update SMS settings.");
+    } finally {
+      setUpdatingNotifications(false);
+    }
+  };
+
+  const handleSaveSMSPhone = async () => {
+    if (!caseData?.caseId || !smsPhone.trim()) return;
+    setUpdatingNotifications(true);
+    try {
+      await api.patch(`/cases/${caseData.caseId}/notifications`, {
+        smsPhone: smsPhone.trim(),
+      });
+      toast.success("SMS phone updated.");
+      await loadCase();
+    } catch (error) {
+      toast.error(error?.response?.data?.error || "Unable to save phone number.");
+    } finally {
+      setUpdatingNotifications(false);
+    }
+  };
 
   const weatherRisk = caseData?.weatherRisk || caseData?.priority?.weatherRisk;
 
@@ -295,6 +357,38 @@ export const MissingCaseDetailPage = () => {
               >
                 Open Location
               </a>
+              {isReporter ? (
+                <>
+                  <button
+                    type="button"
+                    disabled={updatingNotifications}
+                    onClick={handleToggleEmailUpdates}
+                    className={`rounded-full px-4 py-3 text-sm font-semibold transition disabled:opacity-60 ${
+                      caseData.notifications?.emailEnabled
+                        ? "bg-terracotta text-white hover:bg-clay"
+                        : "border border-stone-200 text-stone-700 hover:border-terracotta/30 hover:text-terracotta"
+                    }`}
+                  >
+                    {caseData.notifications?.emailEnabled
+                      ? "Email updates: ON"
+                      : "Email updates: OFF"}
+                  </button>
+                  <button
+                    type="button"
+                    disabled={updatingNotifications}
+                    onClick={handleToggleSMSUpdates}
+                    className={`rounded-full px-4 py-3 text-sm font-semibold transition disabled:opacity-60 ${
+                      caseData.notifications?.smsEnabled
+                        ? "bg-charcoal text-white hover:bg-charcoal/90"
+                        : "border border-stone-200 text-stone-700 hover:border-terracotta/30 hover:text-terracotta"
+                    }`}
+                  >
+                    {caseData.notifications?.smsEnabled
+                      ? "SMS updates: ON"
+                      : "SMS updates: OFF"}
+                  </button>
+                </>
+              ) : null}
               <button
                 type="button"
                 onClick={() => {
@@ -552,6 +646,33 @@ export const MissingCaseDetailPage = () => {
               </div>
             </div>
           </div>
+
+          {isReporter ? (
+            <div className="rounded-3xl border border-stone-200 bg-white p-6">
+              <h2 className="text-xl font-semibold text-charcoal">
+                Reporter notification settings
+              </h2>
+              <p className="mt-2 text-sm text-stone-500">
+                Save a phone number to receive case updates by SMS.
+              </p>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <input
+                  value={smsPhone}
+                  onChange={(event) => setSmsPhone(event.target.value)}
+                  placeholder="+2519..."
+                  className="min-w-[220px] flex-1 rounded-2xl border border-stone-200 px-4 py-3 text-sm outline-none focus:border-terracotta"
+                />
+                <button
+                  type="button"
+                  disabled={updatingNotifications || !smsPhone.trim()}
+                  onClick={handleSaveSMSPhone}
+                  className="rounded-full border border-stone-200 px-4 py-3 text-sm font-semibold text-stone-700 transition hover:border-terracotta/30 hover:text-terracotta disabled:opacity-60"
+                >
+                  Save phone
+                </button>
+              </div>
+            </div>
+          ) : null}
 
           {weatherRisk ? (
             <div className="rounded-3xl border border-stone-200 bg-white p-6">

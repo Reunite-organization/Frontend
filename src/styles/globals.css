@@ -58,15 +58,24 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Dark Theme Colors */
+/* Dark Theme Colors – keep brand warmth but fix contrast */
 .dark {
-  --color-warm-white: #1A1817;
-  --color-cream: #242220;
-  --color-warm-gray: #2E2B28;
-  --color-charcoal: #F5F0E8;
-  --color-stone: #A89B8C;
-  --color-olive: #8B917D;
-  --color-olive-light: #A5AB98;
+  /* Backgrounds */
+  --color-warm-white: #0F0E0D;  /* app background */
+  --color-cream: #181716;       /* surface background */
+  --color-warm-gray: #262321;   /* cards / subtle borders */
+
+  /* Text */
+  --color-charcoal: #F8F4EE;    /* primary text on dark */
+  --color-stone: #B8B0A7;       /* secondary text */
+
+  /* Accents tuned for dark */
+  --color-olive: #fafafa;
+  --color-olive-light: #ffffff;
+  --color-terracotta: #E07B5A;
+  --color-terracotta-dark: #C76447;
+  --color-clay: #C76447;
+  --color-clay-dark: #9C4A35;
 }
 
 /* Keyframe Animations */
@@ -219,5 +228,49 @@
   
   .snap-start {
     scroll-snap-align: start;
+  }
+
+  /* Dark-mode alignment for legacy light-only Tailwind classes */
+  .dark .bg-white {
+    background-color: #181716 !important;
+  }
+  .dark .bg-white\/95 {
+    background-color: rgb(24 23 22 / 0.95) !important;
+  }
+  .dark .bg-white\/80 {
+    background-color: rgb(24 23 22 / 0.8) !important;
+  }
+  .dark .bg-stone-50 {
+    background-color: #1f1c1a !important;
+  }
+  .dark .bg-stone-100 {
+    background-color: #262321 !important;
+  }
+
+  .dark .border-stone-200 {
+    border-color: #34302d !important;
+  }
+  .dark .border-stone-300 {
+    border-color: #3f3a36 !important;
+  }
+
+  .dark .text-stone-500 {
+    color: #a89f95 !important;
+  }
+  .dark .text-stone-600 {
+    color: #b8afa5 !important;
+  }
+  .dark .text-stone-700 {
+    color: #d2cbc2 !important;
+  }
+  .dark .text-charcoal {
+    color: #f8f4ee !important;
+  }
+
+  .dark .hover\:bg-stone-50:hover {
+    background-color: #262321 !important;
+  }
+  .dark .hover\:bg-stone-100:hover {
+    background-color: #2f2a27 !important;
   }
 }

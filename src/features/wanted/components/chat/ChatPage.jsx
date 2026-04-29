@@ -12,7 +12,6 @@ import {
   MessageCircle,
 } from "lucide-react";
 import { useChat } from "../../hooks/useChat";
-import { useSocket } from "../../hooks/useSocket";
 import { useLanguage } from "../../../../lib/i18n";
 import { ChatSidebar } from "./ChatSidebar";
 import { MessageBubble } from "./MessageBubble";
@@ -25,16 +24,23 @@ export const ChatPage = () => {
   const { roomId } = useParams();
   const navigate = useNavigate();
   const { language } = useLanguage();
-  const { rooms, currentRoom, messages, sendMessage, sendTyping, typingUsers, isLoading } =
+  const {
+    rooms,
+    currentRoom,
+    messages,
+    sendMessage,
+    sendTyping,
+    typingUsers,
+    onlineUsers,
+    isLoading,
+  } =
     useChat(roomId);
 
-  const { socket } = useSocket();
   const [messageInput, setMessageInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
   const [showSidebar, setShowSidebar] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const { user } = useAuth();
-  const [otherParticipantOnline, setOtherParticipantOnline] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -179,30 +185,16 @@ export const ChatPage = () => {
         (p) => (p.user?._id || p.user) !== user?.id,
       );
 
-  useEffect(() => {
-    const otherUserId =
-      otherParticipant?.user?._id ||
-      otherParticipant?.user ||
-      currentRoom?.otherUser?.user?._id ||
-      currentRoom?.otherUser?.user;
+  const otherUserId =
+    otherParticipant?.user?._id ||
+    otherParticipant?.user ||
+    currentRoom?.otherUser?.user?._id ||
+    currentRoom?.otherUser?.user;
 
-    if (!socket || !otherUserId) {
-      setOtherParticipantOnline(false);
-      return;
-    }
-
-    const normalizedOtherUserId = String(otherUserId);
-    const handleUserStatus = ({ userId, isOnline }) => {
-      if (String(userId) === normalizedOtherUserId) {
-        setOtherParticipantOnline(Boolean(isOnline));
-      }
-    };
-
-    socket.on("user-status", handleUserStatus);
-    return () => {
-      socket.off("user-status", handleUserStatus);
-    };
-  }, [currentRoom?.otherUser, otherParticipant, socket]);
+  const onlineUserSet = new Set(onlineUsers.map(String));
+  const otherParticipantOnline = otherUserId
+    ? onlineUserSet.has(String(otherUserId))
+    : false;
 
   if (isLoading) {
     return <ChatSkeleton />;

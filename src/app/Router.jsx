@@ -23,6 +23,7 @@ import { AdminRoute } from "./RoleRoute";
 import { CreateStory } from "../features/wanted/stories/CreateStory";
 import ReadMorePage from "../components/ReadMorePage";
 import FAQPage from "../components/FAQPage";
+import MapPage from "../pages/Map";
 
 const LegacyCaseRedirect = () => {
   const { id } = useParams();
@@ -72,6 +73,7 @@ export const Router = () => {
 
       <Route path="/read-more" element={<ReadMorePage />} />
       <Route path="/faq" element={<FAQPage />} />{" "}
+      <Route path="/map" element={<MapPage />} />
       <Route path="/how-it-works" element={<div>How It Works</div>} />
       <Route path="/about" element={<div>About</div>} />
       <Route path="/mission" element={<div>Mission</div>} />

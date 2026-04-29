@@ -4,7 +4,6 @@ import { toast } from "sonner";
 import { aiService, normalizeAssistantResponse } from "../services/api";
 import { useLanguage } from "../lib/i18n";
 import { useAuth } from "../hooks/useAuth";
-import { isAdminRole } from "../lib/authRoles";
 
 const readFileAsBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -37,7 +36,7 @@ export const AIDeskPage = () => {
   const [verifyFiles, setVerifyFiles] = useState({ file1: null, file2: null });
   const [verifyResult, setVerifyResult] = useState(null);
   const [verifyLoading, setVerifyLoading] = useState(false);
-  const canVerifyFaces = isAdminRole(user?.role);
+  const canVerifyFaces = Boolean(user);
 
   const handleAssistant = async () => {
     const message = assistantInput.trim();
@@ -242,6 +241,7 @@ export const AIDeskPage = () => {
                 <input
                   type="file"
                   accept="image/*"
+                  capture="user"
                   className="hidden"
                   onChange={(event) =>
                     setVerifyFiles((current) => ({
@@ -256,6 +256,7 @@ export const AIDeskPage = () => {
                 <input
                   type="file"
                   accept="image/*"
+                  capture="user"
                   className="hidden"
                   onChange={(event) =>
                     setVerifyFiles((current) => ({
@@ -275,14 +276,12 @@ export const AIDeskPage = () => {
             >
               {verifyLoading
                 ? "Verifying..."
-                : canVerifyFaces
-                  ? "Run face verification"
-                  : "Admin only"}
+                : "Run face verification"}
             </button>
 
             {!canVerifyFaces ? (
               <p className="mt-3 text-sm text-stone-500">
-                Face verification is restricted to admin and coordinator accounts.
+                Please sign in to run face verification.
               </p>
             ) : null}
 

@@ -10,6 +10,8 @@ export const useChat = (roomId) => {
   const queryClient = useQueryClient();
   const [isConnected, setIsConnected] = useState(false);
   const [typingUsers, setTypingUsers] = useState(new Set());
+  // Track online presence for any participant id.
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
   
   // Store roomId in a ref to avoid stale closures
   const roomIdRef = useRef(roomId);
@@ -75,8 +77,20 @@ export const useChat = (roomId) => {
     };
     const handleDisconnect = () => setIsConnected(false);
 
+    const handleUserStatus = ({ userId, isOnline }) => {
+      if (!userId) return;
+      const normalized = String(userId);
+      setOnlineUsers((prev) => {
+        const next = new Set(prev);
+        if (isOnline) next.add(normalized);
+        else next.delete(normalized);
+        return next;
+      });
+    };
+
     socketClient.on("connect", handleConnect);
     socketClient.on("disconnect", handleDisconnect);
+    socketClient.on("user-status", handleUserStatus);
 
     // Join room if roomId exists
     if (roomId) {
@@ -86,6 +100,7 @@ export const useChat = (roomId) => {
     return () => {
       socketClient.off("connect", handleConnect);
       socketClient.off("disconnect", handleDisconnect);
+      socketClient.off("user-status", handleUserStatus);
       
       if (roomId) {
         socketClient.emit("leave-room", roomId);
@@ -312,6 +327,7 @@ export const useChat = (roomId) => {
     isLoading: roomsLoading || messagesLoading,
     isConnected,
     typingUsers: Array.from(typingUsers),
+    onlineUsers: Array.from(onlineUsers),
     sendMessage: sendMessageMutation.mutate,
     sendTyping,
     markAsRead,
