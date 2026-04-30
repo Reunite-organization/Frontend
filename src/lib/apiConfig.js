@@ -13,11 +13,14 @@ const stripApiSuffix = (value) => value.replace(/\/api(\/)?$/i, '');
 
 const rawApiUrl = import.meta.env.VITE_API_URL;
 const configuredApiUrl = normalizeConfiguredApiUrl(rawApiUrl);
+const preferDirectApiInDev = String(import.meta.env.VITE_USE_DIRECT_API || "").toLowerCase() === "true";
 
-// In development, we use the proxy (empty base URL) if no VITE_API_URL is provided.
-// If VITE_API_URL is provided, we use it directly to avoid proxy issues with live APIs.
-export const apiBaseUrl = configuredApiUrl || (import.meta.env.DEV ? '' : '');
-export const socketServerUrl = stripApiSuffix(configuredApiUrl) || (import.meta.env.DEV ? undefined : undefined);
+// In development we default to Vite proxy to avoid CORS headaches.
+// Set VITE_USE_DIRECT_API=true only when you intentionally want direct cross-origin calls.
+export const apiBaseUrl =
+  import.meta.env.DEV && !preferDirectApiInDev ? "" : configuredApiUrl;
+export const socketServerUrl =
+  import.meta.env.DEV && !preferDirectApiInDev ? undefined : stripApiSuffix(configuredApiUrl);
 
 export default {
   apiBaseUrl,
