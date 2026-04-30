@@ -1,0 +1,275 @@
+﻿
+@import "tailwindcss";
+
+@theme {
+  --color-sahara: #D4A54A;
+  --color-sahara-light: #E5C07A;
+  --color-sahara-dark: #B8892E;
+  
+  --color-terracotta: #C4654A;
+  --color-terracotta-light: #D48873;
+  --color-terracotta-dark: #A44C3E;
+  
+  --color-olive: #6B705C;
+  --color-olive-light: #8B917D;
+  --color-olive-dark: #4A4E3F;
+  
+  --color-clay: #A44C3E;
+  --color-clay-light: #C4654A;
+  --color-clay-dark: #823D32;
+  
+  /* Neutrals - Clean & Airy */
+  --color-warm-white: #FDFBF7;
+  --color-cream: #F5F0E8;
+  --color-warm-gray: #E8E3D9;
+  --color-stone: #8B8580;
+  --color-charcoal: #2C2825;
+  
+  /* Accent - Hope & Connection */
+  --color-hope-green: #5B8C6F;
+  --color-hope-green-light: #7AA88C;
+  --color-warmth: #D4956B;
+  --color-gentle: #A89B8C;
+  
+  /* Status Colors */
+  --color-success: #4A7C5F;
+  --color-warning: #D4952B;
+  --color-error: #B8554A;
+  --color-info: #7A8B7A;
+  
+  /* Typography */
+  --font-display: "Playfair Display", Georgia, serif;
+  --font-body: "Source Sans Pro", -apple-system, sans-serif;
+  --font-amharic: "Noto Sans Ethiopic", "Nyala", sans-serif;
+  
+  /* Animations */
+  --animate-fade-up: fadeUp 0.6s ease-out;
+  --animate-fade-in: fadeIn 0.4s ease-out;
+  --animate-slide-in: slideIn 0.3s ease-out;
+  --animate-pulse-soft: pulseSoft 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  --animate-float: float 6s ease-in-out infinite;
+  
+  /* Border Radius */
+  --radius-lg: 1rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+  --radius-full: 9999px;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+.dark {
+  /* Backgrounds */
+  --color-warm-white: #0F0E0D;  
+  --color-cream: #181716;      
+  --color-warm-gray: #262321; 
+
+  /* Text */
+  --color-charcoal: #ffffff;    /* primary text on dark */
+  --color-stone: #B8B0A7;       /* secondary text */
+
+  /* Accents tuned for dark */
+  --color-olive: #fafafa;
+  --color-olive-light: #ffffff;
+  --color-terracotta: #E07B5A;
+  --color-terracotta-dark: #C76447;
+  --color-clay: #C76447;
+  --color-clay-dark: #9C4A35;
+}
+
+/* Keyframe Animations */
+@keyframes fadeUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@keyframes slideIn {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(0); }
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Base Styles */
+@layer base {
+  * {
+    @apply border-warm-gray;
+  }
+  
+  body {
+    @apply bg-warm-white text-charcoal font-body antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-medium tracking-tight;
+  }
+  
+  /* Amharic text optimization */
+  .font-amharic {
+    @apply font-amharic leading-relaxed;
+  }
+  
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  
+  ::-webkit-scrollbar-track {
+    @apply bg-cream;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    @apply bg-stone/30 rounded-full hover:bg-stone/50 transition-colors;
+  }
+}
+
+/* Component Utilities */
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+  
+  @media (width >= 640px) {
+    max-width: 640px;
+  }
+  
+  @media (width >= 768px) {
+    max-width: 768px;
+  }
+  
+  @media (width >= 1024px) {
+    max-width: 1024px;
+  }
+  
+  @media (width >= 1280px) {
+    max-width: 1280px;
+  }
+}
+
+/* Custom Components */
+@layer components {
+  /* Humanitarian Card */
+  .card-humanitarian {
+    @apply bg-cream rounded-2xl p-6 border border-warm-gray/50 
+           shadow-sm hover:shadow-md transition-all duration-300;
+  }
+  
+  /* Gradient Text */
+  .text-gradient-warm {
+    @apply bg-gradient-to-r from-terracotta to-sahara bg-clip-text text-transparent;
+  }
+  
+  /* Button Variants */
+  .btn-primary {
+    @apply px-6 py-3 bg-terracotta text-white rounded-full font-medium
+           hover:bg-clay transition-all duration-200 
+           shadow-sm hover:shadow-md active:scale-95
+           disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-secondary {
+    @apply px-6 py-3 bg-sahara text-white rounded-full font-medium
+           hover:bg-sahara-dark transition-all duration-200
+           shadow-sm hover:shadow-md active:scale-95;
+  }
+  
+  .btn-outline {
+    @apply px-6 py-3 border-2 border-olive text-olive rounded-full font-medium
+           hover:bg-olive hover:text-white transition-all duration-200
+           active:scale-95;
+  }
+  
+  .btn-ghost {
+    @apply px-6 py-3 text-olive hover:text-terracotta font-medium
+           transition-colors duration-200;
+  }
+  
+  /* Impact Stat Card */
+  .stat-card {
+    @apply text-center p-6 rounded-2xl bg-gradient-to-br from-cream to-warm-white
+           border border-warm-gray/30;
+  }
+  
+  .stat-number {
+    @apply font-display text-4xl md:text-5xl font-bold text-terracotta mb-2;
+  }
+  
+  .stat-label {
+    @apply text-olive text-sm uppercase tracking-wider;
+  }
+}
+@layer utilities {
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .snap-x {
+    scroll-snap-type: x mandatory;
+  }
+  
+  .snap-start {
+    scroll-snap-align: start;
+  }
+
+  /* Dark-mode alignment for legacy light-only Tailwind classes */
+  .dark .bg-white {
+    background-color: #181716 !important;
+  }
+  .dark .bg-white\/95 {
+    background-color: rgb(24 23 22 / 0.95) !important;
+  }
+  .dark .bg-white\/80 {
+    background-color: rgb(24 23 22 / 0.8) !important;
+  }
+  .dark .bg-stone-50 {
+    background-color: #1f1c1a !important;
+  }
+  .dark .bg-stone-100 {
+    background-color: #262321 !important;
+  }
+
+  .dark .border-stone-200 {
+    border-color: #34302d !important;
+  }
+  .dark .border-stone-300 {
+    border-color: #3f3a36 !important;
+  }
+
+  .dark .text-stone-500 {
+    color: #a89f95 !important;
+  }
+  .dark .text-stone-600 {
+    color: #b8afa5 !important;
+  }
+  .dark .text-stone-700 {
+    color: #d2cbc2 !important;
+  }
+  .dark .text-charcoal {
+    color: #f8f4ee !important;
+  }
+
+  .dark .hover\:bg-stone-50:hover {
+    background-color: #262321 !important;
+  }
+  .dark .hover\:bg-stone-100:hover {
+    background-color: #2f2a27 !important;
+  }
+}
