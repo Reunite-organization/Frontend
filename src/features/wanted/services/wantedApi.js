@@ -5,7 +5,7 @@ const cleanParams = (params) => {
     Object.entries(params).filter(([_, value]) => {
       if (value === null || value === undefined) return false;
       if (typeof value === "string" && value.trim() === "") return false;
-      if (typeof value === "number" && isNaN(value)) return false;
+      if (typeof value === "number" && Number.isNaN(value)) return false;
       return true;
     }),
   );
@@ -100,7 +100,18 @@ export const wantedApi = {
   leaveChat: (roomId) =>
     axios.post(`/api/wanted/chat/${roomId}/leave`).then((res) => res.data),
   deleteMessage: (messageId) =>
-    axios.delete(`/api/wanted/chat/messages/${messageId}`).then((res) => res.data),
+    axios
+      .delete(`/api/wanted/chat/messages/${messageId}`)
+      .then((res) => res.data)
+      .catch((error) => {
+        if (error?.response?.status === 404) {
+          return {
+            success: true,
+            message: "Message already deleted",
+          };
+        }
+        throw error;
+      }),
   
   uploadVoiceMessage: (formData) =>
     axios

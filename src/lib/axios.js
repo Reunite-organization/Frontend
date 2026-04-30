@@ -21,6 +21,35 @@ const instance = axios.create({
   },
 });
 
+const normalizeUploadUrl = (value) => {
+  if (typeof value !== "string") return value;
+
+  if (value.startsWith("/uploads/")) {
+    return apiBaseUrl ? `${apiBaseUrl}${value}` : value;
+  }
+
+  if (apiBaseUrl && value.startsWith("http://localhost:5173/uploads/")) {
+    return value.replace("http://localhost:5173", apiBaseUrl);
+  }
+
+  return value;
+};
+
+const normalizeUploadUrlsDeep = (value) => {
+  if (Array.isArray(value)) {
+    return value.map((item) => normalizeUploadUrlsDeep(item));
+  }
+
+  if (value && typeof value === "object") {
+    for (const key of Object.keys(value)) {
+      value[key] = normalizeUploadUrlsDeep(value[key]);
+    }
+    return value;
+  }
+
+  return normalizeUploadUrl(value);
+};
+
 instance.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("auth-token");
@@ -49,7 +78,12 @@ instance.interceptors.request.use(
 );
 
 instance.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (response?.data) {
+      normalizeUploadUrlsDeep(response.data);
+    }
+    return response;
+  },
   async (error) => {
     const originalRequest = error.config;
 
