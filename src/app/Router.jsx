@@ -38,11 +38,10 @@ export const Router = () => {
       <Route path="/cases" element={<MissingCasesPage />} />
       <Route path="/cases/:id" element={<MissingCaseDetailPage />} />
       <Route path="/case/:id" element={<LegacyCaseRedirect />} />
-      <Route element={<ProtectedRoute />}>
-        <Route path="/report" element={<ReportCasePage />} />
-        <Route path="/volunteers" element={<VolunteerOperationsPage />} />
-        <Route path="/settings" element={<SettingsPage />} />
-      </Route>
+      <Route path="/report" element={<ReportCasePage />} />
+      <Route path="/volunteers" element={<VolunteerOperationsPage />} />
+      <Route path="/settings" element={<SettingsPage />} />
+      <Route element={<ProtectedRoute />}></Route>
       <Route
         path="/volunteer"
         element={<Navigate to="/volunteers" replace />}
@@ -72,7 +71,6 @@ export const Router = () => {
         <Route path="/wanted/chat/:roomId?" element={<ChatPage />} />
         <Route path="/wanted/profile/create" element={<CreateProfilePage />} />
       </Route>
-
       <Route path="/read-more" element={<ReadMorePage />} />
       <Route path="/faq" element={<FAQPage />} />{" "}
       <Route path="/map" element={<MapPage />} />

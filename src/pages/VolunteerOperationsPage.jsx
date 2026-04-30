@@ -58,7 +58,7 @@ export const VolunteerOperationsPage = () => {
 
   const readiness = useMemo(
     () => [
-    {
+      {
         label: "Location status",
         value: location ? "Captured" : "Waiting",
       },
@@ -127,7 +127,8 @@ export const VolunteerOperationsPage = () => {
       }
     } catch (error) {
       toast.error(
-        error?.response?.data?.error || "Unable to register volunteer right now.",
+        error?.response?.data?.error ||
+          "Unable to register volunteer right now.",
       );
     } finally {
       setRegistering(false);
@@ -202,7 +203,8 @@ export const VolunteerOperationsPage = () => {
             Volunteer Response
           </p>
           <h1 className="mt-3 text-4xl font-semibold text-charcoal">
-            Register volunteers, capture field location, and report nearby sightings
+            Register volunteers, capture field location, and report nearby
+            sightings
           </h1>
           <p className="mt-2 max-w-3xl text-base leading-7 text-stone">
             This page is focused on the missing-person backend. It supports
@@ -289,10 +291,7 @@ export const VolunteerOperationsPage = () => {
 
             <div className="mt-5 grid gap-4">
               {readiness.map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-2xl bg-stone-50 p-4"
-                >
+                <div key={item.label} className="rounded-2xl bg-stone-50 p-4">
                   <p className="text-xs uppercase tracking-[0.2em] text-stone-500">
                     {item.label}
                   </p>
@@ -312,8 +311,8 @@ export const VolunteerOperationsPage = () => {
               Quick sighting
             </h2>
             <p className="mt-2 text-sm text-stone-500">
-              Sends a full quick sighting payload (location, confidence, clothing,
-              optional target case) into the backend quick flow.
+              Sends a full quick sighting payload (location, confidence,
+              clothing, optional target case) into the backend quick flow.
             </p>
             <select
               value={quickForm.caseId}
@@ -383,7 +382,7 @@ export const VolunteerOperationsPage = () => {
             <button
               type="submit"
               disabled={sendingSighting || !quickForm.description.trim()}
-              className="mt-5 inline-flex items-center gap-2 rounded-full bg-charcoal px-5 py-3 text-sm font-semibold text-white transition hover:bg-charcoal/90 disabled:opacity-60"
+              className="mt-5 inline-flex items-center gap-2 rounded-full bg-charcoal px-5 py-3 text-sm font-semibold text-white transition   dark:text-white dark:bg-orange-700 dark:hover:bg-orange-500"
             >
               <Send className="h-4 w-4" />
               {sendingSighting ? "Sending..." : "Submit quick sighting"}
@@ -457,7 +456,7 @@ export const VolunteerOperationsPage = () => {
                     </a>
                     <a
                       href={`/cases/${caseItem.caseId}`}
-                      className="rounded-full bg-charcoal px-4 py-2 text-sm font-semibold text-white"
+                      className="rounded-full bg-charcoal px-4 py-2 text-sm font-semibold text-white dark:bg-orange-400"
                     >
                       Review case
                     </a>
