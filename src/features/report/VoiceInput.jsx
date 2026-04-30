@@ -228,27 +228,35 @@ export default function VoiceInput({ onTranscript, language = 'am-ET' }) {
       
       {/* Language Selector - Modern Pills */}
       <div className="flex justify-center">
-        <div className="inline-flex bg-stone-100 rounded-2xl p-1.5 gap-1">
-          {languages.map(lang => (
-            <button
-              key={lang.code}
-              type="button"
-              onClick={() => !isRecording && setSelectedLanguage(lang.code)}
-              disabled={isRecording}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all ${
-                selectedLanguage === lang.code
-                  ? 'bg-white text-stone-900 shadow-sm ring-1 ring-stone-200'
-                  : 'text-stone-500 hover:text-stone-700 hover:bg-white/50'
-              } ${isRecording ? 'opacity-50 cursor-not-allowed' : ''}`}
-            >
-              <span className="text-base">{lang.flag}</span>
-              <span>{lang.name}</span>
-              {selectedLanguage === lang.code && (
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
-              )}
-            </button>
-          ))}
-        </div>
+        <div className="flex justify-center">
+  <div className="inline-flex bg-stone-100 dark:bg-[#1a1a1a] rounded-2xl p-1.5 gap-1 border border-orange-200 dark:border-orange-500/40">
+    {languages.map(lang => (
+      <button
+        key={lang.code}
+        type="button"
+        onClick={() => !isRecording && setSelectedLanguage(lang.code)}
+        disabled={isRecording}
+        className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-semibold transition-all
+          
+          ${
+            selectedLanguage === lang.code
+              ? "bg-orange-500 text-white shadow-md shadow-orange-500/30 ring-1 ring-orange-300 dark:ring-orange-400"
+              : "text-stone-600 dark:text-stone-300 hover:text-orange-600 dark:hover:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10"
+          }
+
+          ${isRecording ? "opacity-50 cursor-not-allowed" : ""}
+        `}
+      >
+        <span className="text-base">{lang.flag}</span>
+        <span>{lang.name}</span>
+
+        {selectedLanguage === lang.code && (
+          <CheckCircle2 className="w-3.5 h-3.5 text-white" />
+        )}
+      </button>
+    ))}
+  </div>
+</div>
       </div>
       
       {/* Recording Button - Enhanced Design */}
@@ -392,32 +400,46 @@ export default function VoiceInput({ onTranscript, language = 'am-ET' }) {
       )}
       
       {/* Tips Card - Modern Design */}
-      <div className="rounded-2xl border-2 border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50 p-5">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 bg-amber-100 rounded-lg flex items-center justify-center">
-            <Sparkles className="w-4 h-4 text-amber-700" />
-          </div>
-          <h4 className="text-sm font-semibold text-amber-900">Voice Tips</h4>
-        </div>
-        <div className="grid grid-cols-2 gap-2">
-          <div className="flex items-start gap-2">
-            <span className="text-amber-400 mt-0.5 font-bold">•</span>
-            <p className="text-xs text-amber-800">Speak clearly & naturally</p>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-amber-400 mt-0.5 font-bold">•</span>
-            <p className="text-xs text-amber-800">Minimize background noise</p>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-amber-400 mt-0.5 font-bold">•</span>
-            <p className="text-xs text-amber-800">Describe in detail</p>
-          </div>
-          <div className="flex items-start gap-2">
-            <span className="text-amber-400 mt-0.5 font-bold">•</span>
-            <p className="text-xs text-amber-800">Both languages supported</p>
-          </div>
-        </div>
-      </div>
+      <div className="rounded-2xl border-2 bg-amber-100 border-orange-500/40 dark:bg-[#1a1a1a] p-5">
+  <div className="flex items-center gap-2 mb-3">
+    <div className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center">
+      <Sparkles className="w-4 h-4 text-amber-700 dark:text-orange-400" />
+    </div>
+    <h4 className="text-sm font-semibold text-amber-900 dark:text-orange-300">
+      Voice Tips
+    </h4>
+  </div>
+
+  <div className="grid grid-cols-2 gap-2">
+    <div className="flex items-start gap-2">
+      <span className="text-amber-400 dark:text-orange-400 mt-0.5 font-bold">•</span>
+      <p className="text-xs text-amber-800 dark:text-orange-300">
+        Speak clearly & naturally
+      </p>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="text-amber-400 dark:text-orange-400 mt-0.5 font-bold">•</span>
+      <p className="text-xs text-amber-800 dark:text-orange-300">
+        Minimize background noise
+      </p>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="text-amber-400 dark:text-orange-400 mt-0.5 font-bold">•</span>
+      <p className="text-xs text-amber-800 dark:text-orange-300">
+        Describe in detail
+      </p>
+    </div>
+
+    <div className="flex items-start gap-2">
+      <span className="text-amber-400 dark:text-orange-400 mt-0.5 font-bold">•</span>
+      <p className="text-xs text-amber-800 dark:text-orange-300">
+        Both languages supported
+      </p>
+    </div>
+  </div>
+</div>
     </div>
   );
 }

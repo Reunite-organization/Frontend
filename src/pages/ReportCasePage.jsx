@@ -344,9 +344,9 @@ export const ReportCasePage = () => {
   };
 
   return (
-<div className="min-h-screen bg-white dark:bg-[#0f0f0f] transition-colors">      {/* Header */}
+<div className="min-h-screen bg-white  dark:bg-[#0f0f0f] transition-colors">      {/* Header */}
     
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className=" dark:border-orange-500/40 dark:border-2 dark:rounded-lg max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Hero Section */}
         <div className="mb-5">
           <div className="flex items-center gap-3 mb-3">
@@ -357,7 +357,7 @@ export const ReportCasePage = () => {
               {language === "am" ? "አስቸኳይ ሪፖርት" : "Urgent Report"}
             </p>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-3">
+          <h1 className="text-3xl sm:text-4xl font-bold text-stone-900 mb-3 dark:text-white">
             {language === "am"
               ? "እያንዳንዱ ዝርዝር መረጃ ወሳኝ ነው"
               : "Every detail matters in finding someone"}
@@ -372,11 +372,12 @@ export const ReportCasePage = () => {
               key={section.id}
               type="button"
               onClick={() => setActiveSection(section.id)}
-              className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative ${
-                activeSection === section.id
-                  ? "bg-white text-stone-900 shadow-sm"
-                  : "text-stone-500 hover:text-stone-700"
-              }`}
+             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative border
+  ${
+    activeSection === section.id
+      ? "bg-white dark:bg-[#1f1f1f] text-stone-900 dark:text-white border-orange-500 shadow-sm"
+      : "bg-transparent text-stone-600 dark:text-stone-300 border-stone-300 dark:border-orange-500/40 hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400"
+  }`}
             >
               <span>{section.label}</span>
               {isSectionComplete(section.id) && (
@@ -392,7 +393,7 @@ export const ReportCasePage = () => {
             {activeSection === "person" && (
               <div className="bg-white rounded-3xl border border-stone-200 dark:border-orange-500/30 p-6 sm:p-8 space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-stone-900">
+                  <h2 className="text-xl font-bold dark:text-white text-stone-900">
                     {language === "am"
                       ? "የጠፋው ሰው መረጃ"
                       : "Missing Person Details"}
@@ -541,7 +542,7 @@ export const ReportCasePage = () => {
             {activeSection === "incident" && (
               <div className="bg-white rounded-3xl border border-stone-200 dark:border-orange-500/30 p-6 sm:p-8 space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-stone-900">
+                  <h2 className="text-xl font-bold dark:text-white text-stone-900">
                     {language === "am" ? "የክስተት ዝርዝሮች" : "Incident Details"}
                   </h2>
                   <p className="text-sm text-stone-500 mt-1">
@@ -678,7 +679,8 @@ export const ReportCasePage = () => {
                       type="button"
                       onClick={handleAiExtract}
                       disabled={extracting}
-                      className="inline-flex items-center gap-2 px-5 py-3 bg-clay-light text-white rounded-2xl text-sm font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 transition-all shadow-lg shadow-purple-200"
+                      className="inline-flex items-center gap-2 px-5 py-3 bg-clay-light text-white rounded-2xl text-sm 
+                      font-semibold hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 transition-all "
                     >
                       {extracting ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -700,6 +702,7 @@ export const ReportCasePage = () => {
                       </span>
                     </div>
                     <VoiceInput
+              
                       language={language === "am" ? "am-ET" : "en-US"}
                       onTranscript={(text) => {
                         setVoiceText(text);
@@ -754,7 +757,7 @@ export const ReportCasePage = () => {
             {activeSection === "reporter" && (
               <div className="bg-white rounded-3xl border border-stone-200 dark:border-orange-500/30 p-6 sm:p-8 space-y-6">
                 <div>
-                  <h2 className="text-xl font-bold text-stone-900">
+                  <h2 className="text-xl dark:text-white font-bold text-stone-900">
                     {language === "am" ? "የሪፖርተር መረጃ" : "Reporter Information"}
                   </h2>
                   <p className="text-sm text-stone-500 mt-1">
@@ -907,9 +910,9 @@ export const ReportCasePage = () => {
                     window.scrollTo({ top: 0, behavior: "smooth" });
                   }
                 }}
-                className={`px-6 py-3 text-stone-600 font-semibold rounded-2xl hover:bg-stone-100 transition-all ${
-                  activeSection === "person" ? "invisible" : ""
-                }`}
+               className={`px-6 py-3 text-white font-semibold bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 rounded-2xl hover:opacity-90 transition-all ${
+  activeSection === "person" ? "invisible" : ""
+}`}
               >
                 ← {language === "am" ? "ቀዳሚ" : "Previous"}
               </button>
@@ -939,7 +942,7 @@ export const ReportCasePage = () => {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="px-10 py-3.5 bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold rounded-2xl hover:from-red-700 hover:to-red-800 disabled:opacity-50 transition-all shadow-xl shadow-red-200 flex items-center gap-2"
+                  className="px-10 py-3.5 bg-gradient-to-r from-orange-500 to-orange-600 dark:from-orange-600 dark:to-orange-700 text-white font-semibold rounded-2xl hover:from-red-700 hover:to-red-800 disabled:opacity-50 transition-all flex items-center gap-2"
                 >
                   {loading ? (
                     <>
