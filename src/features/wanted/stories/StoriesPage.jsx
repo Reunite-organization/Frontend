@@ -7,7 +7,7 @@ export const StoriesPage = () => {
   const { language } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-warm-white">
+    <div className="mt-17 min-h-screen bg-warm-white">
       {/* Hero Header with Video Background */}
       <div className="relative py-20 md:py-28 overflow-hidden">
         {/* Background Video */}

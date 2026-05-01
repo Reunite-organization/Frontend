@@ -252,7 +252,7 @@ export const AdminControlPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="mt-16 min-h-screen bg-stone-50">
       <section className="border-b border-stone-200 bg-white">
         <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
           <div className="flex flex-wrap items-center justify-between gap-4">

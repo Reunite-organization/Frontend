@@ -202,7 +202,7 @@ export const ChatPage = () => {
 
   if (!roomId) {
     return (
-      <div className="h-screen flex bg-gray-50 font-sans">
+      <div className="mt-19 h-screen flex bg-gray-50 font-sans">
         <ChatSidebar
           rooms={rooms}
           currentRoomId={roomId}

@@ -32,7 +32,7 @@ const OrgHeroSection = () => {
   const { language } = useLanguage();
 
   return (
-    <section className="relative min-h-[80vh] flex items-center justify-center text-white overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center text-white overflow-hidden pt-16 md:pt-20">
 
       {/* 🎥 VIDEO BACKGROUND */}
       <video
@@ -146,10 +146,10 @@ const DualSystemSection = () => {
   };
 
   return (
-    <section className="relative py-28 md:py-32 bg-white">
+    <section className="relative py-28 md:py-32 bg-white dark:from-black dark:via-zinc-950 dark:to-black dark:bg-gradient-to-b">
 
       {/* subtle divider */}
-      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-stone-200 to-transparent" />
+      <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-stone-200 dark:via-stone-800 to-transparent" />
 
       <div className="container">
 
@@ -164,7 +164,7 @@ const DualSystemSection = () => {
 
           <motion.h2
             variants={itemVariants}
-            className="text-3xl md:text-5xl font-bold tracking-tight text-charcoal"
+            className="text-3xl md:text-5xl font-bold tracking-tight text-charcoal dark:text-white"
           >
             {language === "am"
               ? "ሪዩናይት ምን አገልግሎት ይሰጣል።"
@@ -173,7 +173,7 @@ const DualSystemSection = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-base md:text-lg text-stone-600 leading-relaxed"
+            className="text-base md:text-lg text-stone-600 dark:text-stone-300 leading-relaxed"
           >
             {language === "am"
               ? " ሪዩናይት ለእናንተ ሁለት ዋና ዋና መንገዶችን ያቀርባል፤ የመጀመሪያው በድንገት ለጠፉ ሰዎች እና  ፈጣን ምላሽ ለሚሹ ጉዳዮች በማህበረሰቡ ተሳትፎ ፈጣን ምላሽ የሚሰጥ ሲሆን። ሁለተኛው ደግሞ ለረጅም ጊዜ አድራሻቸውን በማጣት ከተለዩዋቸው ከምትወዳቸው ሰዎች ጋር ለመገናኘት አስተማማኝ መንገድ ማቅረብ የሚቀርብ ነው።በሕይወት ያለ ሰው ይገናኛል እና ማንም ሰው ጠፍቶ መቅረት የለበትም። ፍለጋዎን ዛረዉኑ ይጀምሩ።"
@@ -182,7 +182,7 @@ const DualSystemSection = () => {
 
           <motion.h2
             variants={itemVariants}
-            className="text-3xl md:text-5xl font-bold tracking-tight text-charcoal pt-8"
+            className="text-3xl md:text-5xl font-bold tracking-tight text-charcoal dark:text-white pt-8"
           >
             {language === "am"
               ? "ሪዩናይትን እንዴት ልጠቀም።"
@@ -191,7 +191,7 @@ const DualSystemSection = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-base md:text-lg text-stone-600 leading-relaxed"
+            className="text-base md:text-lg text-stone-600 dark:text-stone-300 leading-relaxed"
           >
             {language === "am"
               ? "የምትወዱትን ሰው መፈለግ ጥንቃቄ የሚጠይቅ ሂደት ነው። ፍለጋዎን ለመጀመር፣ ከእርሶ ፍለጋ ጋር የሚስማማውን ሂደት ይምረጡ።"
@@ -211,13 +211,13 @@ const DualSystemSection = () => {
           {/* ===== LEFT CARD ===== */}
           <motion.div
             variants={itemVariants}
-            className="group bg-white rounded-3xl p-8 md:p-10 border border-stone-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            className="group bg-white dark:bg-stone-900/30 rounded-3xl p-8 md:p-10 border border-stone-200 dark:border-stone-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
-            <h3 className="text-xl md:text-2xl font-semibold mb-4 text-charcoal">
+            <h3 className="text-xl md:text-2xl font-semibold mb-4 text-charcoal dark:text-white">
               {language === "am" ? "የጠፉቦትን ሰው ይፈልጉ" : "Missing Person Search"}
             </h3>
 
-            <p className="text-stone-600 mb-6 leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-300 mb-6 leading-relaxed">
               {language === "am"
                 ? " በቅርብ ጊዜም ሆነ ከረጅም ጊዜ  በፊት በድንገት የጠፉ ሰዎችን ለመፈለግ እሄኛውን መተግበሪያ ይጠቀሙ።።"
                 : "Use this system if you are dealing with a sudden loss or an urgent situation where time is of the essence."}
@@ -229,11 +229,11 @@ const DualSystemSection = () => {
                 { icon: Users, text: language === "am" ? "እንዴት ላመልክት?" : "How to use it" , description: language === "am" ? "..." : "Click the Find Missing Person search below" },
                 { icon: MapPin, text: language === "am" ? "እንዴት ልከታተል?" : "What to expect:", description: language === "am" ? "..." : "When you start a search, your report is prioritized..." }
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm text-stone-600">
-                  <item.icon className="w-4 h-4 text-red-500 mt-1 flex-shrink-0" />
+                <li key={i} className="flex items-start gap-3 text-sm text-stone-600 dark:text-stone-400">
+                  <item.icon className="w-4 h-4 text-red-500 dark:text-red-400 mt-1 flex-shrink-0" />
                   <div>
-                    <span className="font-medium text-charcoal">{item.text}</span>
-                    <p className="text-stone-500">{item.description}</p>
+                    <span className="font-medium text-charcoal dark:text-white">{item.text}</span>
+                    <p className="text-stone-500 dark:text-stone-400">{item.description}</p>
                   </div>
                 </li>
               ))}
@@ -255,13 +255,13 @@ const DualSystemSection = () => {
           {/* ===== RIGHT CARD ===== */}
           <motion.div
             variants={itemVariants}
-            className="group bg-white rounded-3xl p-8 md:p-10 border border-stone-200 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+            className="group bg-white dark:bg-stone-900/30 rounded-3xl p-8 md:p-10 border border-stone-200 dark:border-stone-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
           >
-            <h3 className="text-xl md:text-2xl font-semibold mb-4 text-charcoal">
+            <h3 className="text-xl md:text-2xl font-semibold mb-4 text-charcoal dark:text-white">
               {language === "am" ? "የልቦትን ሰው ያግኙ" : "Reunite Memory"}
             </h3>
 
-            <p className="text-stone-600 mb-6 leading-relaxed">
+            <p className="text-stone-600 dark:text-stone-300 mb-6 leading-relaxed">
               {language === "am"
                 ? "በትዝታ እና በታሪኮች ላይ ተመስርቶ..."
                 : "Reconnect with people from your past using shared memories and stories. Safe verification and private reconnection built in."}
@@ -273,11 +273,11 @@ const DualSystemSection = () => {
                 { icon: Users, text: language === "am" ? "እንዴት ላመልክት?" : "How to use it" , description: language === "am" ? "..." : "Click the Reconnect With Someone search below" },
                 { icon: MapPin, text: language === "am" ? "እንዴት ልከታተል?" : "What to expect:", description: language === "am" ? "..." : "When you begin, share a memory..." }
               ].map((item, i) => (
-                <li key={i} className="flex items-start gap-3 text-sm text-stone-600">
-                  <item.icon className="w-4 h-4 text-amber-500 mt-1 flex-shrink-0" />
+                <li key={i} className="flex items-start gap-3 text-sm text-stone-600 dark:text-stone-400">
+                  <item.icon className="w-4 h-4 text-amber-500 dark:text-amber-400 mt-1 flex-shrink-0" />
                   <div>
-                    <span className="font-medium text-charcoal">{item.text}</span>
-                    <p className="text-stone-500">{item.description}</p>
+                    <span className="font-medium text-charcoal dark:text-white">{item.text}</span>
+                    <p className="text-stone-500 dark:text-stone-400">{item.description}</p>
                   </div>
                 </li>
               ))}
@@ -313,7 +313,7 @@ const LossUnderstandingSection = () => {
   }, [controls, inView]);
 
   return (
-    <section className="py-24 md:py-32 bg-gradient-to-b from-white to-stone-50">
+    <section className="py-24 md:py-32 bg-gradient-to-b from-white to-stone-50 dark:from-black dark:via-zinc-950 dark:to-black">
       <div className="container max-w-5xl">
 
         <motion.div
@@ -324,14 +324,14 @@ const LossUnderstandingSection = () => {
           className="text-center"
         >
           {/* ===== TITLE ===== */}
-          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6 text-black ">
+          <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6 text-black dark:text-white">
             {language === "am" 
               ? "ሰዎች በተለያየ መንገድ ይራራቃሉ"
               : "People Get Lost in Different Ways"}
           </h2>
 
           {/* ===== SUBTEXT ===== */}
-          <p className="text-base md:text-lg text-stone-700 mb-20 max-w-2xl mx-auto leading-relaxed">
+          <p className="text-base md:text-lg text-stone-700 dark:text-stone-300 mb-20 max-w-2xl mx-auto leading-relaxed">
             {language === "am"
               ? "ሰዎች በድንገት ይጠፋፋሉ፣ በጊዜ ሂደት ውስጥም ኑሮን ለማሸነፍ በሚያደርጉት ውጣ ውረድ ውስጥ አንዱ የአንዱ አንድራሳ በማጣት፣ ይራራቃሉ አንዱ የሕይወት አካል ነውና። "
               : "Understanding the nature of separation helps us build better tools for reconnection."}
@@ -347,11 +347,11 @@ const LossUnderstandingSection = () => {
               transition={{ delay: 0.2 }}
               className="
                 relative p-8 md:p-10 
-                rounded-3xl bg-white
+                rounded-3xl bg-white dark:bg-stone-900/30
                  backdrop-blur-md 
-                border border-red-100 
-                shadow-lg shadow-red-100/40
-                hover:shadow-xl hover:shadow-red-200/50
+                border border-red-100 dark:border-stone-800
+                shadow-lg shadow-red-100/40 dark:shadow-lg dark:shadow-black/20
+                hover:shadow-xl hover:shadow-red-200/50 dark:hover:shadow-xl dark:hover:shadow-black/30
                 hover:-translate-y-1
                 transition-all duration-300
               "
@@ -359,11 +359,11 @@ const LossUnderstandingSection = () => {
               {/* subtle glow */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-red-100/20 to-transparent pointer-events-none" />
 
-              <h3 className="text-xl md:text-2xl font-semibold text-red-600 mb-4">
+              <h3 className="text-xl md:text-2xl font-semibold text-red-600 dark:text-red-400 mb-4">
                  {language === "am" ? "በድንገት መጥፋት" : "Sudden Loss"}
               </h3>
 
-              <p className="text-stone-600 leading-relaxed">
+              <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
                 {language === "am"
                   ? "በድንገት የጠፉ ሰዎች በፍጥነት መረጃን ማሰራጭት እና ፈጣን ምላሽ ያስፈልጋቸዋል "
                   : "Missing persons, emergencies, urgent situations where every minute matters. Fast action required."}
@@ -378,10 +378,10 @@ const LossUnderstandingSection = () => {
               className="
                 relative p-8 md:p-10 
                 rounded-3xl 
-                bg-white backdrop-blur-md 
-                border border-amber-100 
-                shadow-lg shadow-amber-100/40
-                hover:shadow-xl hover:shadow-amber-200/50
+                bg-white dark:bg-stone-900/30 backdrop-blur-md 
+                border border-amber-100 dark:border-stone-800
+                shadow-lg shadow-amber-100/40 dark:shadow-lg dark:shadow-black/20
+                hover:shadow-xl hover:shadow-amber-200/50 dark:hover:shadow-xl dark:hover:shadow-black/30
                 hover:-translate-y-1
                 transition-all duration-300
               "
@@ -389,11 +389,11 @@ const LossUnderstandingSection = () => {
               {/* subtle glow */}
               <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-100/20 to-transparent pointer-events-none" />
 
-              <h3 className="text-xl md:text-2xl font-semibold text-yellow-500 mb-4">
+              <h3 className="text-xl md:text-2xl font-semibold text-yellow-500 dark:text-yellow-400 mb-4">
                  {language === "am" ? "አርዳሻቸውን በማጣት መራራቅ" : "Silent Loss"}
               </h3>
 
-              <p className="text-stone-600 leading-relaxed">
+              <p className="text-stone-600 dark:text-stone-400 leading-relaxed">
                 {language === "am"
                   ? "የተጠፋፉ ጓደኛሞች፣ የተለያዩ ቤተሰቦች፣ በጊዜ ሂደት ግንኙነታቸው እየደበዘዘ ትዝታቸው እየጨመረ ናፍቆትን ያባብሳልና ። ዘላቂ መፍትሄ ያስፈልግርዋል።"
                   : "Lost friends and separated families. As time passes, connections may fade, but memories linger—deepening the longing. We provide the lasting solution to bridge the gap.."}
@@ -415,13 +415,13 @@ const ImpactSection = () => {
   const { data: stats } = useImpactStats();
 
   return (
-    <section className="p-10 bg-charcoal text-white">
+    <section className="p-10 bg-white dark:from-black dark:via-orange-950/20 dark:to-black dark:bg-gradient-to-b text-charcoal dark:text-white">
       <div className="container">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-bold mb-4">
             {language === "am" ? "የእኛ ተጽዕኖ" : "Our Impact"}
           </h2>
-          <p className="text-white/60">
+          <p className="text-stone-600 dark:text-stone-300">
             {language === "am" 
               ? "በመላው ዓለም እና በኢትዮጵያ ውስጥ ኢትዮጵያዊያንን እንደገና ማገናኘት"
               : "Reconnecting Ethiopians worldwide and across Ethiopia."}
@@ -464,10 +464,10 @@ const TrustSection = () => {
   ];
 
   return (
-    <section className="py-20 bg-white">
+    <section className="py-20 bg-white dark:from-black dark:via-zinc-950 dark:to-black dark:bg-gradient-to-b">
       <div className="container max-w-4xl">
         <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-charcoal mb-4">
+          <h2 className="text-4xl font-bold text-charcoal dark:text-white mb-4">
             {language === "am" ? "ለምን Reunite?" : "Why Reunite?"}
           </h2>
         </div>
@@ -481,11 +481,11 @@ const TrustSection = () => {
               transition={{ delay: idx * 0.2 }}
               className="text-center p-6"
             >
-              <div className="w-12 h-12 bg-charcoal rounded-full flex items-center justify-center mx-auto mb-4">
-                <feature.icon className="w-5 h-5 text-white dark:text-black" />
+              <div className="w-12 h-12 bg-charcoal dark:bg-stone-800 rounded-full flex items-center justify-center mx-auto mb-4">
+                <feature.icon className="w-5 h-5 text-white" />
               </div>
-              <h3 className="font-semibold text-charcoal mb-2">{feature.title}</h3>
-              <p className="text-sm text-stone/70">{feature.description}</p>
+              <h3 className="font-semibold text-charcoal dark:text-white mb-2">{feature.title}</h3>
+              <p className="text-sm text-stone/70 dark:text-stone-400">{feature.description}</p>
             </motion.div>
           ))}
         </div>
@@ -501,7 +501,7 @@ const FinalCTASection = () => {
   const { language } = useLanguage();
 
   return (
-    <section className="py-20 bg-gradient-to-br from-charcoal  to-stone-900 text-white">
+    <section className="py-20 bg-white dark:from-black dark:via-orange-950/20 dark:to-black dark:bg-gradient-to-b text-charcoal dark:text-white">
       <div className="container text-center max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -513,7 +513,7 @@ const FinalCTASection = () => {
               ? "ፍለጋውትን ለመጀመር ዝግጁ ነዎት?"
               : "Ready to Find Someone?"}
           </h2>
-          <p className="text-white/70 mb-10 text-lg">
+          <p className="text-stone-600 dark:text-stone-300 mb-10 text-lg">
             {language === "am"
               ? "ፍለጋዎን ለመጀመር፣ ከእርሶ ፍለጋ ጋር የሚስማማውን ሂደት ይምረጡ።"
               : "Choose your path — we're here to help you reconnect."}
@@ -525,7 +525,7 @@ const FinalCTASection = () => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="px-8 py-4 border border-white/30 bg-white/10 rounded-full font-semibold shadow-lg backdrop-blur"
+                className="px-8 py-4 border border-stone-300 dark:border-white/30 bg-stone-100 dark:bg-white/10 text-charcoal dark:text-white rounded-full font-semibold shadow-lg backdrop-blur hover:bg-stone-200 dark:hover:bg-white/20 transition-colors"
               >
                 {language === "am" ? "ይመዝገቡ" : "Create Account"}
               </motion.button>
@@ -547,7 +547,7 @@ export const LandingPage = () => {
   }, []);
 
   return (
-    <div className="bg-warm-white">
+    <div className="bg-warm-white dark:bg-black">
       <OrgHeroSection />
       <DualSystemSection />
       <LossUnderstandingSection />

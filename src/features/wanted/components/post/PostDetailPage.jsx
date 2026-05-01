@@ -52,7 +52,7 @@ export const PostDetailPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-warm-white">
+    <div className="mt-17 min-h-screen bg-warm-white">
       <section className="relative bg-gradient-to-b from-cream to-transparent pt-20 pb-12">
         <div className="container mb-8">
           <button

@@ -80,7 +80,7 @@ export const AIDeskPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-900 dark:to-stone-950 transition-colors">
+    <div className="mt-15 min-h-screen bg-gradient-to-b from-stone-50 to-white dark:from-stone-900 dark:to-stone-950 transition-colors">
       {/* HEADER */}
       <section className="border-b border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-900">
         <div className="max-w-7xl mx-auto px-4 py-10">

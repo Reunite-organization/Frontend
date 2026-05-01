@@ -131,7 +131,7 @@ export const CreatePostPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-warm-white">
+    <div className="mt-18min-h-screen bg-warm-white">
       {/* Header with Progress */}
       <div className="sticky top-0 z-40 bg-warm-white/95 backdrop-blur-md border-b border-warm-gray/30">
         <div className="container py-4">

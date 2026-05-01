@@ -138,7 +138,7 @@ export const CreateProfilePage = () => {
   const isPending = isCreating || isUploading;
 
   return (
-    <div className="min-h-screen bg-warm-white py-12 px-4">
+    <div className="mt-17 min-h-screen bg-warm-white py-12 px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}

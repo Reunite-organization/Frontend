@@ -196,7 +196,7 @@ export const VolunteerOperationsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-stone-50">
+    <div className="mt-17 min-h-screen bg-stone-50">
       <section className="border-b border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl p-4 sm:px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-terracotta">

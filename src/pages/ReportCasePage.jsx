@@ -344,9 +344,9 @@ export const ReportCasePage = () => {
   };
 
   return (
-<div className="min-h-screen bg-white  dark:bg-[#0f0f0f] transition-colors">      {/* Header */}
+<div className="mt-23 min-h-screen bg-white  dark:bg-[#0f0f0f] transition-colors">      {/* Header */}
     
-      <div className=" dark:border-orange-500/40 dark:border-2 dark:rounded-lg max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
+      <div className=" dark:border-orange-500/40 dark:border-1 dark:rounded-lg max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Hero Section */}
         <div className="mb-5">
           <div className="flex items-center gap-3 mb-3">

@@ -34,7 +34,7 @@ const ClaimCard = ({ claim, onReview }) => {
       exit={{ opacity: 0, scale: 0.95 }}
       className="bg-cream rounded-xl border border-warm-gray/30 overflow-hidden hover:shadow-md transition-shadow"
     >
-      <div className="p-5">
+      <div className="mt-18 p-5">
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3">

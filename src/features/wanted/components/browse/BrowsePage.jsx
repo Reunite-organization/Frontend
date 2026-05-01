@@ -88,7 +88,7 @@ const HeroSection = () => {
   ];
 
   return (
-    <section className="relative min-h-screen flex bg-white">
+    <section className="mt-19 relative min-h-screen flex bg-white">
       <div className="w-full lg:w-1/2 relative overflow-hidden bg-charcoal">
         {heroBackgrounds.map((bg, idx) => (
           <motion.div
