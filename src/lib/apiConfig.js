@@ -13,6 +13,7 @@ const stripApiSuffix = (value) => value.replace(/\/api(\/)?$/i, "");
 
 const rawApiUrl = import.meta.env.VITE_API_URL;
 const configuredApiUrl = normalizeConfiguredApiUrl(rawApiUrl);
+const preferDirectApiInDev = String(import.meta.env.VITE_USE_DIRECT_API || "").toLowerCase() === "true";
 
 // In development, always use the Vite proxy by keeping requests relative.
 // In production, use the configured backend URL.

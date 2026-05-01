@@ -12,6 +12,7 @@ export function usePassiveVigilance(enabled = true) {
   // Initialize service worker
   useEffect(() => {
     if (!enabled || !("serviceWorker" in navigator)) return;
+    if (import.meta.env.DEV) return;
 
     const wb = new Workbox("/sw.js");
 
@@ -22,13 +23,9 @@ export function usePassiveVigilance(enabled = true) {
 
         // Setup periodic sync
         if ("periodicSync" in registration) {
-          registration.periodicSync
-            .register("location-check", {
-              minInterval: 5 * 60 * 1000, // 5 minutes
-            })
-            .catch(() => {
-              // Some browsers reject without permission/support details.
-            });
+          registration.periodicSync.register("location-check", {
+            minInterval: 5 * 60 * 1000, // 5 minutes
+          });
         }
       })
       .catch((err) => console.error("SW registration failed:", err));

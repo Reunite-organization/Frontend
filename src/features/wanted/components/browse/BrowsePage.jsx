@@ -37,7 +37,9 @@ const HeroSection = () => {
     { src: 'hero 2', alt: 'Friends connecting' },
     { src: 'hero 3', alt: 'Community support' },
     { src: 'hero 4', alt: 'Reconnection moment' },
-    { src: 'hero 5', alt: 'Joyful reunion' }
+    { src: 'hero 5', alt: 'Joyful reunion' },
+    { src: 'hero 4', alt: 'Joyful reunion' },
+
   ];
 
   useEffect(() => {
@@ -252,7 +254,7 @@ const ProblemSection = () => {
   const problems = [
     {
       icon: Users,
-      image: 'hero 2',
+      image: 'hero 9',
       title: { en: 'Migration Separates', am: 'ስደት ይለያል' },
       description: { 
         en: 'Whether seeking a better life, peace, or new career opportunities, people often move or migrate. Unfortunately, this often leads to distance and the loss of long-held connections.',
@@ -275,8 +277,16 @@ const ProblemSection = () => {
       description: { 
         en: 'Years of silence turn into decades. The longer you wait, the harder it gets to reconnect.',
         am: 'የዕለት ተለት ዝምታችን ዓመታትን እየወለደ በመጣ ቁጥር የመገናኘት ዕድላችንን ሊያጠበው ይችላል። እርሶም ፍለጋውን ዛረዉኑ ይጀምሩ።'
+      },
+    },{
+      icon: StopCircleIcon,
+      image: 'hero 7',
+      title: { en: 'Silence Grows', am: 'በኛ በዝምታ የመገናኘት ጊዘው ሊረዝም ይቻላል። ' },
+      description: { 
+        en: 'Years of silence turn into decades. The longer you wait, the harder it gets to reconnect.',
+        am: 'የዕለት ተለት ዝምታችን ዓመታትን እየወለደ በመጣ ቁጥር የመገናኘት ዕድላችንን ሊያጠበው ይችላል። እርሶም ፍለጋውን ዛረዉኑ ይጀምሩ።'
       }
-    }
+    },
   ];
 
   return (

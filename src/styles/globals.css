@@ -124,7 +124,7 @@
   
   /* Custom scrollbar */
   ::-webkit-scrollbar {
-    width: 8px;
+    width: 7px;
     height: 8px;
   }
   
@@ -199,16 +199,17 @@
   
   /* Impact Stat Card */
   .stat-card {
-    @apply text-center p-6 rounded-2xl bg-gradient-to-br from-cream to-warm-white
-           border border-warm-gray/30;
+    @apply text-center p-6 rounded-2xl bg-gradient-to-br from-white to-stone-50
+           border border-stone-200
+           dark:from-stone-900/30 dark:to-stone-800/20 dark:border-stone-800;
   }
   
   .stat-number {
-    @apply font-display text-4xl md:text-5xl font-bold text-terracotta mb-2;
+    @apply font-display text-4xl md:text-5xl font-bold text-terracotta dark:text-orange-400 mb-2;
   }
   
   .stat-label {
-    @apply text-olive text-sm uppercase tracking-wider;
+    @apply text-stone-600 dark:text-stone-400 text-sm uppercase tracking-wider;
   }
 }
 @layer utilities {

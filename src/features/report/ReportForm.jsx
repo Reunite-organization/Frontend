@@ -30,6 +30,28 @@ import { toast } from "sonner";
 import { caseService } from "@/services/caseService";
 import { aiService } from "@/services/api";
 
+const normalizeEthiopianMobile = (value) => {
+  let digits = String(value || "").replace(/\D/g, "");
+
+  if (digits.startsWith("00")) {
+    digits = digits.slice(2);
+  }
+
+  if (digits.startsWith("251") && digits.length === 12 && /^251[79]\d{8}$/.test(digits)) {
+    return `0${digits.slice(3)}`;
+  }
+
+  if (digits.length === 9 && /^[79]\d{8}$/.test(digits)) {
+    return `0${digits}`;
+  }
+
+  if (digits.length === 10 && /^0[79]\d{8}$/.test(digits)) {
+    return digits;
+  }
+
+  return "";
+};
+
 export default function ReportForm() {
   const navigate = useNavigate();
   const { isOffline, saveOfflineReport, pendingSyncs } = useOffline();
@@ -122,6 +144,13 @@ export default function ReportForm() {
     e.preventDefault();
     setLoading(true);
 
+    const normalizedSmsPhone = enableSMS ? normalizeEthiopianMobile(smsPhone) : null;
+    if (enableSMS && !normalizedSmsPhone) {
+      toast.error("Enter a valid Ethiopian mobile number, for example 0911223344 or 0711223344.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const caseData = {
         person: {
@@ -178,7 +207,7 @@ export default function ReportForm() {
               factors: [],
             },
         aiExtracted: aiExtracted,
-        smsPhone: enableSMS ? `09${smsPhone.replace(/\D/g, "")}` : null,
+        smsPhone: normalizedSmsPhone,
       };
 
       if (isOffline) {
@@ -215,6 +244,8 @@ export default function ReportForm() {
     setVoiceText("");
     setAiExtracted(null);
     setActiveTab("text");
+    setEnableSMS(false);
+    setSmsPhone("");
   };
 
   const getConfidenceColor = (score) => {
@@ -457,19 +488,15 @@ export default function ReportForm() {
                   </div>
 
                   {enableSMS && (
-                    <div className="relative">
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-sm">
-                        +251
-                      </span>
+                    <div>
                       <Input
-                        placeholder="9xxxxxxxx"
+                        placeholder="09xxxxxxxx or 07xxxxxxxx"
                         value={smsPhone}
                         onChange={(e) => setSmsPhone(e.target.value)}
-                        className="pl-16"
-                        maxLength={10}
+                        maxLength={13}
                       />
                       <p className="text-xs text-gray-500 mt-1">
-                        Enter 09xxxxxxxx (Ethio Telecom and safaricom)
+                        Enter 09xxxxxxxx, 07xxxxxxxx, or +251xxxxxxxxx
                       </p>
                     </div>
                   )}
@@ -544,7 +571,6 @@ export default function ReportForm() {
                   </span>
                 </div>
               )}
-              // Add this after the AI extraction preview section
               {aiExtracted?.weatherRisk &&
                 aiExtracted.weatherRisk.riskLevel !== "MINIMAL" && (
                   <div className="p-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
