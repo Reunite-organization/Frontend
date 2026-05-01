@@ -131,7 +131,7 @@ export const MainFooter = () => {
                   to="/read-more"
                   className="text-white/60 hover:text-white transition-colors"
                 >
-                  Read More
+                 {language === "am" ? "ተጨማሪ" : "Read More"}
                 </Link></li>
                 <li>
                 

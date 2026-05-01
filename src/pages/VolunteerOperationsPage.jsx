@@ -13,6 +13,7 @@ import {
   getCaseSummary,
   getPriorityClasses,
 } from "../lib/caseFormatting";
+import { useLanguage } from "../lib/i18n";
 
 const getStoredVolunteerId = () => {
   const existing = localStorage.getItem("reunite-volunteer-device-id");
@@ -178,7 +179,8 @@ export const VolunteerOperationsPage = () => {
     } finally {
       setSendingSighting(false);
     }
-  };
+  }; 
+  const {language} = useLanguage();
 
   const handleSendSMSUpdate = async (caseId) => {
     setSendingSMSCaseId(caseId);
@@ -200,16 +202,13 @@ export const VolunteerOperationsPage = () => {
       <section className="border-b border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl p-4 sm:px-6 lg:px-8">
           <p className="text-sm font-semibold uppercase tracking-[0.24em] text-terracotta">
-            Volunteer Response
+            {language === "am" ?"የበጎ ፊቃዳኞች ምላሽ" : "Volunteer Response"}
           </p>
           <h1 className="mt-3 text-4xl font-semibold text-charcoal">
-            Register volunteers, capture field location, and report nearby
-            sightings
+            {language === "am" ?"በጎ ፈቃደኞችን መመዝገብ፣ አድሻቸውን መለየት እና በአቅራቢያ ስለታዩበት ሁኔታ ሪፖርት ማድረግ" :"Register volunteers, capture field location, and report nearby sightings"}
           </h1>
           <p className="mt-2 max-w-3xl text-base leading-7 text-stone">
-            This page is focused on the missing-person backend. It supports
-            volunteer intake, location-based nearby case lookup, and the quick
-            sighting endpoint for field response.
+            {language === "am" ?"ይህ ገጽ የበጎ ፈቃደኞችን መረጃ ለመመዝገብ፣ የጠፉበትን አካባቢ ለመለየት እና የተገኙ መረጃዎችን በፍጥነት ሪፖርት በማድረግ የፍለጋ ሥራዎችን ያቀናጅልዎታል።" : "This page is focused on the missing-person backend. It supports volunteer intake, location-based nearby case lookup, and the quick sighting endpoint for field response."}
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             <Link
