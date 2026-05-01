@@ -19,7 +19,7 @@ export const StoriesPage = () => {
             playsInline
             className="w-full h-full object-cover"
           >
-             <source src="/videos/vedio1.mp4" type="video/mp4" />
+             <source src="/videos/video3.mp4" type="video/mp4" />
           </video>
 
           {/* Dark Overlay for text readability */}
