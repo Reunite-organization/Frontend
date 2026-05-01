@@ -4,7 +4,7 @@ import { Camera, Globe, Mail, Share2, Shield, X } from "lucide-react";
 import { useLanguage } from "../../lib/i18n";
 import { useAuth } from "../../hooks/useAuth";
 import { isAdminRole } from "../../lib/authRoles";
-
+import { Send } from 'lucide-react'
 export const MainFooter = () => {
   const { language } = useLanguage();
   const { user } = useAuth();
@@ -12,160 +12,194 @@ export const MainFooter = () => {
   const canAccessAdmin = isAdminRole(user?.role);
 
   return (
-    <footer className="bg-gradient-to-r from-[#1a1a1a] via-[#2b0f0a] to-[#1a1a1a] text-white/80">
-      <div className="container py-12 max-w-7xl mx-auto">
-        <div className="mb-12 grid grid-cols-2 gap-8 md:grid-cols-4">
-
-          {/* Logo Section */}
+    <footer className="bg-[#423c39] text-white/80">
+      <div className="container py-12">
+        <div className="mb-12 grid gap-8 md:grid-cols-4">
           <div className="col-span-1">
             <Link to="/" className="mb-4 flex items-center gap-2">
-              <span className="font-display text-xl font-bold bg-gradient-to-r from-orange-500 to-red-500 bg-clip-text text-transparent">
+              <span className="font-display text-xl font-bold text-white">
                 Reunite
               </span>
             </Link>
-
             <p className="mb-4 text-sm text-white/60">
-              Reconnecting people through memory, community, and trust.
+              {language === "am"
+                ? "Reconnecting people through memory, community, and trust."
+                : "Reconnecting people through memory, community, and trust."}
             </p>
-
             <div className="flex gap-3">
               <a
                 href="https://twitter.com/reunite"
-                className="rounded-full bg-white/10 p-2 transition-all duration-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 hover:scale-110"
+                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-terracotta"
               >
                 <X className="h-4 w-4" />
               </a>
-
               <a
                 href="https://facebook.com/reunite"
-                className="rounded-full bg-white/10 p-2 transition-all duration-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 hover:scale-110"
+                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-terracotta"
               >
                 <Share2 className="h-4 w-4" />
               </a>
-
               <a
                 href="https://instagram.com/reunite"
-                className="rounded-full bg-white/10 p-2 transition-all duration-300 hover:bg-gradient-to-r hover:from-orange-500 hover:to-red-500 hover:scale-110"
+                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-terracotta"
               >
                 <Camera className="h-4 w-4" />
+              </a>
+               <a
+                href="https://t.me/reunite_world"
+                className="rounded-full bg-white/10 p-2 transition-colors hover:bg-terracotta"
+              >
+                <Send className="h-4 w-4" />
               </a>
             </div>
           </div>
 
-          {/* Platform */}
           <div>
-            <h3 className="mb-4 font-display text-white font-semibold tracking-wide">
-              Platform
+            <h3 className="mb-4 font-display text-white">
+              {language === "am" ? "Platform" : "Platform"}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/cases" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Cases
+                <Link
+                  to="/cases"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "ኬዞች" : "Cases"}
                 </Link>
               </li>
               <li>
-                <Link to="/report" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Report Missing
+                <Link
+                  to="/report"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "የጠፉ ሰዎችን ያመልክቱ" : "Report Missing"}
                 </Link>
               </li>
               <li>
-                <Link to="/wanted" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Reconnect Hub
+                <Link
+                  to="/wanted"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "እንደገና ለመገናኘት" : "Reconnect Hub"}
                 </Link>
               </li>
               <li>
-                <Link to="/wanted/stories" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Success Stories
+                <Link
+                  to="/wanted/stories"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "የተሳኩ ታሪኮች" : "Success Stories"}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Operations */}
           <div>
-            <h3 className="mb-4 font-display text-white font-semibold tracking-wide">
-              Operations
+            <h3 className="mb-4 font-display text-white">
+              {language === "am" ? "Operations" : "Operations"}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/volunteers" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Volunteer Response
+                <Link
+                  to="/volunteers"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am"
+                    ? "የበጎ ፈቃደኞች ምላሽ"
+                    : "Volunteer Response"}
                 </Link>
               </li>
-
-              {canAccessAdmin && (
+              {canAccessAdmin ? (
                 <li>
-                  <Link to="/admin" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                    Command Center
+                  <Link
+                    to="/admin"
+                    className="text-white/60 transition-colors hover:text-white"
+                  >
+                    {language === "am" ? "የቁጥጥር ማዕከል" : "Command Center"}
                   </Link>
                 </li>
-              )}
-
+              ) : null}
               <li>
-                <Link to="/ai" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Help Desk
+                <Link
+                  to="/ai"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "እርዳታ" : "Help Desk"}
                 </Link>
               </li>
-
-              <li>
-                <Link to="/read-more" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Read More
-                </Link>
-              </li>
-
-              <li>
-                <Link to="/faq" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
+                <li><Link
+                  to="/read-more"
+                  className="text-white/60 hover:text-white transition-colors"
+                >
+                 {language === "am" ? "ተጨማሪ" : "Read More"}
+                </Link></li>
+                <li>
+                
+                <Link
+                  to="/faq"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
                   {language !== "am" ? "FAQs" : "ተደጋጋሚ ጥያቄዎች"}
                 </Link>
               </li>
             </ul>
           </div>
 
-          {/* Legal */}
           <div>
-            <h3 className="mb-4 font-display text-white font-semibold tracking-wide">
-              Legal
+            <h3 className="mb-4 font-display text-white">
+              {language === "am" ? "ደንቦች" : "Legal"}
             </h3>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link to="/privacy-policy" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Privacy
+                <Link
+                  to="/privacy-policy"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "ደንነት" : "Privacy"}
                 </Link>
               </li>
               <li>
-                <Link to="/terms-of-service" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Terms
+                <Link
+                  to="/terms-of-service"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "ተርሞች" : "Terms"}
                 </Link>
               </li>
               <li>
-                <Link to="/contact" className="text-white/60 transition-all duration-300 hover:text-orange-400 hover:translate-x-1">
-                  Contact
+                <Link
+                  to="/contact"
+                  className="text-white/60 transition-colors hover:text-white"
+                >
+                  {language === "am" ? "ለበለጠ መረጃ" : "Contact"}
                 </Link>
               </li>
             </ul>
           </div>
         </div>
 
-        {/* Bottom */}
-        <div className="flex flex-wrap items-center justify-center gap-6 border-t border-orange-500/20 py-6">
-          <div className="flex items-center gap-2 text-white/50 hover:text-orange-400 transition">
+        <div className="flex flex-wrap items-center justify-center gap-6 border-t border-white/10 py-6">
+          <div className="flex items-center gap-2 text-white/40">
             <Shield className="h-4 w-4" />
-            <span className="text-xs">Secure & Private</span>
+            <span className="text-xs">
+              {language === "am" ? "ደንነት" : "Secure & Private"}
+            </span>
           </div>
-
-          <div className="flex items-center gap-2 text-white/50 hover:text-orange-400 transition">
+          <div className="flex items-center gap-2 text-white/40">
             <Globe className="h-4 w-4" />
-            <span className="text-xs">Global reach</span>
+            <span className="text-xs">
+              {language === "am" ? "ተደራሽነት" : "Global reach"}
+            </span>
           </div>
-
-          <div className="flex items-center gap-2 text-white/50 hover:text-orange-400 transition">
+          <div className="flex items-center gap-2 text-white/40">
             <Mail className="h-4 w-4" />
             <span className="text-xs">support@reunite.com</span>
           </div>
         </div>
 
         <div className="mt-6 text-center text-xs text-white/30">
-          &copy; {year} Reunite. All rights reserved.
+          &copy; {year} Reunite.{" "}
+          {language === "am" ? "መብቱ በሕግ የተጠበቀ ነው." : "All rights reserved."}
         </div>
       </div>
     </footer>

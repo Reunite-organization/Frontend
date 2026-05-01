@@ -187,35 +187,6 @@ export const VerificationStatus = ({ profile }) => {
         )}
       </VerificationCard>
 
-      <VerificationCard
-        icon={Shield}
-        title={language === 'am' ? 'የፊት ማረጋገጫ' : 'Face verification'}
-        description={language === 'am'
-          ? 'የመለያ እምነትን ለማሳደግ አማራጭ ፎቶ መላክ ይችላሉ'
-          : 'You can optionally submit a face photo to strengthen identity trust.'
-        }
-        isVerified={profile?.identityPhotoStatus === 'verified'}
-        color="text-olive"
-      >
-        <div className="space-y-3">
-          <p className="text-sm text-stone">
-            {profile?.identityPhotoStatus === 'submitted'
-              ? (language === 'am' ? 'ፎቶው ተልኳል እና በመገምገም ላይ ነው።' : 'Your photo has been submitted and is awaiting review.')
-              : profile?.identityPhotoStatus === 'rejected'
-                ? (language === 'am' ? 'ፎቶው እንደገና መላክ ይፈልጋል። ፕሮፋይልዎን ያርትዑ።' : 'That photo needs a re-upload. Edit your profile to submit a new one.')
-                : (language === 'am' ? 'ፎቶ ለመጨመር ፕሮፋይልዎን ያርትዑ።' : 'Edit your profile to add a verification photo.')}
-          </p>
-          {profile?.identityPhotoUrl ? (
-            <img
-              src={profile.identityPhotoUrl}
-              alt="Verification"
-              className="h-36 w-full rounded-2xl object-cover"
-            />
-          ) : null}
-        </div>
-      </VerificationCard>
-
-
       {/* Trust Score Info */}
       <div className="p-4 bg-warmth/5 rounded-xl border border-warmth/20">
         <div className="flex items-start gap-3">

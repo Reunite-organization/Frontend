@@ -167,8 +167,8 @@ const DualSystemSection = () => {
             className="text-3xl md:text-5xl font-bold tracking-tight text-charcoal dark:text-white"
           >
             {language === "am"
-              ? "ሪዩናይት ምን አገልግሎት ይሰጣል።"
-              : "What Reunite Offers"}
+              ? "ሪዩናይት ምን አገልግሎት ይሰጣል?"
+              : "What Reunite Offers?"}
           </motion.h2>
 
           <motion.p
@@ -185,8 +185,8 @@ const DualSystemSection = () => {
             className="text-3xl md:text-5xl font-bold tracking-tight text-charcoal dark:text-white pt-8"
           >
             {language === "am"
-              ? "ሪዩናይትን እንዴት ልጠቀም።"
-              : "How to Use Reunite"}
+              ? "ሪዩናይትን እንዴት ልጠቀም?"
+              : "How to Use Reunite?"}
           </motion.h2>
 
           <motion.p
@@ -228,9 +228,11 @@ const DualSystemSection = () => {
                 { icon: Users, text: language === "am" ? "እንዴት ላመልክት?" : "How to use it" , description: language === "am" ? "ከተራራቁት ሰዎች ጋር ይገናኙ የሚለውን ከታች ይጫኑ": "Click the Reconnect With Someone search below" },
                 { icon: MapPin, text: language === "am" ? "እንዴት ልከታተል?" : "What to expect:", description: language === "am" ? "ፍለጋውን ሲጀምሩ፣ ስለሚፈልጉት ሰው ያለዎትን ትዝታ ወይም መረጃ ለማህበረሰቡ ያጋሩ። የምትፈልጉት ሰው ያጋሩትን መረጃ  ካየ እና  ለመነጋገር ፍላጎት ካለው፣ መልእክት በመላክ ምላሽ ይሰጣል። አንዴ ከተገናኛችሁ በኋላ በግል በማውራት ትገናኛላችሁ።": "When you begin, share a memory or detail about the person with our community. If the person you’re looking for sees your post and wants to reconnect, they can respond to you. Once connected, you can start chatting privately." }
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm text-stone/80">
-                  <item.icon className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <span className="font-bold p-1 text-teal-600 text-md">{item.text}</span>
+                <li key={i} className="text-sm text-stone/80">
+                    <div className="flex items-center gap-3">
+                  <item.icon className="w-4 h-4 text-red-500" /> 
+                  <p className="font-bold pl-2 text-teal-600 text-lg flex flex-col"> {item.text}</p>
+                    </div>
                   <p> {item.description}</p>
                 </li>
               ))}
@@ -260,7 +262,7 @@ const DualSystemSection = () => {
 
             <p className="text-stone-600 dark:text-stone-300 mb-6 leading-relaxed">
               {language === "am"
-                ? "በትዝታ እና በታሪኮች ላይ ተመስርቶ..."
+                ? "በትዝታ እና በታሪኮች ላይ ተመስርቶ የተለዩ ሰዎችን እንደገና የሚያገናኝ ስርዓት። ደህንነቱ የተጠበቀ ማረጋገጫ እና የግል ግንኙነት ያቀርባል።"
                 : "Reconnect with people from your past using shared memories and stories. Safe verification and private reconnection built in."}
             </p>
 
@@ -270,9 +272,11 @@ const DualSystemSection = () => {
                 { icon: Users, text: language === "am" ? "እንዴት ላመልክት?" : "How to use it" , description: language === "am" ? "ከተራራቁት ሰዎች ጋር ይገናኙ የሚለውን ከታች ይጫኑ": "Click the Reconnect With Someone search below" },
                 { icon: MapPin, text: language === "am" ? "እንዴት ልከታተል?" : "What to expect:", description: language === "am" ? "ፍለጋውን ሲጀምሩ፣ ስለሚፈልጉት ሰው ያለዎትን ትዝታ ወይም መረጃ ለማህበረሰቡ ያጋሩ። የምትፈልጉት ሰው ያጋሩትን መረጃ  ካየ እና  ለመነጋገር ፍላጎት ካለው፣ መልእክት በመላክ ምላሽ ይሰጣል። አንዴ ከተገናኛችሁ በኋላ በግል በማውራት ትገናኛላችሁ።": "When you begin, share a memory or detail about the person with our community. If the person you’re looking for sees your post and wants to reconnect, they can respond to you. Once connected, you can start chatting privately." }
               ].map((item, i) => (
-                <li key={i} className="flex items-center gap-3 text-sm text-stone/80">
-                  <item.icon className="w-4 h-4 text-red-500 flex-shrink-0" />
-                  <span className="font-bold p-1 text-teal-600 text-md">{item.text}</span>
+                <li key={i} className=" text-sm text-stone/80">
+                   <div className="flex items-center gap-3">
+                    <item.icon className="w-4 h-4 text-red-500" /> 
+                  <p className="font-bold pl-2 text-teal-600 text-lg flex flex-col"> {item.text}</p>
+                    </div>
                   <p> {item.description}</p>
                 </li>
               ))}
