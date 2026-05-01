@@ -10,6 +10,7 @@ import {
   Shield,
   ArrowLeft,
   MessageCircle,
+  Trash2,
 } from "lucide-react";
 import { useChat } from "../../hooks/useChat";
 import { useLanguage } from "../../../../lib/i18n";
@@ -29,10 +30,13 @@ export const ChatPage = () => {
     currentRoom,
     messages,
     sendMessage,
+    deleteMessage,
+    leaveChat,
     sendTyping,
     typingUsers,
     onlineUsers,
     isLoading,
+    isLeavingChat,
   } =
     useChat(roomId);
 
@@ -52,6 +56,12 @@ export const ChatPage = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  useEffect(() => {
+    if (roomId && !isLoading && rooms && !currentRoom) {
+      navigate("/wanted/chat", { replace: true });
+    }
+  }, [roomId, isLoading, rooms, currentRoom, navigate]);
 
   const handleTyping = () => {
     if (!isTyping) {
@@ -165,7 +175,7 @@ export const ChatPage = () => {
   const handleDeleteMessage = async (message) => {
     if (!message?._id || String(message._id).startsWith("temp-")) return;
     try {
-      await wantedApi.deleteMessage(message._id);
+      await deleteMessage(message._id);
       toast.success(language === "am" ? "መልእክት ተሰርዟል" : "Message deleted");
     } catch {
       toast.error(
@@ -176,13 +186,40 @@ export const ChatPage = () => {
     }
   };
 
+  const handleLeaveChat = async (targetRoomId) => {
+    const selectedRoomId = targetRoomId || roomId;
+    if (!selectedRoomId) return;
+
+    const confirmed = window.confirm(
+      language === "am"
+        ? "ይህን ውይይት ከመልእክቶችዎ ማጥፋት ይፈልጋሉ?"
+        : "Delete this chat from your inbox? The other person will keep their copy.",
+    );
+    if (!confirmed) return;
+
+    try {
+      await leaveChat(selectedRoomId);
+      toast.success(language === "am" ? "ውይይቱ ተሰርዟል" : "Chat deleted");
+
+      if (String(selectedRoomId) === String(roomId)) {
+        navigate("/wanted/chat", { replace: true });
+      }
+    } catch {
+      toast.error(
+        language === "am"
+          ? "ውይይት መሰረዝ አልተሳካም"
+          : "Unable to delete this chat",
+      );
+    }
+  };
+
   const otherParticipant = currentRoom?.otherUser
     ? {
         profile: currentRoom.otherUser,
         user: currentRoom.otherUser.user || currentRoom.otherUser._id,
       }
     : currentRoom?.participants?.find(
-        (p) => (p.user?._id || p.user) !== user?.id,
+        (p) => String(p.user?._id || p.user) !== String(user?.id),
       );
 
   const otherUserId =
@@ -195,6 +232,7 @@ export const ChatPage = () => {
   const otherParticipantOnline = otherUserId
     ? onlineUserSet.has(String(otherUserId))
     : false;
+  const getSenderId = (message) => message?.sender?._id || message?.sender;
 
   if (isLoading) {
     return <ChatSkeleton />;
@@ -208,6 +246,7 @@ export const ChatPage = () => {
           currentRoomId={roomId}
           isOpen={showSidebar}
           onClose={() => setShowSidebar(false)}
+          onLeaveRoom={handleLeaveChat}
         />
         <div className="hidden lg:flex flex-1 items-center justify-center px-8">
           <div className="text-center max-w-md mx-auto text-gray-400 space-y-4">
@@ -233,6 +272,7 @@ export const ChatPage = () => {
         currentRoomId={roomId}
         isOpen={showSidebar}
         onClose={() => setShowSidebar(false)}
+        onLeaveRoom={handleLeaveChat}
       />
 
       <div className="flex-1 flex flex-col bg-white shadow-lg rounded-l-2xl overflow-hidden">
@@ -308,6 +348,18 @@ export const ChatPage = () => {
 
           <div className="flex items-center space-x-2">
             <button
+              onClick={() => handleLeaveChat(roomId)}
+              disabled={isLeavingChat}
+              className="p-2 rounded-full hover:bg-red-50 transition disabled:opacity-50"
+              title={language === "am" ? "ውይይት ሰርዝ" : "Delete chat"}
+            >
+              {isLeavingChat ? (
+                <div className="w-5 h-5 border-2 border-red-400 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Trash2 className="w-5 h-5 text-red-500" />
+              )}
+            </button>
+            <button
               className="p-2 rounded-full hover:bg-gray-100 transition"
               title={language === "am" ? "ተጨማሪ" : "More"}
             >
@@ -332,12 +384,10 @@ export const ChatPage = () => {
               <MessageBubble
                 key={msg._id || msg.clientId || index}
                 message={msg}
-                isOwn={
-                  msg.sender === user?.id ||
-                  msg.sender?._id === user?.id
-                }
+                isOwn={String(getSenderId(msg)) === String(user?.id)}
                 showAvatar={
-                  index === 0 || messages[index - 1]?.sender !== msg.sender
+                  index === 0 ||
+                  String(getSenderId(messages[index - 1])) !== String(getSenderId(msg))
                 }
                 onDelete={handleDeleteMessage}
               />

@@ -235,6 +235,27 @@ class OfflineStorage {
     await tx.done;
   }
 
+  async deleteMessage(messageId) {
+    const db = await this.init();
+    const tx = db.transaction('messages', 'readwrite');
+    await tx.store.delete(messageId);
+    await tx.done;
+  }
+
+  async deleteMessagesForRoom(roomId) {
+    const db = await this.init();
+    const tx = db.transaction('messages', 'readwrite');
+    const index = tx.store.index('by_room');
+    let cursor = await index.openCursor(roomId);
+
+    while (cursor) {
+      await cursor.delete();
+      cursor = await cursor.continue();
+    }
+
+    await tx.done;
+  }
+
   // ============ SYNC QUEUE ============
   
   async addToQueue(action, data) {

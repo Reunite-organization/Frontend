@@ -56,6 +56,10 @@ export const Router = () => {
       <Route path="/auth/register" element={<RegisterPage />} />
       <Route path="/auth/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/auth/reset-password" element={<ResetPasswordPage />} />
+      <Route
+        path="/forget-password"
+        element={<Navigate to="/auth/forgot-password" replace />}
+      />
       <Route path="/reconnect" element={<Navigate to="/wanted" replace />} />
       <Route path="/wanted" element={<BrowsePage />} />
       <Route path="/wanted/post/:id" element={<PostDetailPage />} />

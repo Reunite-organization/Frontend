@@ -11,14 +11,21 @@ import {
   CheckCheck,
   Circle,
   Sparkles,
-  MessageSquare
+  MessageSquare,
+  Trash2,
 } from 'lucide-react';
 import { useLanguage } from '../../../../lib/i18n';
 import { formatRelativeTime } from '../../utils/formatters';
 import { TrustBadge } from '../profile/TrustBadge';
 import { useAuth } from '../../../../hooks/useAuth';
 
-export const ChatSidebar = ({ rooms = [], currentRoomId, isOpen, onClose }) => {
+export const ChatSidebar = ({
+  rooms = [],
+  currentRoomId,
+  isOpen,
+  onClose,
+  onLeaveRoom,
+}) => {
   const { language } = useLanguage();
   const [searchTerm, setSearchTerm] = useState('');
   const { user: currentUser } = useAuth();
@@ -211,19 +218,19 @@ export const ChatSidebar = ({ rooms = [], currentRoomId, isOpen, onClose }) => {
                       exit={{ opacity: 0, x: -30 }}
                       transition={{ delay: index * 0.05 }}
                     >
-                      <Link
-                        to={`/wanted/chat/${room._id}`}
-                        onClick={() => onClose()}
-                        className="block group"
+                      <div
+                        className={`
+                          group relative rounded-2xl transition-all duration-300
+                          ${isActive
+                            ? 'bg-gradient-to-r from-terracotta/20 via-terracotta/10 to-transparent border-2 border-terracotta/30'
+                            : 'hover:bg-warm-gray/10 border-2 border-transparent'
+                          }
+                        `}
                       >
-                        <div
-                          className={`
-                            relative p-4 rounded-2xl transition-all duration-300
-                            ${isActive 
-                              ? 'bg-gradient-to-r from-terracotta/20 via-terracotta/10 to-transparent border-2 border-terracotta/30' 
-                              : 'hover:bg-warm-gray/10 border-2 border-transparent'
-                            }
-                          `}
+                        <Link
+                          to={`/wanted/chat/${room._id}`}
+                          onClick={() => onClose()}
+                          className="block p-4 pr-12"
                         >
                           <div className="flex items-start gap-4">
                             {/* Avatar */}
@@ -279,8 +286,23 @@ export const ChatSidebar = ({ rooms = [], currentRoomId, isOpen, onClose }) => {
                               )}
                             </div>
                           </div>
-                        </div>
-                      </Link>
+                        </Link>
+                        {onLeaveRoom && (
+                          <button
+                            type="button"
+                            onClick={(event) => {
+                              event.preventDefault();
+                              event.stopPropagation();
+                              onLeaveRoom(room._id);
+                            }}
+                            className="absolute right-3 top-3 rounded-full p-1.5 text-stone/50 opacity-100 transition hover:bg-red-50 hover:text-red-600 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-red-200 lg:opacity-0 lg:group-hover:opacity-100"
+                            aria-label={language === 'am' ? 'ውይይት ሰርዝ' : 'Delete chat'}
+                            title={language === 'am' ? 'ውይይት ሰርዝ' : 'Delete chat'}
+                          >
+                            <Trash2 className="h-4 w-4" />
+                          </button>
+                        )}
+                      </div>
                     </motion.div>
                   );
                 })}

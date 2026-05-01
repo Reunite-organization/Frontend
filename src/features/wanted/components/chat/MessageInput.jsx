@@ -149,7 +149,7 @@ export const MessageInput = ({
           formData.append("voice", audioBlob, `voice-message.${extension}`);
           formData.append("duration", recordingTime.toString());
 
-          const response = await wantedApi.uploadChatPhoto(formData);
+          const response = await wantedApi.uploadVoiceMessage(formData);
 
           if (response?.url) {
             onSendMessage({

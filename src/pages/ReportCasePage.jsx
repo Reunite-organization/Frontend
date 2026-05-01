@@ -53,6 +53,28 @@ const RELATIONSHIP_OPTIONS = [
   { value: "other", label: "Other" },
 ];
 
+const normalizeEthiopianMobile = (value) => {
+  let digits = String(value || "").replace(/\D/g, "");
+
+  if (digits.startsWith("00")) {
+    digits = digits.slice(2);
+  }
+
+  if (digits.startsWith("251") && digits.length === 12 && /^251[79]\d{8}$/.test(digits)) {
+    return `0${digits.slice(3)}`;
+  }
+
+  if (digits.length === 9 && /^[79]\d{8}$/.test(digits)) {
+    return `0${digits}`;
+  }
+
+  if (digits.length === 10 && /^0[79]\d{8}$/.test(digits)) {
+    return digits;
+  }
+
+  return "";
+};
+
 export const ReportCasePage = () => {
   const navigate = useNavigate();
   const { language, setLanguage } = useLanguage();
@@ -237,6 +259,15 @@ export const ReportCasePage = () => {
       return;
     }
 
+    const normalizedSmsPhone = form.smsPhone.trim()
+      ? normalizeEthiopianMobile(form.smsPhone)
+      : "";
+
+    if (form.smsPhone.trim() && !normalizedSmsPhone) {
+      toast.error("Enter a valid SMS number, for example 0911223344 or 0711223344.");
+      return;
+    }
+
     setLoading(true);
     try {
       let locationForSubmit = resolvedLocation;
@@ -251,7 +282,7 @@ export const ReportCasePage = () => {
       }
 
       const payload = new FormData();
-      const formToSubmit = { ...form };
+      const formToSubmit = { ...form, smsPhone: normalizedSmsPhone };
 
       if (form.reporterRelation === "other" && form.customRelation) {
         formToSubmit.reporterRelation = form.customRelation;
@@ -876,7 +907,7 @@ export const ReportCasePage = () => {
                     <input
                       value={form.smsPhone}
                       onChange={(e) => updateField("smsPhone", e.target.value)}
-                      placeholder={language === "am" ? "አማራጭ" : "Optional"}
+                      placeholder={language === "am" ? "አማራጭ" : "Optional, e.g. 0911223344"}
                       className="w-full rounded-2xl border-2 border-stone-200 px-4 py-3.5 text-sm focus:border-terracotta focus:ring-4 focus:ring-terracotta/10 outline-none transition-all"
                     />
                   </div>
