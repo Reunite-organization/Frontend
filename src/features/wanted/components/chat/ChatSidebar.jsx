@@ -30,11 +30,9 @@ export const ChatSidebar = ({
   const [searchTerm, setSearchTerm] = useState('');
   const { user: currentUser } = useAuth();
 
-  // ✅ FIXED: Get other participant with proper checks
   const getOtherParticipant = (room) => {
     if (!room) return null;
 
-    // If service already provided otherUser, use it
     if (room.otherUser) {
       const profile = room.otherUser;
       return {
@@ -117,7 +115,7 @@ export const ChatSidebar = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-gradient-to-br from-charcoal/60 to-charcoal/40 backdrop-blur-sm z-40 lg:hidden"
+            className="fixed inset-0 bg-gradient-to-br  z-40 lg:hidden"
             onClick={onClose}
           />
         )}

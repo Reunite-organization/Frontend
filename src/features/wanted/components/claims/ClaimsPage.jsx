@@ -157,7 +157,7 @@ export const ClaimsPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-warm-white">
+    <div className="min-h-screen mt-24 bg-warm-white">
       <div className="container py-8">
         {/* Header */}
         <div className="mb-8">

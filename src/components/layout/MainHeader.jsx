@@ -330,7 +330,7 @@ export const MainHeader = () => {
                 <>
                   <Link
                     to="/wanted/claims"
-                    className={`relative rounded-full p-1.5 sm:p-2 transition hidden xs:block ${
+                    className={`relative rounded-full p-1.5 sm:p-2 transition  xs:block ${
                       isLandingPage && !isScrolled
                         ? "text-white hover:bg-white/10"
                         : "text-stone-600 hover:bg-stone-100 hover:text-charcoal"
