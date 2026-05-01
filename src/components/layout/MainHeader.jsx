@@ -27,7 +27,7 @@ import { isAdminRole } from "../../lib/authRoles";
 import { useTheme } from "../../app/providers/ThemeProvider";
 
 const primaryLinks = [
-  { path: "/cases", label: { en: "Cases", am: "ኬሶች" } },
+  { path: "/cases", label: { en: "Cases", am: "ኬዞች" } },
   { path: "/report", label: { en: "Report Missing", am: "የጠፉ ሰዎችን ያመልክቱ" } },
   {
     path: "/volunteers",
@@ -158,7 +158,7 @@ export const MainHeader = () => {
   return (
     <>
       <header
-        className={`absolute left-0 right-0 top-0 z-50 transition-all duration-300 ${
+        className={`absolute left-0 right-0 mb-17 top-0 z-50 transition-all duration-300 ${
           isScrolled
             ? "border-b border-stone-200 shadow-sm backdrop-blur-xl bg-white/80"
             : "bg-transparent"
