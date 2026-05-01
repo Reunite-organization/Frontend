@@ -2,7 +2,7 @@
 
 **Two powerful systems. One platform. One mission — reunite people.**
 
-<<<<<<< HEAD
+HEAD
 
 ## What Reunite Does
 
