@@ -93,7 +93,7 @@ const OrgHeroSection = () => {
           {/* CTA BUTTONS */}
           <div className="flex flex-wrap justify-center gap-4">
 
-            <Link to="/read-more">
+            <Link to="/report">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.97 }}
@@ -108,7 +108,7 @@ const OrgHeroSection = () => {
                   transition-all
                 "
               >
-                 {language === "am" ? "ዝርዝሩን ይመልከቱ" : "Read More"}
+                 {language === "am" ? "የጠፉቦትን ሰው ይፈልጉ" : "report Missing"}
               </motion.button>
             </Link>
 
