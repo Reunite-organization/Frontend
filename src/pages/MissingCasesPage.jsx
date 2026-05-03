@@ -111,24 +111,6 @@ export const MissingCasesPage = () => {
                 </Link>
               </div>
             </div>
-
-            { canAccessAdmin && <div className="grid gap-4 sm:grid-cols-3 lg:grid-cols-1">
-              {[
-                { label: "Active cases", value: activeCount },
-                { label: "High priority", value: highPriorityCount },
-                { label: "Resolved", value: resolvedCount },
-              ].map((item) => (
-                <div
-                  key={item.label}
-                  className="rounded-3xl border border-stone-200 bg-stone-50 p-5"
-                >
-                  <p className="text-sm text-stone-500">{item.label}</p>
-                  <p className="mt-2 text-3xl font-semibold text-charcoal">
-                    {item.value}
-                  </p>
-                </div>
-              ))}
-            </div>}
           </div>
         </div>
       </section>
@@ -186,7 +168,7 @@ className="rounded-2xl bg-terracotta px-6 py-3.5 text-base font-semibold text-wh
                     setStatus(nextStatus);
                     loadCases(nextStatus, query);
                   }}
-                  className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm text-charcoal outline-none focus:border-terracotta/50"
+                  className="w-full rounded-xl border border-stone-200 px-3 py-2.5 text-sm dark:bg-gray-900 text-charcoal outline-none focus:border-terracotta/50"
                 >
                   <option value="active">Active</option>
                   <option value="pending_verification">Pending verification</option>

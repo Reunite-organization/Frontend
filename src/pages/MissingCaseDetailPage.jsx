@@ -327,9 +327,10 @@ export const MissingCaseDetailPage = () => {
                 <h1 className="text-4xl font-semibold text-charcoal">
                   {caseData.person?.name || "Unknown person"}
                 </h1>
-                <p className="mt-2 text-sm text-stone-500">
+               { isReporter || isAdminRole(user?.role) ? (
+               <p className="mt-2 text-sm text-stone-500">
                   Case ID: {caseData.caseId}
-                </p>
+                </p>) : null}
               </div>
 
               <p className="max-w-3xl text-base leading-7 text-stone-700">
