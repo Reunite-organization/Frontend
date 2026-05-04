@@ -45,7 +45,7 @@ const OrgHeroSection = () => {
         <source src="/videos/vedio1.mp4" type="video/mp4" />
       </video>
 
-      <div className="absolute inset-0 bg-black/10 backdrop-blur-[1px]" />
+      <div className="absolute inset-0 bg-black/20 backdrop-blur-[1px]" />
 
       {/* ✨ CONTENT */}
       <div className="relative z-10 text-center px-6 max-w-3xl mx-auto">
@@ -108,7 +108,7 @@ const OrgHeroSection = () => {
                   transition-all
                 "
               >
-                 {language === "am" ? "የጠፉቦትን ሰው ይፈልጉ" : "report Missing"}
+                 {language === "am" ? "የጠፉቦትን ሰው ይፈልጉ" : "Report Missing"}
               </motion.button>
             </Link>
 
