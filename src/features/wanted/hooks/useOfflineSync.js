@@ -71,9 +71,6 @@ export const useOfflineSync = () => {
       }
 
       const remaining = await refreshPendingCount();
-      if (remaining.length === 0) {
-        toast.success("Offline updates synced.");
-      }
     } catch (error) {
       console.error("Offline sync failed:", error);
     } finally {
