@@ -19,6 +19,7 @@ export default function VoiceInput({ onTranscript, language = 'am-ET' }) {
   
   const languages = [
     { code: 'am-ET', name: 'አማርኛ', flag: '🇪🇹', fullName: 'Amharic' },
+    { code: 'om-ET', name: 'Afaan Oromoo', flag: '🇪🇹', fullName: 'Oromo' },
     { code: 'en-GB', name: 'English', flag: '', fullName: 'English' }
   ];
   

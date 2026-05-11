@@ -61,7 +61,8 @@ export default function VoiceReportWizard({
   onSubmit,
   photoPreview,
 }) {
-  const locale = language === "am" ? "am-ET" : "en-US";
+  const locale =
+    language === "am" ? "am-ET" : language === "om" ? "om-ET" : "en-US";
   const [voiceText, setVoiceText] = useState("");
   const [extracting, setExtracting] = useState(false);
   const [collecting, setCollecting] = useState(false);
@@ -87,7 +88,9 @@ export default function VoiceReportWizard({
   const relationLabel = useMemo(() => {
     const match = RELATION_OPTIONS.find((r) => r.value === answers.reporterRelation);
     if (!match) return "";
-    return language === "am" ? match.am : match.en;
+    if (language === "am") return match.am;
+    if (language === "om") return match.en;
+    return match.en;
   }, [answers.reporterRelation, language]);
 
   const apply = (patch) => {
@@ -158,7 +161,10 @@ export default function VoiceReportWizard({
         await askAndFill({
           key: "missingPersonName",
           promptAm: "የጠፋው ሰው ሙሉ ስም ምንድነው?",
-          promptEn: "What is the missing person's full name?",
+          promptEn:
+            language === "om"
+              ? "Maqaan nama bade eenyu?"
+              : "What is the missing person's full name?",
         });
       }
 
@@ -166,7 +172,7 @@ export default function VoiceReportWizard({
         await askAndFill({
           key: "lastSeenLocation",
           promptAm: "ለመጨረሻ ጊዜ የታዩበት ቦታ የት ነው?",
-          promptEn: "Where were they last seen?",
+          promptEn: language === "om" ? "Eessa irratti yeroo dhumaa mul'atan?" : "Where were they last seen?",
         });
       }
 
@@ -174,7 +180,7 @@ export default function VoiceReportWizard({
         await askAndFill({
           key: "reporterName",
           promptAm: "እባክዎ ስምዎን ይናገሩ።",
-          promptEn: "Please say your name.",
+          promptEn: language === "om" ? "Maqaa kee dubbadhu." : "Please say your name.",
         });
       }
 
@@ -182,7 +188,7 @@ export default function VoiceReportWizard({
         await askAndFill({
           key: "reporterPhone",
           promptAm: "እባክዎ ስልክ ቁጥርዎን ይናገሩ።",
-          promptEn: "Please say your phone number.",
+          promptEn: language === "om" ? "Lakkoofsa bilbilaa kee dubbadhu." : "Please say your phone number.",
           parser: (raw) => {
             // Try to normalize Ethiopian numbers, otherwise keep raw
             const normalized = normalizeEthiopianMobile(raw);
@@ -195,7 +201,9 @@ export default function VoiceReportWizard({
         const relationPrompt =
           language === "am"
             ? "ከጠፋው ሰው ጋር ያለዎት ግንኙነት ምንድነው? ለምሳሌ ወላጅ፣ ጓደኛ፣ ጎረቤት ወይም ምስክር።"
-            : "What is your relationship to the missing person? For example parent, friend, neighbor, or witness.";
+            : language === "om"
+              ? "Hariiroon kee nama bade waliin maal dha? Fakkeenyaaf: maatii, hiriyyaa, ollaa, yookaan ragaa-bahu."
+              : "What is your relationship to the missing person? For example parent, friend, neighbor, or witness.";
         await speak(relationPrompt, locale);
         const raw = await listenOnce(locale);
         const lower = raw.toLowerCase();
@@ -209,7 +217,9 @@ export default function VoiceReportWizard({
       await speak(
         language === "am"
           ? "እናመሰግናለን። አሁን ሪፖርቱን ማስገባት ይችላሉ።"
-          : "Thank you. You can submit the report now.",
+          : language === "om"
+            ? "Galatoomi. Amma gabaasa erguu ni dandeessa."
+            : "Thank you. You can submit the report now.",
         locale,
       );
     } catch (e) {

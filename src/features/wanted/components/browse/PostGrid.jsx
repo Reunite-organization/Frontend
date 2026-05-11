@@ -1,5 +1,5 @@
-﻿import { useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+﻿import { useEffect, useMemo } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { PostCard } from './PostCard';
 import { EmptyState } from './EmptyState';
 import { LoadingSkeleton } from '../shared/LoadingSkeleton';
@@ -9,6 +9,7 @@ import { useLanguage } from '../../../../lib/i18n';
 export const PostGrid = ({ posts, hasMore, loadMore, isLoading }) => {
   const { language } = useLanguage();
   const { ref, inView } = useInView({ threshold: 0.1, triggerOnce: false });
+  const reducedMotion = useReducedMotion();
 
   useEffect(() => {
     if (inView && hasMore && !isLoading) {
@@ -21,6 +22,11 @@ export const PostGrid = ({ posts, hasMore, loadMore, isLoading }) => {
   
   // Filter out invalid posts
   const validPosts = safePosts.filter(post => post && typeof post === 'object' && post._id);
+  const shouldAnimateList = useMemo(() => {
+    // Animation is nice for small lists, but becomes expensive on large feeds / low-end phones.
+    if (reducedMotion) return false;
+    return validPosts.length <= 24;
+  }, [reducedMotion, validPosts.length]);
 
   // Loading state
   if (isLoading && validPosts.length === 0) {
@@ -48,23 +54,31 @@ export const PostGrid = ({ posts, hasMore, loadMore, isLoading }) => {
   return (
     <>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <AnimatePresence mode="popLayout">
-          {validPosts.map((post, index) => (
-            <motion.div
-              key={post._id}
-              layout
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.9 }}
-              transition={{ 
-                duration: 0.3,
-                delay: Math.min(index * 0.05, 0.3)
-              }}
-            >
+        {shouldAnimateList ? (
+          <AnimatePresence mode="popLayout">
+            {validPosts.map((post, index) => (
+              <motion.div
+                key={post._id}
+                layout
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ 
+                  duration: 0.25,
+                  delay: Math.min(index * 0.04, 0.2)
+                }}
+              >
+                <PostCard post={post} index={index} />
+              </motion.div>
+            ))}
+          </AnimatePresence>
+        ) : (
+          validPosts.map((post, index) => (
+            <div key={post._id}>
               <PostCard post={post} index={index} />
-            </motion.div>
-          ))}
-        </AnimatePresence>
+            </div>
+          ))
+        )}
       </div>
 
       {/* Load More Trigger */}
@@ -73,15 +87,10 @@ export const PostGrid = ({ posts, hasMore, loadMore, isLoading }) => {
           <div className="flex flex-col items-center gap-3">
             <div className="flex gap-1">
               {[...Array(3)].map((_, i) => (
-                <motion.div
+                <div
                   key={i}
-                  className="w-2.5 h-2.5 bg-terracotta rounded-full"
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{
-                    duration: 0.6,
-                    repeat: Infinity,
-                    delay: i * 0.1,
-                  }}
+                  className="w-2.5 h-2.5 bg-terracotta rounded-full animate-bounce"
+                  style={{ animationDelay: `${i * 120}ms` }}
                 />
               ))}
             </div>

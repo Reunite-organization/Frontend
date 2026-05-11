@@ -27,14 +27,14 @@ import { isAdminRole } from "../../lib/authRoles";
 import { useTheme } from "../../app/providers/ThemeProvider";
 
 const primaryLinks = [
-  { path: "/cases", label: { en: "Cases", am: "ኬዞች" } },
-  { path: "/report", label: { en: "Report Missing", am: "የጠፉ ሰዎችን ያመልክቱ" } },
-  { path: "/support", label: { en: "Support Us", am: "ይደግፉን" } },
+  { path: "/cases", label: { en: "Cases", am: "ኬዞች", om: "Dhimmoota" } },
+  { path: "/report", label: { en: "Report Missing", am: "የጠፉ ሰዎችን ያመልክቱ", om: "Namni bade gabaasi" } },
+  { path: "/support", label: { en: "Support Us", am: "ይደግፉን", om: "Nu deeggaruu" } },
   {
     path: "/volunteers",
-    label: { en: "Volunteer Response", am: "የበጎ ፈቃደኞች ምላሽ" },
+    label: { en: "Volunteer Response", am: "የበጎ ፈቃደኞች ምላሽ", om: "Deebii tola-ooltoota" },
   },
-  { path: "/admin", label: { en: "Command Center", am: "Command Center" } },
+  { path: "/admin", label: { en: "Command Center", am: "Command Center", om: "Giddu-gala to'annoo" } },
 ];
 
 const reconnectLinks = [
@@ -150,6 +150,8 @@ export const MainHeader = () => {
   const isActive = (path) =>
     location.pathname === path || location.pathname.startsWith(`${path}/`);
 
+  const pickLabel = (entry) => entry?.[language] || entry?.en || "";
+
   const handleLogout = async () => {
     await logout();
     setIsProfileMenuOpen(false);
@@ -195,7 +197,7 @@ export const MainHeader = () => {
                 >
                   <span className="inline-flex items-center gap-2">
                     {link.icon ? <link.icon className="h-4 w-4" /> : null}
-                    {language === "am" ? link.label.am : link.label.en}
+                    {pickLabel(link.label)}
                   </span>
                 </Link>
               ))}
@@ -213,7 +215,11 @@ export const MainHeader = () => {
                   }`}
                 >
                   <span>
-                    {language === "am" ? "እንደገና ለመገናኘት" : "Reconnect"}
+                    {language === "am"
+                      ? "እንደገና ለመገናኘት"
+                      : language === "om"
+                        ? "Deebi'ee wal-qunnamtii"
+                        : "Reconnect"}
                   </span>
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -234,7 +240,7 @@ export const MainHeader = () => {
                           className="block rounded-2xl px-4 py-3 transition hover:bg-stone-50"
                         >
                           <div className="font-medium text-charcoal">
-                            {language === "am" ? link.label.am : link.label.en}
+                            {pickLabel(link.label)}
                           </div>
                         </Link>
                       ))}
@@ -254,7 +260,13 @@ export const MainHeader = () => {
                 }`}
               >
                 <Bot className="w-4 h-4" />
-                <span>{language === "am" ? "እርዳታ" : "Help"}</span>
+                <span>
+                  {language === "am"
+                    ? "እርዳታ"
+                    : language === "om"
+                      ? "Gargaarsa"
+                      : "Help"}
+                </span>
               </Link>
             </div>
 
@@ -291,7 +303,9 @@ export const MainHeader = () => {
                   }`}
                 >
                   <Globe className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                  <span className="hidden sm:inline">{language === "am" ? "አማ" : "EN"}</span>
+                  <span className="hidden sm:inline">
+                    {language === "am" ? "አማ" : language === "om" ? "OM" : "EN"}
+                  </span>
                 </button>
 
                 <AnimatePresence>
@@ -305,6 +319,7 @@ export const MainHeader = () => {
                       {[
                         { code: "en", label: "English" },
                         { code: "am", label: "አማርኛ" },
+                        { code: "om", label: "Afaan Oromoo" },
                       ].map((item) => (
                         <button
                           key={item.code}
@@ -536,7 +551,7 @@ export const MainHeader = () => {
                         : "text-stone-700 hover:bg-stone-50"
                     }`}
                   >
-                    {language === "am" ? link.label.am : link.label.en}
+                    {pickLabel(link.label)}
                   </Link>
                 ))}
                 <Link
@@ -549,7 +564,13 @@ export const MainHeader = () => {
                   }`}
                 >
                   <Bot className="h-4 w-4" />
-                  <span>{language === "am" ? "እርዳታ" : "Help"}</span>
+                  <span>
+                    {language === "am"
+                      ? "እርዳታ"
+                      : language === "om"
+                        ? "Gargaarsa"
+                        : "Help"}
+                  </span>
                 </Link>
               </div>
 
@@ -582,6 +603,7 @@ export const MainHeader = () => {
                     {[
                       { code: "en", label: "EN" },
                       { code: "am", label: "አማ" },
+                      { code: "om", label: "OM" },
                     ].map((item) => (
                       <button
                         key={item.code}

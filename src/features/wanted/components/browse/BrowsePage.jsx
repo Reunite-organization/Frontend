@@ -430,6 +430,7 @@ export const BrowsePage = () => {
     city: "",
     year: "",
     category: "",
+    search: "",
   });
   const { data, isLoading, fetchNextPage, hasNextPage } = usePosts(filters);
   const allPosts =
@@ -488,8 +489,21 @@ export const BrowsePage = () => {
       city: "",
       year: "",
       category: "",
+      search: "",
     });
   };
+
+  // Debounce search to avoid spamming the API on every keystroke
+  useEffect(() => {
+    const timeout = window.setTimeout(() => {
+      setFilters((current) => ({
+        ...current,
+        search: searchTerm.trim(),
+      }));
+    }, 350);
+
+    return () => window.clearTimeout(timeout);
+  }, [searchTerm]);
 
   return (
     <div className="min-h-screen bg-warm-white">

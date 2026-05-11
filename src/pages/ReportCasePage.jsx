@@ -9,8 +9,6 @@ import {
   User,
   Phone,
   Calendar,
-  Clock,
-  Shield,
   AlertCircle,
   ChevronRight,
   X,
@@ -19,7 +17,6 @@ import {
 import { toast } from "sonner";
 import api, { aiService } from "../services/api";
 import { useLanguage } from "../lib/i18n";
-import VoiceInput from "../features/report/VoiceInput";
 import VoiceReportWizard from "../features/report/VoiceReportWizard";
 import { geocodeLocation } from "../services/locationService";
 import { useAuth } from "../hooks/useAuth";
