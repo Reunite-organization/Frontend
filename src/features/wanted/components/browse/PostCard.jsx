@@ -31,6 +31,8 @@ export const PostCard = ({ post, index }) => {
   };
 
   const memoryText = post.memoryText?.[language] || post.memoryText?.en || post.memoryText?.am;
+  const personName = post.personDetails?.personName;
+  const nickname = post.personDetails?.nickname;
 
   return (
     <motion.article
@@ -55,6 +57,17 @@ export const PostCard = ({ post, index }) => {
 
         {/* Memory Text */}
         <div>
+          {(personName || nickname) && (
+            <p className="mb-2 text-sm text-stone">
+              {language === "am" ? "የሚፈለጉት ሰው፦" : "Looking for:"}{" "}
+              <span className="font-semibold text-charcoal">
+                {personName || (language === "am" ? "ያልታወቀ" : "Unknown")}
+              </span>
+              {nickname ? (
+                <span className="ml-2 text-stone">"{nickname}"</span>
+              ) : null}
+            </p>
+          )}
           <p className="text-charcoal line-clamp-3 leading-relaxed">
             {memoryText}
           </p>

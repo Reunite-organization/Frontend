@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import api, { aiService } from "../services/api";
 import { useLanguage } from "../lib/i18n";
 import VoiceInput from "../features/report/VoiceInput";
+import VoiceReportWizard from "../features/report/VoiceReportWizard";
 import { geocodeLocation } from "../services/locationService";
 import { useAuth } from "../hooks/useAuth";
 import { useOfflineSync } from "../features/wanted/hooks/useOfflineSync";
@@ -118,6 +119,7 @@ export const ReportCasePage = () => {
   const [validationErrors, setValidationErrors] = useState({});
   const [quickMode, setQuickMode] = useState(true);
   const [draftStatus, setDraftStatus] = useState("");
+  const [reportInputMode, setReportInputMode] = useState(null); // 'voice' | 'form'
 
   // Validation function
   const validateSection = (sectionId) => {
@@ -530,7 +532,8 @@ export const ReportCasePage = () => {
   };
 
   return (
-<div className="mt-24 min-h-screen bg-white  dark:bg-[#0f0f0f] transition-colors">      {/* Header */}
+    <div className="mt-24 min-h-screen bg-warm-white transition-colors">
+      {/* Header */}
     
       <div className=" dark:border-orange-500/40 dark:border-1 dark:rounded-lg max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 lg:py-12">
         {/* Hero Section */}
@@ -549,47 +552,51 @@ export const ReportCasePage = () => {
               : "Every detail matters in finding someone"}
           </h1>
           <p className="text-lg text-stone-600 max-w-2xl">{helperText}</p>
-          <div className="mt-4 flex flex-wrap items-center gap-3">
-            <button
-              type="button"
-              onClick={() => setQuickMode((current) => !current)}
-              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
-                quickMode
-                  ? "bg-red-600 text-white hover:bg-red-700"
-                  : "border border-stone-200 text-stone-700 hover:border-terracotta/30 hover:text-terracotta"
-              }`}
-            >
-              {quickMode ? "Quick alert mode" : "Full detail mode"}
-            </button>
-            <p className="text-sm text-stone-500">
-              {quickMode
-                ? "Send the minimum alert first, then keep adding details."
-                : "Capture fuller details for a stronger search brief."}
-            </p>
-          </div>
+          {reportInputMode === "form" && (
+            <div className="mt-4 flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => setQuickMode((current) => !current)}
+                className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                  quickMode
+                    ? "bg-red-600 text-white hover:bg-red-700"
+                    : "border border-stone-200 text-stone-700 hover:border-terracotta/30 hover:text-terracotta"
+                }`}
+              >
+                {quickMode ? "Quick alert mode" : "Full detail mode"}
+              </button>
+              <p className="text-sm text-stone-500">
+                {quickMode
+                  ? "Send the minimum alert first, then keep adding details."
+                  : "Capture fuller details for a stronger search brief."}
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Section Navigation - No icons */}
-        <div className="flex gap-2 mb-8 bg-stone-100 rounded-2xl p-1.5">
-          {sections.map((section) => (
-            <button
-              key={section.id}
-              type="button"
-              onClick={() => setActiveSection(section.id)}
-             className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative border
-  ${
-    activeSection === section.id
-      ? "bg-white dark:bg-[#1f1f1f] text-stone-900 dark:text-white border-orange-500 shadow-sm"
-      : "bg-transparent text-stone-600 dark:text-stone-300 border-stone-300 dark:border-orange-500/40 hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400"
-  }`}
-            >
-              <span>{section.label}</span>
-              {isSectionComplete(section.id) && (
-                <span className="w-2 h-2 bg-green-500 rounded-full" />
-              )}
-            </button>
-          ))}
-        </div>
+        {reportInputMode === "form" && (
+          <div className="flex gap-2 mb-8 bg-stone-100 rounded-2xl p-1.5">
+            {sections.map((section) => (
+              <button
+                key={section.id}
+                type="button"
+                onClick={() => setActiveSection(section.id)}
+               className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-semibold transition-all relative border
+    ${
+      activeSection === section.id
+        ? "bg-white dark:bg-[#1f1f1f] text-stone-900 dark:text-white border-orange-500 shadow-sm"
+        : "bg-transparent text-stone-600 dark:text-stone-300 border-stone-300 dark:border-orange-500/40 hover:border-orange-500 hover:text-orange-600 dark:hover:text-orange-400"
+    }`}
+              >
+                <span>{section.label}</span>
+                {isSectionComplete(section.id) && (
+                  <span className="w-2 h-2 bg-green-500 rounded-full" />
+                )}
+              </button>
+            ))}
+          </div>
+        )}
 
         <div className="mb-8 rounded-3xl border border-amber-200 bg-amber-50 p-5">
           <h2 className="text-base font-semibold text-charcoal">
@@ -605,29 +612,163 @@ export const ReportCasePage = () => {
           </div>
         </div>
 
-        <div className="mb-8 rounded-3xl border border-stone-200 bg-white p-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-base font-semibold text-charcoal">
-                {quickMode ? "Fast submission status" : "Report status"}
-              </h2>
-              <p className="mt-1 text-sm text-stone-600">
-                {quickMode
-                  ? "Required now: name, last seen place, your name, phone, and relationship."
-                  : "Photos, date, clothing, and description help the search team move faster."}
-              </p>
-            </div>
-            <div className="text-sm text-stone-500">
-              <p>{isOnline ? "Online" : "Offline"}</p>
-              {draftStatus ? <p className="font-medium text-stone-700">{draftStatus}</p> : null}
+        {/* Safety / crime / harm guidance */}
+        <div className="mb-8 rounded-3xl border border-red-200 bg-red-50 p-5">
+          <h2 className="text-base font-semibold text-red-900">
+            {language === "am" ? "ደህንነት ማስጠንቀቂያ" : "Safety notice"}
+          </h2>
+          <p className="mt-2 text-sm text-red-800">
+            {language === "am"
+              ? "አደጋ በቅርብ ካለ ወይም ወንጀል/ጥቃት እንዳለ ተጠርጣሪ ከሆነ፣ በመጀመሪያ ከአካባቢዎ ፖሊስ/አስቸኳይ አገልግሎት ጋር ይገናኙ። ይህ መተግበሪያ የአስቸኳይ ጥሪ ምትክ አይደለም።"
+              : "If there’s immediate danger or suspected crime/violence, contact your local police/emergency services first. This app is not a replacement for emergency response."}
+          </p>
+        </div>
+
+        {reportInputMode === "form" && (
+          <div className="mb-8 rounded-3xl border border-stone-200 bg-white p-5">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <h2 className="text-base font-semibold text-charcoal">
+                  {quickMode ? "Fast submission status" : "Report status"}
+                </h2>
+                <p className="mt-1 text-sm text-stone-600">
+                  {quickMode
+                    ? "Required now: name, last seen place, your name, phone, and relationship."
+                    : "Photos, date, clothing, and description help the search team move faster."}
+                </p>
+              </div>
+              <div className="text-sm text-stone-500">
+                <p>{isOnline ? "Online" : "Offline"}</p>
+                {draftStatus ? (
+                  <p className="font-medium text-stone-700">{draftStatus}</p>
+                ) : null}
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
+            {/* Input mode selection */}
+            {!reportInputMode && (
+              <div className="rounded-3xl border border-warm-gray/40 bg-cream p-6">
+                <h2 className="text-lg font-bold text-charcoal">
+                  {language === "am"
+                    ? "እባክዎ የሪፖርት መንገድ ይምረጡ"
+                    : "Choose how you want to report"}
+                </h2>
+                <p className="mt-1 text-sm text-stone">
+                  {language === "am"
+                    ? "በድምጽ መናገር ወይም ቅፅ መሙላት አንዱን ብቻ ይምረጡ።"
+                    : "Pick one option. We’ll hide the other to keep it simple."}
+                </p>
+
+                <div className="mt-5 grid sm:grid-cols-2 gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setReportInputMode("voice")}
+                    className="rounded-3xl border border-warm-gray/50 bg-warm-white p-5 text-left hover:border-terracotta/40 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-terracotta/10 flex items-center justify-center">
+                        <Mic className="w-5 h-5 text-terracotta" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-charcoal">
+                          {language === "am" ? "ድምጽ" : "Voice"}
+                        </p>
+                        <p className="text-xs text-stone">
+                          {language === "am"
+                            ? "AI በድምጽ ተከታታይ ጥያቄዎችን ይጠይቃል"
+                            : "AI will ask follow-up questions by voice"}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setReportInputMode("form")}
+                    className="rounded-3xl border border-warm-gray/50 bg-warm-white p-5 text-left hover:border-terracotta/40 transition"
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-2xl bg-sahara/15 flex items-center justify-center">
+                        <User className="w-5 h-5 text-sahara-dark" />
+                      </div>
+                      <div>
+                        <p className="font-semibold text-charcoal">
+                          {language === "am" ? "ቅፅ" : "Form"}
+                        </p>
+                        <p className="text-xs text-stone">
+                          {language === "am"
+                            ? "በቀላሉ መረጃ በመሙላት ይላኩ"
+                            : "Fill the form with the details"}
+                        </p>
+                      </div>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* Voice-only wizard (hides the full form) */}
+            {reportInputMode === "voice" && (
+              <div className="rounded-3xl border border-warm-gray/40 bg-warm-white p-6 sm:p-8">
+                <div className="flex items-center justify-between gap-3 mb-4">
+                  <div>
+                    <h2 className="text-xl font-bold text-charcoal">
+                      {language === "am" ? "የድምጽ ሪፖርት" : "Voice report"}
+                    </h2>
+                    <p className="text-sm text-stone">
+                      {language === "am"
+                        ? "ቅፁ ተሰውሯል እንዳትጭንቁ።"
+                        : "The form is hidden to keep it simple."}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setReportInputMode(null)}
+                    className="text-sm font-semibold text-terracotta hover:underline"
+                  >
+                    {language === "am" ? "መቀየር" : "Change"}
+                  </button>
+                </div>
+
+                <VoiceReportWizard
+                  language={language}
+                  photoPreview={photoPreview}
+                  onApplyDraft={(draft) => {
+                    if (draft.missingPersonName !== undefined) {
+                      updateField("missingPersonName", draft.missingPersonName);
+                    }
+                    if (draft.lastSeenLocation !== undefined) {
+                      updateField("lastSeenLocation", draft.lastSeenLocation);
+                    }
+                    if (draft.description !== undefined) {
+                      updateField("description", draft.description);
+                      setVoiceText(draft.description);
+                    }
+                    if (draft.reporterName !== undefined) {
+                      updateField("reporterName", draft.reporterName);
+                    }
+                    if (draft.reporterPhone !== undefined) {
+                      updateField("reporterPhone", draft.reporterPhone);
+                    }
+                    if (draft.reporterRelation !== undefined) {
+                      updateField("reporterRelation", draft.reporterRelation);
+                    }
+                  }}
+                  onSubmit={() => {
+                    // submit using existing pipeline (auth/offline/photo/etc.)
+                    const fakeEvent = { preventDefault: () => undefined };
+                    handleSubmit(fakeEvent);
+                  }}
+                />
+              </div>
+            )}
+
             {/* Section 1: Missing Person Details */}
-            {activeSection === "person" && (
+            {reportInputMode === "form" && activeSection === "person" && (
               <div className="bg-white rounded-3xl border border-stone-200 dark:border-orange-500/30 p-6 sm:p-8 space-y-6">
                 <div>
                   <h2 className="text-xl font-bold dark:text-white text-stone-900">
@@ -776,7 +917,7 @@ export const ReportCasePage = () => {
             )}
 
             {/* Section 2: Incident Details */}
-            {activeSection === "incident" && (
+            {reportInputMode === "form" && activeSection === "incident" && (
               <div className="bg-white rounded-3xl border border-stone-200 dark:border-orange-500/30 p-6 sm:p-8 space-y-6">
                 <div>
                   <h2 className="text-xl font-bold dark:text-white text-stone-900">
@@ -929,26 +1070,7 @@ export const ReportCasePage = () => {
                   </div>
 
                   {/* Voice Input */}
-                  <div className="rounded-2xl border-2 border-stone-200 dark:border-orange-500/30 p-5 bg-stone-50">
-                    <div className="flex items-center gap-2 mb-3">
-                      <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-                        <Mic className="w-4 h-4 text-red-600" />
-                      </div>
-                      <span className="text-sm font-semibold text-stone-700">
-                        {language === "am" ? "የድምጽ ሪፖርት" : "Voice Report"}
-                      </span>
-                    </div>
-                    <VoiceInput
-              
-                      language={language === "am" ? "am-ET" : "en-US"}
-                      onTranscript={(text) => {
-                        setVoiceText(text);
-                        if (!form.description.trim()) {
-                          updateField("description", text);
-                        }
-                      }}
-                    />
-                  </div>
+                  {/* Voice is intentionally hidden in Form mode to avoid overload */}
 
                   {/* AI Preview */}
                   {aiPreview && (
@@ -991,7 +1113,7 @@ export const ReportCasePage = () => {
             )}
 
             {/* Section 3: Reporter Details */}
-            {activeSection === "reporter" && (
+            {reportInputMode === "form" && activeSection === "reporter" && (
               <div className="bg-white rounded-3xl border border-stone-200 dark:border-orange-500/30 p-6 sm:p-8 space-y-6">
                 <div>
                   <h2 className="text-xl dark:text-white font-bold text-stone-900">
@@ -1135,7 +1257,8 @@ export const ReportCasePage = () => {
             )}
 
             {/* Navigation Buttons */}
-            <div className="flex items-center justify-between pt-4">
+            {reportInputMode === "form" && (
+              <div className="flex items-center justify-between pt-4">
               <button
                 type="button"
                 onClick={() => {
@@ -1191,7 +1314,8 @@ export const ReportCasePage = () => {
                   )}
                 </button>
               )}
-            </div>
+              </div>
+            )}
           </div>
         </form>
 

@@ -60,21 +60,22 @@
 
 .dark {
   /* Backgrounds */
-  --color-warm-white: #0F0E0D;  
-  --color-cream: #181716;      
-  --color-warm-gray: #262321; 
+  /* More professional deep slate/blue dark theme */
+  --color-warm-white: #0B1220;
+  --color-cream: #101A2E;
+  --color-warm-gray: #18233A;
 
   /* Text */
   --color-charcoal: #ffffff;    /* primary text on dark */
-  --color-stone: #B8B0A7;       /* secondary text */
+  --color-stone: #B7C0D1;       /* secondary text */
 
   /* Accents tuned for dark */
   --color-olive: #fafafa;
   --color-olive-light: #ffffff;
-  --color-terracotta: #E07B5A;
-  --color-terracotta-dark: #C76447;
-  --color-clay: #C76447;
-  --color-clay-dark: #9C4A35;
+  --color-terracotta: #F08A62;
+  --color-terracotta-dark: #D56F4B;
+  --color-clay: #D56F4B;
+  --color-clay-dark: #B85A3A;
 }
 
 /* Keyframe Animations */
@@ -232,39 +233,39 @@
 
   /* Dark-mode alignment for legacy light-only Tailwind classes */
   .dark .bg-white {
-    background-color: #181716 !important;
+    background-color: #101A2E !important;
   }
   .dark .bg-white\/95 {
-    background-color: rgb(24 23 22 / 0.95) !important;
+    background-color: rgb(16 26 46 / 0.95) !important;
   }
   .dark .bg-white\/80 {
-    background-color: rgb(24 23 22 / 0.8) !important;
+    background-color: rgb(16 26 46 / 0.8) !important;
   }
   .dark .bg-stone-50 {
-    background-color: #1f1c1a !important;
+    background-color: #0F1730 !important;
   }
   .dark .bg-stone-100 {
-    background-color: #262321 !important;
+    background-color: #14203A !important;
   }
 
   .dark .border-stone-200 {
-    border-color: #34302d !important;
+    border-color: #22314F !important;
   }
   .dark .border-stone-300 {
-    border-color: #3f3a36 !important;
+    border-color: #2B3B5D !important;
   }
 
   .dark .text-stone-500 {
-    color: #a89f95 !important;
+    color: #A9B4C9 !important;
   }
   .dark .text-stone-600 {
-    color: #b8afa5 !important;
+    color: #B7C0D1 !important;
   }
   .dark .text-stone-700 {
-    color: #d2cbc2 !important;
+    color: #D3DAE8 !important;
   }
   .dark .text-charcoal {
-    color: #f8f4ee !important;
+    color: #F4F7FF !important;
   }
 
   .dark .hover\:bg-stone-50:hover {
