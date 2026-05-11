@@ -180,15 +180,6 @@ export const ReportCasePage = () => {
       });
     }
   };
-
-  const helperText = useMemo(
-    () =>
-      language === "am"
-        ? "ይህ ሪፖርት በቀጥታ ወደ የጠፉ ሰዎች ምላሽ ስርዓት ይገባል፣ በአማርኛ ድምጽ-ወደ-ጽሑፍ እና የአድራሻ ፍለጋ"
-        : "This report goes directly into the missing-person response workflow with voice-to-text and address-based map lookup.",
-    [language],
-  );
-
   const updateField = (key, value) => {
     setForm((current) => ({
       ...current,
@@ -548,7 +539,6 @@ export const ReportCasePage = () => {
               ? "እያንዳንዱ ዝርዝር መረጃ ወሳኝ ነው"
               : "Every detail matters in finding someone"}
           </h1>
-          <p className="text-lg text-stone-600 max-w-2xl">{helperText}</p>
           {reportInputMode === "form" && (
             <div className="mt-4 flex flex-wrap items-center gap-3">
               <button
@@ -594,19 +584,6 @@ export const ReportCasePage = () => {
             ))}
           </div>
         )}
-
-        <div className="mb-8 rounded-3xl border border-amber-200 bg-amber-50 p-5">
-          <h2 className="text-base font-semibold text-charcoal">
-            {language === "am" ? "አስቸኳይ የመጀመሪያ እርምጃ ዝርዝር" : "Immediate Action Checklist"}
-          </h2>
-          <div className="mt-3 space-y-2 text-sm text-stone-700">
-            {(language === "am"
-              ? IMMEDIATE_ACTION_CHECKLIST.am
-              : IMMEDIATE_ACTION_CHECKLIST.en
-            ).map((item) => (
-              <p key={item}>{item}</p>
-            ))}
-          </div>
         </div>
 
         {/* Safety / crime / harm guidance */}
