@@ -12,9 +12,7 @@ export const RoleRoute = ({ roles = [], fallbackPath = "/" }) => {
   const { isAuthenticated, isLoading, user } = useAuth();
   const location = useLocation();
 
-  if (isLoading) {
-    return null;
-  }
+  if (isLoading)  return null;
 
   if (!isAuthenticated) {
     return <Navigate to="/auth/login" state={{ from: location }} replace />;

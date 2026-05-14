@@ -29,7 +29,7 @@ function App() {
                 </main>
                 <MainFooter />
               </div>
-              {/* <GlobalAIAssistant /> */}
+              <GlobalAIAssistant />
               <OfflineIndicator />
               <Toaster
                 position="top-center"

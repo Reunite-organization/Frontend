@@ -11,7 +11,6 @@ export const ProtectedRoute = () => {
   }
 
   const { isAuthenticated, isLoading } = context;
-
   if (isLoading) return <div><LoadingSkeleton/></div>; 
 
   return isAuthenticated 

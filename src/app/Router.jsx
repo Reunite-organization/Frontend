@@ -70,14 +70,14 @@ export const Router = () => {
         path="/stories/success"
         element={<Navigate to="/wanted/stories" replace />}
       />
-      {/* <Route element={<ProtectedRoute />}> */}
+      <Route element={<ProtectedRoute />}>
         <Route path="/wanted/create" element={<CreatePostPage />} />
         <Route path="/wanted/stories/share" element={<CreateStory />} />
         <Route path="/wanted/profile" element={<ProfilePage />} />
         <Route path="/wanted/claims" element={<ClaimsPage />} />
         <Route path="/wanted/chat/:roomId?" element={<ChatPage />} />
         <Route path="/wanted/profile/create" element={<CreateProfilePage />} />
-      {/* </Route> */}
+      </Route>
 
       <Route path="/read-more" element={<ReadMorePage />} />
       <Route path="/faq" element={<FAQPage />} />{" "}
